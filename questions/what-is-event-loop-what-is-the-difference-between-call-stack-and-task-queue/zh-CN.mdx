@@ -5,7 +5,7 @@ subtitle: call stack 和 task queue 之间有什么区别？
 
 ## TL;DR
 
-事件循环是 JavaScript 运行时环境内关于异步操作如何在 JavaScript 引擎中执行的概念。它的工作原理如下：
+事件循环是JavaScript运行时环境中的一个概念，涉及异步操作如何在JavaScript引擎中执行。它的工作原理如下：
 
 1. JavaScript 引擎开始执行脚本，将同步操作放在调用堆栈上。
 2. 当遇到异步操作（例如，`setTimeout()`、HTTP 请求）时，它会被卸载到相应的 Web API 或 Node.js API，以在后台处理该操作。
@@ -19,7 +19,7 @@ subtitle: call stack 和 task queue 之间有什么区别？
 
 不幸的是，仅使用文本很难很好地解释事件循环。我们建议查看以下优秀的视频之一，解释事件循环：
 
-* [JavaScript Visualized - Event Loop, Web APIs, (Micro)task Queue](https://www.youtube.com/watch?v=eiC58R16hb8) (2024): Lydia Hallie 是 JavaScript 方面的热门教育家，这是解释事件循环的最新最佳视频。对于那些喜欢详细的基于文本的解释的人，还有一个[配套博客文章](https://www.lydiahallie.com/blog/event-loop)。
+* [JavaScript Visualized - Event Loop, Web APIs, (Micro)task Queue](https://www.youtube.com/watch?v=eiC58R16hb8) (2024): Lydia Hallie 是一个受欢迎的 JavaScript 教育者，这是最近解释事件循环的最佳视频。对于那些喜欢详细的基于文本的解释的人，还有一个[随附的博客文章](https://www.lydiahallie.com/blog/event-loop)。
 * [In the Loop](https://www.youtube.com/watch?v=cCOL7MC4Pl0) (2018): 来自 Chrome 团队的 Jake Archibald 在 JSConf 2018 期间提供了事件循环的视觉演示，解释了不同类型的任务。
 * [What the heck is the event loop anyway?](https://www.youtube.com/watch?v=8aGhZQkoFbQ) (2014): Philip Robert 在 JSConf 2014 上发表了这次史诗般的演讲，这是 YouTube 上观看次数最多的 JavaScript 视频之一。
 

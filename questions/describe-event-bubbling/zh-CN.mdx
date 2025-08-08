@@ -140,8 +140,8 @@ function handleBuyClick(event) {
 ```js
 // HTML:
 // <ul id="product-list">
-//   <li><button id="item1-buy">立即购买</button></li>
-//   <li><button id="item2-buy">立即购买</button></li>
+//   <li><button id="item1-buy">Buy Now</button></li>
+//   <li><button id="item2-buy">Buy Now</button></li>
 // </ul>
 
 const productList = document.getElementById('product-list');
@@ -149,9 +149,9 @@ const productList = document.getElementById('product-list');
 productList.addEventListener('click', handleBuyClick);
 
 function handleBuyClick(event) {
-  // 检查点击的元素是否是列表中的一个按钮
+  // Check if the clicked element is a button within the list
   if (event.target.tagName.toLowerCase() === 'button') {
-    console.log('点击了项目的购买按钮：', event.target.textContent);
+    console.log('Buy button clicked for item:', event.target.id);
   }
 }
 ```

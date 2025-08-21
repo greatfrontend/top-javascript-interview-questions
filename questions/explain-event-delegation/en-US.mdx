@@ -126,6 +126,41 @@ When an event occurs, React's event listener captures it and determines which Re
 
 By using event delegation, React avoids attaching individual event handlers to each component instance, which would create significant overhead, especially for large component trees. Instead, React leverages the browser's native event bubbling mechanism to capture events at the root and distribute them to the appropriate components.
 
+```js
+function List({ items }) {
+  return (
+    <ul>
+      {items.map(item => (
+        <li key={item.id} onClick={() => alert(item.name)}>
+          {item.name}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+You might expect that each <li> gets its own click event listener. But:
+
+**Without Event Delegation:** The browser would have to manage N event listeners for N items.
+
+**With React's Event Delegation:** Only a single event listener for click is attached at the root (where React renders). The event bubbles up from the <li>, and React's synthetic event system figures out which handler to call.
+
+###Why is This Efficient?
+**Reduces Memory Usage:** Only a few listeners are needed, no matter how many elements/components you render.
+
+**Improves Performance:** Managing lots of native listeners is slow (especially for very large lists/grids). React's event delegation avoids this overhead.
+
+**Unified Event System:** React normalizes browser differences using its synthetic event system, making events behave consistently across environments.
+
+###Visualization
+Imagine you render 10,000 items in a grid. Without event delegation:
+
+10,000 native click listeners in the DOM.
+
+**With React:**
+
+1 global listener on the root (#root).
+
 ## Further reading
 
 - [MDN Web Docs on Event Delegation](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#event_delegation)

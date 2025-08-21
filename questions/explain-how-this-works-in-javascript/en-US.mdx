@@ -105,7 +105,9 @@ const person = new Person('John');
 person.showThis(); // Person {name: 'John'}
 
 const showThisStandalone = person.showThis;
-showThisStandalone(); // `undefined` because all parts of a class' body are strict mode.
+showThisStandalone(); // `undefined` because in JavaScript class bodies, all methods are in strict mode by default, even if you don't add 'use strict'.
+
+
 ```
 
 ### Explicitly binding `this`

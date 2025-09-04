@@ -1,11 +1,6 @@
 {
-  "frontmatter": {
-    "title": "a4d94590",
-    "subtitle": "d8b55125"
-  },
   "content": {
     "source": {
-      "locale": "en-US",
       "hashes": [
         "77da26a5",
         "9eacf6bc",
@@ -29,8 +24,9 @@
         "e22beaf8",
         "750510df",
         "1f4770e5",
-        "b11b22d6"
-      ]
+        "63685884"
+      ],
+      "locale": "en-US"
     },
     "targets": {
       "zh-CN": [
@@ -56,8 +52,12 @@
         "e22beaf8",
         "750510df",
         "1f4770e5",
-        "b11b22d6"
+        "63685884"
       ]
     }
+  },
+  "frontmatter": {
+    "title": "a4d94590",
+    "subtitle": "d8b55125"
   }
 }

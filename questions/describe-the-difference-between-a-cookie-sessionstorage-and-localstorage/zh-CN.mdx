@@ -118,10 +118,10 @@ localStorage.clear();
 
 `sessionStorage` 用于存储页面会话期间的数据。它专为临时存储数据而设计。
 
-* **存储容量**：通常每个来源约 5MB（因浏览器而异）。
-* **生命周期**：当页面会话结束时（即，当浏览器或选项卡关闭时），`sessionStorage` 中的数据将被清除。重新加载页面不会销毁 `sessionStorage` 中的数据。
-* **访问**：数据仅在当前选项卡或窗口中可访问。具有相同页面的不同选项卡或窗口将具有不同的 `sessionStorage` 对象。
-* **安全性**：同一页面上的所有 JavaScript 都可以访问该页面 `sessionStorage` 中的值。
+* **存储容量**: 通常每个来源约 5MB（取决于浏览器）。
+* **生命周期**: `sessionStorage` 中的数据在页面会话结束时清除（即，当浏览器或选项卡关闭时）。重新加载页面不会销毁 `sessionStorage` 中的数据。
+* **访问**: 数据仅在当前选项卡（或浏览上下文）中可访问。不同的选项卡共享不同的 `sessionStorage` 对象，即使它们属于同一个浏览器窗口。在这种情况下，窗口指的是可以包含多个选项卡的浏览器窗口。
+* **安全性**: 同一页面上的所有 JavaScript 都可以访问该页面 `sessionStorage` 中的值。
 
 ```js
 // Set a value in sessionStorage.

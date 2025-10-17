@@ -120,7 +120,7 @@ localStorage.clear();
 
 - **Storage Capacity**: Typically around 5MB per origin (varies by browser).
 - **Lifespan**: Data in `sessionStorage` is cleared when the page session ends (i.e., when the browser or tab is closed). Reloading the page does not destroy data within `sessionStorage`.
-- **Access**: "Data is accessible only within the current tab (or browsing context). Different tabs share different `sessionStorage` objects even if they belong to the same browser window." (In this context window refers to a browser window that could have multiple tabs).
+- **Access**: Data is accessible only within the current tab (or browsing context). Different tabs share different `sessionStorage` objects even if they belong to the same browser window. In this context, window refers to a browser window that can contain multiple tabs.
 - **Security**: All JavaScript on the same page have access to values within `sessionStorage` for that page.
 
 ```js

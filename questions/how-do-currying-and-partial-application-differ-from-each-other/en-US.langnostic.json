@@ -1,10 +1,6 @@
 {
-  "frontmatter": {
-    "title": "d34df27e"
-  },
   "content": {
     "source": {
-      "locale": "en-US",
       "hashes": [
         "77da26a5",
         "9fcd7e6e",
@@ -23,8 +19,9 @@
         "67423e0a",
         "7f8361a1",
         "1f4770e5",
-        "367db191"
-      ]
+        "64d0705a"
+      ],
+      "locale": "en-US"
     },
     "targets": {
       "zh-CN": [
@@ -45,8 +42,11 @@
         "67423e0a",
         "7f8361a1",
         "1f4770e5",
-        "367db191"
+        "64d0705a"
       ]
     }
+  },
+  "frontmatter": {
+    "title": "d34df27e"
   }
 }

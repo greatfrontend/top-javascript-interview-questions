@@ -24,8 +24,11 @@
     "lodash-es": "^4.17.21",
     "tsx": "^4.15.1"
   },
-  "packageManager": "pnpm@8.15.8",
   "devDependencies": {
     "typescript": "^5.8.2"
-  }
+  },
+  "engines": {
+    "node": ">= 22.15.0"
+  },
+  "packageManager": "pnpm@10.9.0"
 }

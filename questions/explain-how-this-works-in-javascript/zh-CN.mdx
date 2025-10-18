@@ -105,7 +105,7 @@ const person = new Person('John');
 person.showThis(); // Person {name: 'John'}
 
 const showThisStandalone = person.showThis;
-showThisStandalone(); // `undefined` 因为类的所有部分都是严格模式。
+showThisStandalone(); // `undefined` because in JavaScript class bodies, all methods are strict mode by default, even if you don't add 'use strict'
 ```
 
 ### 显式绑定 `this`

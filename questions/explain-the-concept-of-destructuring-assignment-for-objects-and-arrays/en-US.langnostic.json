@@ -1,10 +1,6 @@
 {
-  "frontmatter": {
-    "title": "faf08055"
-  },
   "content": {
     "source": {
-      "locale": "en-US",
       "hashes": [
         "77da26a5",
         "4343f7ff",
@@ -36,8 +32,9 @@
         "1530bb48",
         "21ba8ff5",
         "1f4770e5",
-        "794d2aa7"
-      ]
+        "7973f9b8"
+      ],
+      "locale": "en-US"
     },
     "targets": {
       "zh-CN": [
@@ -71,8 +68,11 @@
         "1530bb48",
         "21ba8ff5",
         "1f4770e5",
-        "794d2aa7"
+        "7973f9b8"
       ]
     }
+  },
+  "frontmatter": {
+    "title": "faf08055"
   }
 }

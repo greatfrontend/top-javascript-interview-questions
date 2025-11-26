@@ -1,6 +1,8 @@
 # Top JavaScript Interview Questions (Updated for 2025)
 
-**Updated for 2025!** This repository contains a few hundred curated JavaScript interview questions with high quality answers for acing your Front End Engineer interviews. The questions are divided into two sections:
+**Updated for 2025!** This repository contains a few hundred curated JavaScript interview questions with high quality answers for acing your Front End Engineer interviews, brought to you by [GreatFrontEnd](https://www.greatfrontend.com/?utm_source=github&utm_medium=referral&utm_campaign=top-reactjs-qns&gnrs=yangshun).
+
+The questions are divided into two sections:
 
 1. [**Top questions**](#table-of-contents-top-questions): List of the most important JavaScript interview questions that are commonly-asked during Front End Developer interviews. This README displays the concise version of the answers and links are provided to the full version of answers for further learning. If you are are short on time, start with this section.
 2. [**All questions**](#table-of-contents-all-questions): Comprehensive and elaborate list of JavaScript interview questions that ranges from basic to advanced topics. The answers in this section are more concise. This section is useful if you rusty with JavaScript concepts and need a refresher.
@@ -9,14 +11,14 @@
 ---
 
 <div>
-<p align="center">
-  <a href="https://www.greatfrontend.com/questions/javascript-interview-questions?utm_source=github&utm_medium=referral&utm_campaign=top-js-qns&gnrs=yangshun">
-    <img src="./images/greatfrontend-js-banner4x.png" alt="GreatFrontEnd JavaScript Interview Questions" width="100%">
-  </a>
-</p>
+  <p align="center">
+    <a href="https://www.greatfrontend.com/questions/javascript-interview-questions?utm_source=github&utm_medium=referral&utm_campaign=top-js-qns&gnrs=yangshun">
+      <img src="./images/greatfrontend-js-banner4x.png" alt="GreatFrontEnd JavaScript Interview Questions" width="100%">
+    </a>
+  </p>
 </div>
 
-> 💡 Nail JavaScript interviews with questions and solutions from ex-interviewers! [Try GreatFrontEnd →](https://www.greatfrontend.com/questions/javascript-interview-questions?utm_source=github&utm_medium=referral&utm_campaign=top-js-qns&gnrs=yangshun) 💡
+> Black Friday 2025 sale going on now, enjoy the largest discount of the year! [Get 30% off GreatFrontEnd Premium →](https://www.greatfrontend.com/questions/javascript-interview-questions?utm_source=github&utm_medium=referral&utm_campaign=top-js-qns&gnrs=yangshun) 💡
 
 ---
 

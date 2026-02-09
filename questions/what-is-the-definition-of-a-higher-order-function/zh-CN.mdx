@@ -121,13 +121,13 @@ function memoize(fn) {
   };
 }
 
-function fibonacci(n) {
+const memoizedFibonacci = memoize(function(n) {
   if (n <= 1) return n;
-  return fibonacci(n - 1) + fibonacci(n - 2);
-}
+    return memoizedFibonacci(n - 1) + memoizedFibonacci(n - 2);
+});
 
-const memoizedFibonacci = memoize(fibonacci);
 console.log(memoizedFibonacci(10)); // Output: 55
+console.log(memoizedFibonacci(100)); // Output: 354224848179262000000
 ```
 
 `memoize` 函数是一个高阶函数，它接受一个函数 `fn` 作为参数，并返回一个新函数，该函数根据原始函数的参数缓存其结果。

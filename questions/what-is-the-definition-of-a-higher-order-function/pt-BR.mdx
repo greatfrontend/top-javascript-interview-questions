@@ -2,19 +2,21 @@
 title: Qual é a definição de uma função de ordem superior?
 ---
 
-Uma função de ordem superior é qualquer função que recebe uma ou mais funções como argumentos, que ela usa para operar em algum dado e/ou retorna uma função como resultado. As funções de ordem superior têm como objetivo abstrair alguma operação que é realizada repetidamente. O exemplo clássico disso é o map, que recebe como argumentos um array e uma função. O map então usa essa função para transformar cada item no array, retornando um novo array com os dados transformados. Outros exemplos populares em JavaScript são `forEach`, `filter` e `reduce`. Uma função de ordem superior não precisa apenas manipular arrays, pois há muitos casos de uso para retornar uma função de outra função. `Function.prototype.bind` é um exemplo desse tipo em JavaScript.
+## TL;DR
 
-## Map
+Uma função de ordem superior é qualquer função que recebe uma ou mais funções como argumentos, as quais ela usa para operar sobre alguns dados, e/ou retorna uma função como resultado.
+
+Funções de ordem superior são destinadas a abstrair alguma operação que é executada repetidamente. O exemplo clássico disso é o `Array.prototype.map()`, que recebe um array e uma função como argumentos. O `Array.prototype.map()` então usa essa função para transformar cada item do array, retornando um novo array com os dados transformados. Outros exemplos populares em JavaScript são `Array.prototype.forEach()`, `Array.prototype.filter()` e `Array.prototype.reduce()`. Uma função de ordem superior não precisa apenas manipular arrays, pois existem muitos casos de uso para retornar uma função de outra função. `Function.prototype.bind()` é um exemplo que retorna outra função.
 
 Vamos supor que temos um array de nomes no qual precisamos transformar cada string em maiúsculas.
 
-```js
+```js live
 const names = ['irish', 'daisy', 'anna'];
 ```
 
 A maneira imperativa seria assim:
 
-```js
+```js live
 const transformNamesToUppercase = function (names) {
   const results = [];
   for (let i = 0; i < names.length; i++) {
@@ -25,11 +27,133 @@ const transformNamesToUppercase = function (names) {
 transformNamesToUppercase(names); // ['IRISH', 'DAISY', 'ANNA']
 ```
 
-Use `.map(transformerFn)` torna o código mais curto e mais declarativo.
+Use `Array.prototype.map(transformerFn)` torna o código mais curto e mais declarativo.
 
-```js
-const transformNamesToUppercase = function (names) {
+```js live
+function transformNamesToUppercase(names) {
   return names.map((name) => name.toUpperCase());
 };
 transformNamesToUppercase(names); // ['IRISH', 'DAISY', 'ANNA']
 ```
+
+---
+
+## Funções de ordem superior
+
+Uma função de ordem superior é uma função que recebe outra função como argumento ou retorna uma função como resultado.
+
+### Funções como argumentos
+
+Uma função de ordem superior pode receber outra função como argumento e executá-la.
+
+```js live
+function greet(name) {
+  return `Hello, ${name}!`;
+}
+
+function greetName(greeter, name) {
+  console.log(greeter(name));
+}
+
+greetName(greet, 'Alice'); // Hello, Alice!
+```
+
+Neste exemplo, a função `greetName` é uma função de ordem superior porque ela recebe outra função (`greet`) como argumento e a usa para gerar uma saudação para o nome fornecido.
+
+### Funções como valores de retorno
+
+Uma função de ordem superior pode retornar outra função.
+
+```js live
+function multiplier(factor) {
+  return function (num) {
+    return num * factor;
+  };
+}
+
+const double = multiplier(2);
+const triple = multiplier(3);
+
+console.log(double(5)); // 10
+console.log(triple(5)); // 15
+```
+
+Neste exemplo, a função `multiplier` retorna uma nova função que multiplica qualquer número pelo fator especificado. A função retornada é uma closure que lembra o valor de `factor` da função externa. A função `multiplier` é uma função de ordem superior porque retorna outra função.
+
+### Exemplos práticos
+
+1. **Decorador de logging**: Uma função de ordem superior que adiciona funcionalidade de logging a outra função:
+
+```js live
+function withLogging(fn) {
+  return function (...args) {
+    console.log(`Calling ${fn.name} with arguments`, args);
+    return fn.apply(this, args);
+  };
+}
+
+function add(a, b) {
+  return a + b;
+}
+
+const loggedAdd = withLogging(add);
+console.log(loggedAdd(2, 3));
+// Saída
+// Chamando add com argumentos [2, 3]
+// 5
+```
+
+A função `withLogging` é uma função de ordem superior que recebe uma função fn como argumento e retorna uma nova função que registra a chamada da função antes de executar a função original.
+
+2. **Memoization**: Uma função de ordem superior que armazena em cache os resultados de uma função para evitar computações redundantes:
+
+```js live
+function memoize(fn) {
+  const cache = new Map();
+  return function (...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    const result = fn.apply(this, args);
+    cache.set(key, result);
+    return result;
+  };
+}
+
+const memoizedFibonacci = memoize(function(n) {
+  if (n <= 1) return n;
+    return memoizedFibonacci(n - 1) + memoizedFibonacci(n - 2);
+});
+
+console.log(memoizedFibonacci(10)); // Saída: 55
+console.log(memoizedFibonacci(100)); // Saída: 354224848179262000000
+```
+
+A função `memoize` é uma função de ordem superior que recebe uma função `fn` como argumento e retorna uma nova função que armazena em cache os resultados da função original com base em seus argumentos.
+
+3. **Lodash**: Lodash é uma biblioteca utilitária que fornece uma ampla variedade de funções para trabalhar com arrays, objetos, strings e muito mais, sendo a maioria delas funções de ordem superior.
+
+```js
+import _ from 'lodash';
+
+const numbers = [1, 2, 3, 4, 5];
+
+// Filtrar o array
+const evenNumbers = _.filter(numbers, (n) => n % 2 === 0); // [2, 4]
+
+// Mapear o array
+const doubledNumbers = _.map(numbers, (n) => n * 2); // [2, 4, 6, 8, 10]
+
+// Encontrar o valor máximo do array
+const maxValue = _.max(numbers); // 5
+
+// Somar todos os valores do array
+const sum = _.sum(numbers); // 15
+```
+
+## Leitura complementar
+
+- [Higher-Order Functions](https://eloquentjavascript.net/05_higher_order.html)
+- [Understanding Higher-Order Functions in JavaScript](https://blog.bitsrc.io/understanding-higher-order-functions-in-javascript-75461803bad)
+- [Higher Order Functions: How to Use Filter, Map and Reduce for More Maintainable Code](https://www.freecodecamp.org/news/higher-order-functions-in-javascript-d9101f9cf528/)

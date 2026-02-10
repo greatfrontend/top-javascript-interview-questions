@@ -123,7 +123,7 @@ function memoize(fn) {
 
 const memoizedFibonacci = memoize(function(n) {
   if (n <= 1) return n;
-    return memoizedFibonacci(n - 1) + memoizedFibonacci(n - 2);
+  return memoizedFibonacci(n - 1) + memoizedFibonacci(n - 2);
 });
 
 console.log(memoizedFibonacci(10)); // Output: 55

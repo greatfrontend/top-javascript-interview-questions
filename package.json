@@ -2,19 +2,20 @@
   "name": "top-javascript-interview-questions",
   "version": "1.0.0",
   "description": "List of top JavaScript interview questions",
+  "keywords": [
+    "interview",
+    "javascript",
+    "questions"
+  ],
+  "license": "ISC",
+  "author": "yangshun",
   "main": "index.js",
   "scripts": {
     "gen": "tsx scripts/gen.ts",
     "rank": "tsx scripts/rank.ts",
-    "i18n": "langnostic translate"
+    "i18n": "langnostic translate",
+    "prepare": "vp config"
   },
-  "keywords": [
-    "javascript",
-    "interview",
-    "questions"
-  ],
-  "author": "yangshun",
-  "license": "ISC",
   "dependencies": {
     "@types/node": "^20.14.2",
     "github-slugger": "^2.0.0",
@@ -25,7 +26,8 @@
     "tsx": "^4.15.1"
   },
   "devDependencies": {
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "vite-plus": "catalog:"
   },
   "engines": {
     "node": ">= 22.15.0"

@@ -291,4 +291,4 @@ async function generateAll() {
   );
 }
 
-generateAll();
+void generateAll();

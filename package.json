@@ -26,6 +26,7 @@
     "tsx": "^4.15.1"
   },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
     "typescript": "^5.8.2",
     "vite-plus": "catalog:"
   },

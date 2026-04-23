@@ -5,7 +5,7 @@ import { QuestionMetadata } from './types';
 
 const readFileAsync = util.promisify(fs.readFile);
 
-const ranks = {
+const ranks: Record<string, number> = {
   'explain-hoisting': 1,
   'what-are-the-differences-between-variables-created-using-let-var-or-const': 2,
   'what-is-the-difference-between-double-equal-and-triple-equal': 3,
@@ -58,10 +58,10 @@ const ranks = {
   'how-does-javascript-garbage-collection-work': 50,
 };
 
-async function rankQuestion(dirName: string, locale: string = 'en-US') {
+async function rankQuestion(dirName: string) {
   const metadataPath = path.join('./questions', dirName, 'metadata.json');
 
-  const [metadataFile] = await Promise.all([readFileAsync(metadataPath)]);
+  const metadataFile = await readFileAsync(metadataPath);
 
   const metadata: QuestionMetadata = JSON.parse(String(metadataFile));
 
@@ -94,4 +94,4 @@ async function generate() {
   await rankQuestionList(qns);
 }
 
-generate();
+void generate();

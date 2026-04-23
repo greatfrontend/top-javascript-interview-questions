@@ -121,13 +121,13 @@ function memoize(fn) {
   };
 }
 
-function fibonacci(n) {
+const memoizedFibonacci = memoize(function(n) {
   if (n <= 1) return n;
-  return fibonacci(n - 1) + fibonacci(n - 2);
-}
+  return memoizedFibonacci(n - 1) + memoizedFibonacci(n - 2);
+});
 
-const memoizedFibonacci = memoize(fibonacci);
 console.log(memoizedFibonacci(10)); // Output: 55
+console.log(memoizedFibonacci(100)); // Output: 354224848179262000000
 ```
 
 The `memoize` function is a higher-order function that takes a function `fn` as an argument and returns a new function that caches the results of the original function based on its arguments.

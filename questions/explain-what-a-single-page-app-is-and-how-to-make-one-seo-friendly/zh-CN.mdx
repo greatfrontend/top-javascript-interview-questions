@@ -6,7 +6,7 @@ title: 解释什么是单页应用程序以及如何使其对 SEO 友好
 
 单页应用程序 (SPA) 是一种 Web 应用程序，它加载单个 HTML 页面，并在用户与应用程序交互时动态更新内容。这种方法提供了更流畅的用户体验，但对于 SEO 来说可能具有挑战性，因为搜索引擎可能不会执行 JavaScript 来呈现内容。要使 SPA 对 SEO 友好，您可以使用服务器端渲染 (SSR) 或静态站点生成 (SSG) 来确保搜索引擎可以索引您的内容。像 Next.js for React 或 Nuxt.js for Vue.js 这样的工具可以帮助实现这一点。
 
-***
+---
 
 ## 什么是单页应用程序？
 
@@ -16,15 +16,15 @@ title: 解释什么是单页应用程序以及如何使其对 SEO 友好
 
 ### 关键特征
 
-* 应用程序加载单个 HTML 页面，并在用户与应用程序交互时动态更新它
-* 使用 AJAX 或 Fetch API 与服务器通信并更新页面，无需完全重新加载
-* 通常依赖客户端路由来管理应用程序内的不同视图或状态
+- 应用程序加载单个 HTML 页面，并在用户与应用程序交互时动态更新它
+- 使用 AJAX 或 Fetch API 与服务器通信并更新页面，无需完全重新加载
+- 通常依赖客户端路由来管理应用程序内的不同视图或状态
 
 ### 优点
 
-* 初始加载后交互更快
-* 由于页面请求减少，服务器负载降低
-* 通过更流畅的过渡改善用户体验
+- 初始加载后交互更快
+- 由于页面请求减少，服务器负载降低
+- 通过更流畅的过渡改善用户体验
 
 ## 如何使 SPA 对 SEO 友好
 
@@ -38,8 +38,8 @@ title: 解释什么是单页应用程序以及如何使其对 SEO 友好
 
 服务器端渲染涉及在将页面发送到客户端之前在服务器上呈现页面的初始 HTML。这确保了搜索引擎可以索引完全呈现的内容。
 
-* **React**：使用 Next.js，它提供对 SSR 的内置支持
-* **Vue.js**：使用 Nuxt.js，它也支持开箱即用的 SSR
+- **React**：使用 Next.js，它提供对 SSR 的内置支持
+- **Vue.js**：使用 Nuxt.js，它也支持开箱即用的 SSR
 
 Next.js 示例：
 
@@ -74,8 +74,8 @@ export default Page;
 
 静态站点生成涉及在构建时为每个页面生成 HTML。这种方法适用于内容不经常更改的情况。
 
-* **React**：使用 Next.js 及其静态生成功能
-* **Vue.js**：使用 Nuxt.js 及其静态站点生成功能
+- **React**：使用 Next.js 及其静态生成功能
+- **Vue.js**：使用 Nuxt.js 及其静态站点生成功能
 
 Next.js 示例：
 
@@ -110,12 +110,12 @@ export default Page;
 
 一些工具可以预渲染您的 SPA 并将预渲染的 HTML 提供给搜索引擎。
 
-* **Prerender.io**：一项预渲染您的 JavaScript 应用程序并将静态 HTML 提供给搜索引擎的服务
-* **Rendertron**：一个无头 Chrome 渲染解决方案，可用于预渲染您的 SPA
+- **Prerender.io**：一项预渲染您的 JavaScript 应用程序并将静态 HTML 提供给搜索引擎的服务
+- **Rendertron**：一个无头 Chrome 渲染解决方案，可用于预渲染您的 SPA
 
 ## 延伸阅读
 
-* [Next.js 文档](https://nextjs.org/docs)
-* [Nuxt.js 文档](https://nuxtjs.org/docs)
-* [Prerender.io](https://prerender.io/)
-* [Rendertron](https://github.com/GoogleChrome/rendertron)
+- [Next.js 文档](https://nextjs.org/docs)
+- [Nuxt.js 文档](https://nuxtjs.org/docs)
+- [Prerender.io](https://prerender.io/)
+- [Rendertron](https://github.com/GoogleChrome/rendertron)

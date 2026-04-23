@@ -14,7 +14,7 @@ obj.name = 'Doe'; // This will not change the name property
 console.log(obj); // { name: 'John' }
 ```
 
-***
+---
 
 ## 什么是 `Object.freeze()`？
 
@@ -53,8 +53,8 @@ console.log(obj); // Output: { name: "John", age: 30 }
 
 ### 局限性
 
-* `Object.freeze()` 仅使对象本身不可变。如果对象包含嵌套对象，则这些嵌套对象不会被冻结，并且仍然可以被修改。
-* 要深度冻结一个对象，您需要递归地将 `Object.freeze()` 应用于所有嵌套对象。
+- `Object.freeze()` 仅使对象本身不可变。如果对象包含嵌套对象，则这些嵌套对象不会被冻结，并且仍然可以被修改。
+- 要深度冻结一个对象，您需要递归地将 `Object.freeze()` 应用于所有嵌套对象。
 
 ```js live
 const deepFreeze = (obj) => {
@@ -82,6 +82,6 @@ console.log(nestedObj); // Output: { name: "John", details: { age: 30, address: 
 
 ## 延伸阅读
 
-* [MDN Web Docs on Object.freeze()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)
-* [JavaScript.info on property flags and descriptors](https://javascript.info/property-descriptors)
-* [Deep freezing objects in JavaScript](https://medium.com/@saranshkataria/deep-freezing-objects-in-javascript-637f3d4d7d7)
+- [MDN Web Docs on Object.freeze()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)
+- [JavaScript.info on property flags and descriptors](https://javascript.info/property-descriptors)
+- [Deep freezing objects in JavaScript](https://medium.com/@saranshkataria/deep-freezing-objects-in-javascript-637f3d4d7d7)

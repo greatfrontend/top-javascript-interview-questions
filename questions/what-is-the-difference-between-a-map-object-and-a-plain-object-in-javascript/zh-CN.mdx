@@ -16,7 +16,7 @@ JavaScript 中的 `Map` 对象和普通对象都可以存储键值对，但它�
 | 性能 | 通常更适合大型数据集和频繁的添加/删除 | 适用于小型数据集和简单操作 |
 | 可序列化 | 否 | 是 |
 
-***
+---
 
 ## `Map` vs 普通 JavaScript 对象
 
@@ -59,16 +59,16 @@ console.log(person);
 
 当您需要时使用普通对象 (POJO)：
 
-* 您需要一个具有字符串键的简单、轻量级对象。
-* 您正在处理小型数据集。
-* 您需要将对象序列化为 JSON（例如，通过网络发送）。
+- 您需要一个具有字符串键的简单、轻量级对象。
+- 您正在处理小型数据集。
+- 您需要将对象序列化为 JSON（例如，通过网络发送）。
 
 当您需要时使用 `Map` 对象：
 
-* 您需要使用非字符串键（例如对象、数组）存储键值对。
-* 您需要保留键值对的顺序。
-* 您需要按特定顺序迭代键值对。
-* 您正在处理大型数据集，需要更好的性能。
+- 您需要使用非字符串键（例如对象、数组）存储键值对。
+- 您需要保留键值对的顺序。
+- 您需要按特定顺序迭代键值对。
+- 您正在处理大型数据集，需要更好的性能。
 
 总而言之，虽然普通对象和 `Map` 对象都可以用来存储键值对，但 `Map` 对象提供了更高级的功能、更好的性能和额外的方法，使其成为更复杂用例的更好选择。
 
@@ -78,5 +78,5 @@ console.log(person);
 
 ## 延伸阅读
 
-* [Map - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)
-* [Object - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
+- [Map - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)
+- [Object - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)

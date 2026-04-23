@@ -20,7 +20,7 @@ var bar = function () {
 };
 ```
 
-***
+---
 
 ## JavaScript 中的 Hoisting
 
@@ -54,8 +54,8 @@ var bar = function () {
 
 在使用函数表达式时，注意 `var`、`let` 和 `const` 之间的 Hoisting 行为差异也很重要。
 
-* `var`：变量被 Hoisting 并使用 `undefined` 初始化。
-* `let` 和 `const`：变量被 Hoisting 但未初始化，如果在初始化之前访问，则会导致 `ReferenceError`。
+- `var`：变量被 Hoisting 并使用 `undefined` 初始化。
+- `let` 和 `const`：变量被 Hoisting 但未初始化，如果在初始化之前访问，则会导致 `ReferenceError`。
 
 ```js live
 console.log(baz); // undefined
@@ -76,7 +76,7 @@ const quux = function () {
 
 ## 延伸阅读
 
-* [MDN Web Docs on Hoisting](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting)
-* [JavaScript.info on Hoisting](https://javascript.info/var#var-hoisting)
-* [MDN Web Docs on Function Declarations](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
-* [MDN Web Docs on Function Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/function)
+- [MDN Web Docs on Hoisting](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting)
+- [JavaScript.info on Hoisting](https://javascript.info/var#var-hoisting)
+- [MDN Web Docs on Function Declarations](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
+- [MDN Web Docs on Function Expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/function)

@@ -6,13 +6,13 @@ title: 解释 JavaScript 中的 `Function.prototype.bind`
 
 `Function.prototype.bind` 是 JavaScript 中的一个方法，它允许你创建一个新函数，该函数具有特定的 `this` 值和可选的初始参数。它的主要目的是：
 
-* **绑定 `this` 值以保留上下文**：`bind` 的主要目的是将函数的 `this` 值绑定到特定的对象。当你调用 `func.bind(thisArg)` 时，它会创建一个与 `func` 具有相同主体的的新函数，但 `this` 永久绑定到 `thisArg`。
-* **部分应用参数**：`bind` 还允许你为新函数预先指定参数。传递给 `bind` 的任何参数（在 `thisArg` 之后）都将在调用新函数时添加到参数列表的前面。
-* **方法借用**：`bind` 允许你从一个对象借用方法并将其应用于另一个对象，即使它们最初并非设计为与该对象一起使用。
+- **绑定 `this` 值以保留上下文**：`bind` 的主要目的是将函数的 `this` 值绑定到特定的对象。当你调用 `func.bind(thisArg)` 时，它会创建一个与 `func` 具有相同主体的的新函数，但 `this` 永久绑定到 `thisArg`。
+- **部分应用参数**：`bind` 还允许你为新函数预先指定参数。传递给 `bind` 的任何参数（在 `thisArg` 之后）都将在调用新函数时添加到参数列表的前面。
+- **方法借用**：`bind` 允许你从一个对象借用方法并将其应用于另一个对象，即使它们最初并非设计为与该对象一起使用。
 
 `bind` 方法在需要确保使用特定的 `this` 上下文调用函数的情况下特别有用，例如在事件处理程序、回调或方法借用中。
 
-***
+---
 
 ## `Function.prototype.bind`
 
@@ -124,5 +124,5 @@ greetPerson(); // Output: Hello, Alice!
 
 ## 延伸阅读
 
-* [Function.prototype.bind() - JavaScript | MDN](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_objects/Function/bind)
-* [Function Binding | javascript.info](https://javascript.info/bind)
+- [Function.prototype.bind() - JavaScript | MDN](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_objects/Function/bind)
+- [Function Binding | javascript.info](https://javascript.info/bind)

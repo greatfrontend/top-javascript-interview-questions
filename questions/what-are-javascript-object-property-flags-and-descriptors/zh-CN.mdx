@@ -10,9 +10,9 @@ title: JavaScript 对象属性标志和描述符是什么？
 
 属性标志用于指定对象上属性的行为。以下是可用的标志：
 
-* `writable`：指定是否可以写入属性。默认为 `true`。
-* `enumerable`：指定属性是否可枚举。默认为 `true`。
-* `configurable`：指定是否可以删除属性或更改其属性。默认为 `true`。
+- `writable`：指定是否可以写入属性。默认为 `true`。
+- `enumerable`：指定属性是否可枚举。默认为 `true`。
+- `configurable`：指定是否可以删除属性或更改其属性。默认为 `true`。
 
 **属性描述符**
 
@@ -20,12 +20,12 @@ title: JavaScript 对象属性标志和描述符是什么？
 
 属性描述符的用例如下：
 
-* 通过设置 `writable: false` 使属性不可写，以确保数据一致性。
-* 通过设置 `enumerable: false` 隐藏属性，使其不被枚举。
-* 通过设置 `configurable: false` 阻止属性删除和修改。
-* 冻结或密封对象以防止全局修改。
+- 通过设置 `writable: false` 使属性不可写，以确保数据一致性。
+- 通过设置 `enumerable: false` 隐藏属性，使其不被枚举。
+- 通过设置 `configurable: false` 阻止属性删除和修改。
+- 冻结或密封对象以防止全局修改。
 
-***
+---
 
 ## JavaScript 对象属性标志和描述符
 
@@ -35,9 +35,9 @@ title: JavaScript 对象属性标志和描述符是什么？
 
 属性标志用于指定属性的行为。它们使用 `Object.defineProperty()` 方法设置，该方法允许您使用特定属性在对象上定义属性。可用的属性标志有：
 
-* `writable`：指定是否可以写入属性。默认为 `true`。
-* `enumerable`：指定属性是否可枚举。默认为 `true`。
-* `configurable`：指定是否可以删除属性或更改其属性。默认为 `true`。
+- `writable`：指定是否可以写入属性。默认为 `true`。
+- `enumerable`：指定属性是否可枚举。默认为 `true`。
+- `configurable`：指定是否可以删除属性或更改其属性。默认为 `true`。
 
 ## 属性描述符
 
@@ -119,6 +119,6 @@ JavaScript 中的 `Object.seal()` 方法有效地阻止了向对象添加或删�
 
 ## 延伸阅读
 
-* [Object.defineProperty() | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
-* [Property flags and descriptors | Javascript.info](https://javascript.info/property-descriptors)
-* [Object.seal() | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal)
+- [Object.defineProperty() | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
+- [Property flags and descriptors | Javascript.info](https://javascript.info/property-descriptors)
+- [Object.seal() | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal)

@@ -6,8 +6,8 @@ title: JavaScript 中`.call` 和 `.apply` 有什么区别？
 
 `.call` 和 `.apply` 都用于使用特定的 `this` 上下文和参数来调用函数。主要区别在于它们接受参数的方式：
 
-* `.call(thisArg, arg1, arg2, ...)`：单独获取参数。
-* `.apply(thisArg, [argsArray])`：将参数作为数组获取。
+- `.call(thisArg, arg1, arg2, ...)`：单独获取参数。
+- `.apply(thisArg, [argsArray])`：将参数作为数组获取。
 
 假设我们有一个函数 `add`，可以使用以下方式使用 `.call` 和 `.apply` 调用该函数：
 
@@ -20,7 +20,7 @@ console.log(add.call(null, 1, 2)); // 3
 console.log(add.apply(null, [1, 2])); // 3
 ```
 
-***
+---
 
 ## Call vs Apply
 
@@ -106,7 +106,7 @@ console.log(arr1); // [1, 2, 3, 4, 5, 6]
 
 ## 后续问题
 
-* `.call` 和 `.apply` 与 `Function.prototype.bind` 有什么不同？
+- `.call` 和 `.apply` 与 `Function.prototype.bind` 有什么不同？
 
 ## 实践
 
@@ -114,5 +114,5 @@ console.log(arr1); // [1, 2, 3, 4, 5, 6]
 
 ## 延伸阅读
 
-* [Function.prototype.call | MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
-* [Function.prototype.apply | MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/apply)
+- [Function.prototype.call | MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
+- [Function.prototype.apply | MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/apply)

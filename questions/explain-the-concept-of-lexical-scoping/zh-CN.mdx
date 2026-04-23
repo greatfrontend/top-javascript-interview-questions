@@ -22,7 +22,7 @@ outerFunction();
 
 在这个例子中，`innerFunction` 可以访问 `outerVariable`，因为词法作用域。
 
-***
+---
 
 ## 词法作用域
 
@@ -52,9 +52,9 @@ outerFunction();
 
 在这个例子中：
 
-* `outerFunction` 声明一个变量 `outerVariable`。
-* `innerFunction` 嵌套在 `outerFunction` 内部，并将 `outerVariable` 记录到控制台。
-* 当调用 `innerFunction` 时，由于词法作用域，它可以访问 `outerVariable`。
+- `outerFunction` 声明一个变量 `outerVariable`。
+- `innerFunction` 嵌套在 `outerFunction` 内部，并将 `outerVariable` 记录到控制台。
+- 当调用 `innerFunction` 时，由于词法作用域，它可以访问 `outerVariable`。
 
 ### 嵌套函数和闭包
 
@@ -77,12 +77,12 @@ myInnerFunction(); // 'I am outside!'
 
 在这个例子中：
 
-* `outerFunction` 返回 `innerFunction`。
-* `myInnerFunction` 被赋值为返回的 `innerFunction`。
-* 当调用 `myInnerFunction` 时，它仍然可以访问 `outerVariable`，因为词法作用域创建了闭包。
+- `outerFunction` 返回 `innerFunction`。
+- `myInnerFunction` 被赋值为返回的 `innerFunction`。
+- 当调用 `myInnerFunction` 时，它仍然可以访问 `outerVariable`，因为词法作用域创建了闭包。
 
 ## 延伸阅读
 
-* [MDN Web Docs: Closures](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)
-* [JavaScript.info: Lexical environment](https://javascript.info/closure#lexical-environment)
-* [Eloquent JavaScript: Functions and closures](https://eloquentjavascript.net/03_functions.html#h_jxlm8r9e2g)
+- [MDN Web Docs: Closures](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)
+- [JavaScript.info: Lexical environment](https://javascript.info/closure#lexical-environment)
+- [Eloquent JavaScript: Functions and closures](https://eloquentjavascript.net/03_functions.html#h_jxlm8r9e2g)

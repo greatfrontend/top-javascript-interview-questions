@@ -11,7 +11,7 @@ subtitle: 如何检查这些状态？
 | 类型（通过 `typeof` 运算符） | `'object'` | `'undefined'` | `'undefined'` |
 | 等式比较 | `null == undefined` 为 `true` | `undefined == null` 为 `true` | 抛出 `ReferenceError` |
 
-***
+---
 
 ## 未声明
 
@@ -63,9 +63,9 @@ console.log(foo == undefined); // true. 错误，不要使用它来检查一个�
 
 ## 注意事项
 
-* 养成一个好习惯，永远不要让你的变量未声明或未赋值。如果您不打算使用它们，在声明后显式地将 `null` 赋值给它们。
-* 始终在变量使用前显式声明它们以防止错误。
-* 在您的工作流程中使用一些静态分析工具（例如 [ESLint](https://eslint.org/)、TypeScript 编译器），将启用您未引用未声明变量的检查。
+- 养成一个好习惯，永远不要让你的变量未声明或未赋值。如果您不打算使用它们，在声明后显式地将 `null` 赋值给它们。
+- 始终在变量使用前显式声明它们以防止错误。
+- 在您的工作流程中使用一些静态分析工具（例如 [ESLint](https://eslint.org/)、TypeScript 编译器），将启用您未引用未声明变量的检查。
 
 ## 实践
 
@@ -73,6 +73,6 @@ console.log(foo == undefined); // true. 错误，不要使用它来检查一个�
 
 ## 延伸阅读
 
-* [MDN Web 文档：null](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/null)
-* [MDN Web 文档：undefined](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/undefined)
-* [MDN Web 文档：ReferenceError](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError)
+- [MDN Web 文档：null](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/null)
+- [MDN Web 文档：undefined](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/undefined)
+- [MDN Web 文档：ReferenceError](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError)

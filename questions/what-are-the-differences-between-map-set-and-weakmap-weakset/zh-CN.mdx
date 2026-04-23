@@ -12,8 +12,8 @@ JavaScript 中 `Map`/`Set` 和 `WeakMap`/`WeakSet` 的主要区别在于它们�
 
 `WeakMap` 仅允许对象作为键。但是，这些对象键被弱保存。这意味着垃圾收集器可以从内存中删除它们，即使 `WeakMap` 本身仍然存在，只要没有对这些对象的其他引用。`WeakMap` 非常适合您希望将数据与对象关联而不会阻止这些对象被垃圾回收的场景。这对于以下情况可能很有用：
 
-* 基于对象缓存数据，而不会阻止对象本身的垃圾回收。
-* 存储与 DOM 节点关联的私有数据，而不会影响其生命周期。
+- 基于对象缓存数据，而不会阻止对象本身的垃圾回收。
+- 存储与 DOM 节点关联的私有数据，而不会影响其生命周期。
 
 **`Set` vs. `WeakSet`**
 
@@ -21,8 +21,8 @@ JavaScript 中 `Map`/`Set` 和 `WeakMap`/`WeakSet` 的主要区别在于它们�
 
 另一方面，`WeakSet` 仅允许对象作为元素，并且这些对象元素被弱保存，类似于 `WeakMap` 键。`WeakSet` 很少使用，但当您需要一组唯一对象而不影响其垃圾回收时适用。这可能对于以下情况是必要的：
 
-* 跟踪已交互的 DOM 节点，而不会影响其内存管理。
-* 为特定用例实现自定义对象弱引用。
+- 跟踪已交互的 DOM 节点，而不会影响其内存管理。
+- 为特定用例实现自定义对象弱引用。
 
 **以下是一个总结关键差异的表格：**
 
@@ -34,10 +34,10 @@ JavaScript 中 `Map`/`Set` 和 `WeakMap`/`WeakSet` 的主要区别在于它们�
 
 **在它们之间进行选择**
 
-* 在大多数需要存储键值对或唯一元素并希望维护对键/元素和值的引用的情况下，使用 `Map` 和 `Set`。
-* 在特定情况下谨慎使用 `WeakMap` 和 `WeakSet`，您希望将数据与对象关联而不会影响其垃圾回收。如果使用不当，请注意弱引用的含义和潜在的内存泄漏。
+- 在大多数需要存储键值对或唯一元素并希望维护对键/元素和值的引用的情况下，使用 `Map` 和 `Set`。
+- 在特定情况下谨慎使用 `WeakMap` 和 `WeakSet`，您希望将数据与对象关联而不会影响其垃圾回收。如果使用不当，请注意弱引用的含义和潜在的内存泄漏。
 
-***
+---
 
 ## `Map`/`Set` vs `WeakMap`/`WeakSet`
 
@@ -138,9 +138,9 @@ traverse(obj);
 
 ## 延伸阅读
 
-* [`Map` | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)
-* [`WeakMap` | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)
-* [`Set` | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set)
-* [`WeakSet` | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet)
-* [`Map` and `Set` | Javascript.info](https://javascript.info/map-set)
-* [`WeakMap` and `WeakSet` | Javascript.info](https://javascript.info/weakmap-weakset)
+- [`Map` | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)
+- [`WeakMap` | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)
+- [`Set` | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set)
+- [`WeakSet` | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet)
+- [`Map` and `Set` | Javascript.info](https://javascript.info/map-set)
+- [`WeakMap` and `WeakSet` | Javascript.info](https://javascript.info/weakmap-weakset)

@@ -76,7 +76,7 @@ console.log(student2.name, student2.studentId); // "Alice" 5678
 | 继承 | 使用 `Object.create()` 并手动设置原型链 | 使用 `extends` 关键字和 `super` 函数 |
 | 可读性 | 不太直观，更冗长 | 更简洁直观 |
 
-***
+---
 
 ## ES5 函数构造函数 vs ES2015 类
 
@@ -131,14 +131,12 @@ person1.greet(); // Hello, my name is John and I am 30 years old.
 ### 主要区别
 
 1. **语法和可读性**：
-
-   * **ES5**：使用函数构造函数和原型，这不太直观，也更难阅读。
-   * **ES2015**：使用 `class` 关键字，使代码更简洁，更容易理解。
+   - **ES5**：使用函数构造函数和原型，这不太直观，也更难阅读。
+   - **ES2015**：使用 `class` 关键字，使代码更简洁，更容易理解。
 
 2. **静态方法**：
-
-   * **ES5**：静态方法直接添加到构造函数中。
-   * **ES2015**：静态方法使用 `static` 关键字在类中定义。
+   - **ES5**：静态方法直接添加到构造函数中。
+   - **ES2015**：静态方法使用 `static` 关键字在类中定义。
 
    ```js live
    // ES5
@@ -163,9 +161,8 @@ person1.greet(); // Hello, my name is John and I am 30 years old.
    ```
 
 3. **继承**
-
-   * **ES5**：继承是使用 `Object.create()` 并手动设置原型链来实现的。
-   * **ES2015**：使用 extends 关键字，继承更加简单直观。
+   - **ES5**：继承是使用 `Object.create()` 并手动设置原型链来实现的。
+   - **ES2015**：使用 extends 关键字，继承更加简单直观。
 
    ```js live
    // ES5 Inheritance
@@ -231,9 +228,8 @@ person1.greet(); // Hello, my name is John and I am 30 years old.
    ```
 
 4. `super` 调用：
-
-   * **ES5**：手动调用父构造函数。
-   * **ES2015**：使用 `super` 关键字调用父类的构造函数和方法。
+   - **ES5**：手动调用父构造函数。
+   - **ES2015**：使用 `super` 关键字调用父类的构造函数和方法。
 
 ### 结论
 
@@ -241,7 +237,7 @@ person1.greet(); // Hello, my name is John and I am 30 years old.
 
 ## 资源
 
-* [类 - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
-* [继承 - MDN ](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes#inheritance)
-* [对象的秘密生活](https://eloquentjavascript.net/06_object.html)
-* [ES2015 vs ES5](https://www.educative.io/courses/learn-object-oriented-programming-in-javascript/es2015-vs-es5)
+- [类 - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
+- [继承 - MDN ](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes#inheritance)
+- [对象的秘密生活](https://eloquentjavascript.net/06_object.html)
+- [ES2015 vs ES5](https://www.educative.io/courses/learn-object-oriented-programming-in-javascript/es2015-vs-es5)

@@ -6,7 +6,7 @@ title: 如何使用 `window.history` API？
 
 通过 `window.history` API，您可以操作浏览器的会话历史记录。您可以使用 `history.pushState()` 向历史堆栈添加新条目，使用 `history.replaceState()` 修改当前条目，以及使用 `history.back()`、`history.forward()` 和 `history.go()` 在历史记录中导航。例如，`history.pushState({page: 1}, "title 1", "?page=1")` 向历史记录添加一个新条目。
 
-***
+---
 
 ## 使用 `window.history` API
 
@@ -22,9 +22,9 @@ title: 如何使用 `window.history` API？
 history.pushState({ page: 1 }, 'title 1', '?page=1');
 ```
 
-* 第一个参数是与新历史记录条目关联的状态对象。
-* 第二个参数是新历史记录条目的标题（目前大多数浏览器都忽略）。
-* 第三个参数是要显示在地址栏中的 URL。
+- 第一个参数是与新历史记录条目关联的状态对象。
+- 第二个参数是新历史记录条目的标题（目前大多数浏览器都忽略）。
+- 第三个参数是要显示在地址栏中的 URL。
 
 #### `history.replaceState()`
 
@@ -34,7 +34,7 @@ history.pushState({ page: 1 }, 'title 1', '?page=1');
 history.replaceState({ page: 2 }, 'title 2', '?page=2');
 ```
 
-* 参数与 `pushState()` 相同，但此方法替换当前条目，而不是添加新条目。
+- 参数与 `pushState()` 相同，但此方法替换当前条目，而不是添加新条目。
 
 #### `history.back()`
 
@@ -109,9 +109,9 @@ history.go(0);
 
 ## 延伸阅读
 
-* [MDN Web Docs: History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
-* [MDN Web Docs: `history.pushState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/pushState)
-* [MDN Web Docs: `history.replaceState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState)
-* [MDN Web Docs: `history.back()`](https://developer.mozilla.org/en-US/docs/Web/API/History/back)
-* [MDN Web Docs: `history.forward()`](https://developer.mozilla.org/en-US/docs/Web/API/History/forward)
-* [MDN Web Docs: `history.go()`](https://developer.mozilla.org/en-US/docs/Web/API/History/go)
+- [MDN Web Docs: History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
+- [MDN Web Docs: `history.pushState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/pushState)
+- [MDN Web Docs: `history.replaceState()`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState)
+- [MDN Web Docs: `history.back()`](https://developer.mozilla.org/en-US/docs/Web/API/History/back)
+- [MDN Web Docs: `history.forward()`](https://developer.mozilla.org/en-US/docs/Web/API/History/forward)
+- [MDN Web Docs: `history.go()`](https://developer.mozilla.org/en-US/docs/Web/API/History/go)

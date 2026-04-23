@@ -6,7 +6,7 @@ title: Promise.all() 与 Promise.allSettled() 有什么区别？
 
 Promise.all() 和 Promise.allSettled() 都是用于处理 JavaScript 中多个 Promise 的方法，但它们的行为有所不同。Promise.all() 等待所有 Promise 都被解决，如果任何一个 Promise 被拒绝，它会快速失败，返回一个被拒绝的 Promise。另一方面，Promise.allSettled() 等待所有 Promise 都被确定（解决或拒绝），并返回一个描述每个 Promise 结果的对象数组。
 
-***
+---
 
 ## Promise.all() 与 Promise.allSettled() 有什么区别？
 
@@ -98,6 +98,6 @@ Promise.allSettled([promise1, promise2, promise3]).then((results) => {
 
 ## 延伸阅读
 
-* [MDN Web 文档：Promise.all()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)
-* [MDN Web 文档：Promise.allSettled()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled)
-* [JavaScript.info：Promise API](https://zh.javascript.info/promise-api)
+- [MDN Web 文档：Promise.all()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)
+- [MDN Web 文档：Promise.allSettled()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled)
+- [JavaScript.info：Promise API](https://zh.javascript.info/promise-api)

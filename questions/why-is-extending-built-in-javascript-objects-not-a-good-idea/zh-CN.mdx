@@ -8,7 +8,7 @@ title: 为什么扩展内置 JavaScript 对象不是一个好主意？
 
 只有当您想创建一个 polyfill 时，才可能需要扩展原生对象，本质上是为您自己的方法提供实现，该方法是 JavaScript 规范的一部分，但由于它是一个较旧的浏览器，可能不存在于用户的浏览器中。
 
-***
+---
 
 ## 扩展 JavaScript
 
@@ -65,5 +65,5 @@ import 'core-js/actual/array/flat-map'; // With this, Array.prototype.flatMap is
 
 ## 延伸阅读
 
-* [JS: don't extend JS objects](https://lucybain.com/blog/2014/js-extending-built-in-objects/)
-* [Extending built-in classes](https://javascript.info/extend-natives)
+- [JS: don't extend JS objects](https://lucybain.com/blog/2014/js-extending-built-in-objects/)
+- [Extending built-in classes](https://javascript.info/extend-natives)

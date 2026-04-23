@@ -6,13 +6,13 @@ title: 解释 `this` 关键字可以绑定的不同方式
 
 `this` 关键字在 JavaScript 中可以通过几种方式绑定:
 
-* 默认绑定：在非严格模式下，`this` 指向全局对象（在浏览器中是 window）。在严格模式下，`this` 是 `undefined`。
-* 隐式绑定：当一个函数作为对象的方法被调用时，`this` 指向该对象。
-* 显式绑定：使用 `call`、`apply` 或 `bind` 方法显式设置 `this`。
-* new 绑定：当一个函数与 `new` 关键字一起用作构造函数时，`this` 指向新创建的对象。
-* 箭头函数：箭头函数没有自己的 `this`，并从周围的词法环境继承 `this`。
+- 默认绑定：在非严格模式下，`this` 指向全局对象（在浏览器中是 window）。在严格模式下，`this` 是 `undefined`。
+- 隐式绑定：当一个函数作为对象的方法被调用时，`this` 指向该对象。
+- 显式绑定：使用 `call`、`apply` 或 `bind` 方法显式设置 `this`。
+- new 绑定：当一个函数与 `new` 关键字一起用作构造函数时，`this` 指向新创建的对象。
+- 箭头函数：箭头函数没有自己的 `this`，并从周围的词法环境继承 `this`。
 
-***
+---
 
 ## 默认绑定
 
@@ -112,6 +112,6 @@ obj.greet(); // undefined, because `this` is inherited from the global scope
 
 ## 延伸阅读
 
-* [MDN Web Docs: this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
-* [JavaScript.info: Object methods, "this"](https://javascript.info/object-methods)
-* [You Don't Know JS: this & Object Prototypes](https://github.com/getify/You-Don't-Know-JS/tree/2nd-ed/this%20%26%20object%20prototypes)
+- [MDN Web Docs: this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
+- [JavaScript.info: Object methods, "this"](https://javascript.info/object-methods)
+- [You Don't Know JS: this & Object Prototypes](https://github.com/getify/You-Don't-Know-JS/tree/2nd-ed/this%20%26%20object%20prototypes)

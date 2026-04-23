@@ -13,7 +13,7 @@ const obj = {};
 console.log(isEmpty(obj)); // true
 ```
 
-***
+---
 
 ## 如何可靠地确定一个对象是否为空？
 
@@ -85,12 +85,12 @@ console.log(childObj.key); // Output: 'value' (still has the inherited property)
 
 ### 边缘情况
 
-* **原型属性**：上述方法仅检查对象自身的属性，而不是从其原型继承的属性。
-* **不可枚举属性**：这些方法不考虑不可枚举属性。
+- **原型属性**：上述方法仅检查对象自身的属性，而不是从其原型继承的属性。
+- **不可枚举属性**：这些方法不考虑不可枚举属性。
 
 ## 延伸阅读
 
-* [MDN Web 文档：Object.keys()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/keys)
-* [MDN Web 文档：Object.entries()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/entries)
-* [MDN Web 文档：Object.values()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/values)
-* [MDN Web 文档：for...in](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/for...in)
+- [MDN Web 文档：Object.keys()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/keys)
+- [MDN Web 文档：Object.entries()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/entries)
+- [MDN Web 文档：Object.values()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/values)
+- [MDN Web 文档：for...in](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/for...in)

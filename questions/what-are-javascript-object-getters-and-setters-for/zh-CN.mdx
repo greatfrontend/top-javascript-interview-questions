@@ -39,14 +39,14 @@ person.name = ''; // 调用 Setter，但由于验证，该值未设置
 console.log(person.name); // 输出：'Jane Smith'
 ```
 
-***
+---
 
 ## JavaScript 对象 getter 和 setter
 
 在 JavaScript 中，getter 和 setter 是特殊的方法，允许您控制如何访问和修改对象的属性。
 
-* **Getters**：每当您尝试使用点表示法（例如，`obj.name`）访问属性时调用的函数。它们提供了一种自定义在读取属性时返回的值的方法。
-* **Setters**：当您尝试使用点表示法和赋值运算符（例如，`obj.name = "John"`）为属性赋值时调用的函数。它们允许您在将实际值存储在对象中之前执行数据验证、格式化或副作用等操作。
+- **Getters**：每当您尝试使用点表示法（例如，`obj.name`）访问属性时调用的函数。它们提供了一种自定义在读取属性时返回的值的方法。
+- **Setters**：当您尝试使用点表示法和赋值运算符（例如，`obj.name = "John"`）为属性赋值时调用的函数。它们允许您在将实际值存储在对象中之前执行数据验证、格式化或副作用等操作。
 
 ```js live
 const person = {
@@ -80,6 +80,6 @@ Getters 和 setters 提供了几个好处：
 
 ## 延伸阅读
 
-* [Object.defineProperty() | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
-* [Property flags and descriptors | Javascript.info](https://javascript.info/property-descriptors)
-* [Object.seal() | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal)
+- [Object.defineProperty() | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
+- [Property flags and descriptors | Javascript.info](https://javascript.info/property-descriptors)
+- [Object.seal() | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal)

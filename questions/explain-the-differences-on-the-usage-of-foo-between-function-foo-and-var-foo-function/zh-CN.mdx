@@ -39,7 +39,7 @@ console.log(namedFunc); // ReferenceError: namedFunc is not defined
 
 **注意**：由于历史原因，示例使用 `var`。 函数表达式可以使用 `let` 和 `const` 定义，关键区别在于这些关键字的提升行为。
 
-***
+---
 
 ## 函数声明
 
@@ -104,16 +104,16 @@ console.log(namedFunc); // ReferenceError: namedFunc is not defined
 
 ## 何时使用
 
-* 函数声明：
-  * 当您想在全局范围内创建一个函数，并在整个封闭范围内使用它时。
-  * 如果一个函数是可重用的，并且需要多次调用。
-* 函数表达式：
-  * 如果一个函数只需要一次或在特定上下文中。
-  * 用于将函数可用性限制为后续代码，并保持封闭范围的清洁。
+- 函数声明：
+  - 当您想在全局范围内创建一个函数，并在整个封闭范围内使用它时。
+  - 如果一个函数是可重用的，并且需要多次调用。
+- 函数表达式：
+  - 如果一个函数只需要一次或在特定上下文中。
+  - 用于将函数可用性限制为后续代码，并保持封闭范围的清洁。
 
 总的来说，最好使用函数声明来避免确定是否可以调用函数的精神负担。函数表达式的实际用法非常罕见。
 
 ## 延伸阅读
 
-* [函数声明 | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
-* [函数表达式 | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/function)
+- [函数声明 | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)
+- [函数表达式 | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/function)

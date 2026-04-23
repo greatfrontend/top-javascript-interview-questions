@@ -17,7 +17,7 @@ window.addEventListener('message', (event) => {
 });
 ```
 
-***
+---
 
 ## 页面上的 `<iframe>` 如何通信？
 
@@ -54,8 +54,8 @@ window.addEventListener('message', (event) => {
 
 使用 `postMessage` 时，考虑安全性至关重要：
 
-* **指定目标 origin**：不要使用 `'*'`，而是指定确切的 origin，以确保仅接收来自受信任来源的消息。
-* **验证消息**：始终验证消息内容，以防止处理恶意数据。
+- **指定目标 origin**：不要使用 `'*'`，而是指定确切的 origin，以确保仅接收来自受信任来源的消息。
+- **验证消息**：始终验证消息内容，以防止处理恶意数据。
 
 ### 带有目标 origin 的示例
 
@@ -79,6 +79,6 @@ window.addEventListener('message', (event) => {
 
 ## 延伸阅读
 
-* [MDN Web Docs: Window.postMessage()](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage)
-* [HTML Living Standard: postMessage](https://html.spec.whatwg.org/multipage/web-messaging.html#dom-window-postmessage)
-* [跨文档消息传递](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#cross-document_messaging)
+- [MDN Web Docs: Window.postMessage()](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage)
+- [HTML Living Standard: postMessage](https://html.spec.whatwg.org/multipage/web-messaging.html#dom-window-postmessage)
+- [跨文档消息传递](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#cross-document_messaging)

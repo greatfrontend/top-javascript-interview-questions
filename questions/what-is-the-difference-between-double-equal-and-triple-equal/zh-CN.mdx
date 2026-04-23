@@ -6,13 +6,13 @@ title: JavaScript 中 `==` 和 `===` 的区别是什么？
 
 `==` 是抽象相等运算符，而 `===` 是严格相等运算符。`==` 运算符会在进行任何必要的类型转换后比较是否相等。`===` 运算符不会进行类型转换，因此如果两个值不是同一类型，`===` 将直接返回 `false`。
 
-| 运算符 | `==` | `===` |
-| --- | --- | --- |
-| 名称 | （宽松）相等运算符 | 严格相等运算符 |
-| 类型转换 | 是 | 否 |
-| 比较值和类型 | 否 | 是 |
+| 运算符       | `==`               | `===`          |
+| ------------ | ------------------ | -------------- |
+| 名称         | （宽松）相等运算符 | 严格相等运算符 |
+| 类型转换     | 是                 | 否             |
+| 比较值和类型 | 否                 | 是             |
 
-***
+---
 
 ### 相等运算符 (`==`)
 
@@ -77,15 +77,15 @@ JavaScript 中最后一个值比较操作是 [`Object.is()`](https://developer.m
 
 ## 结论
 
-* 当您希望通过类型转换比较值（并了解其含义）时，请使用`==`。 实际上，相等运算符的唯一合理用例是在单个比较中同时检查`null`和`undefined`以方便使用。
-* 当您希望确保值和类型都相同时，请使用`===`，这在大多数情况下是更安全、更可预测的选择。
+- 当您希望通过类型转换比较值（并了解其含义）时，请使用`==`。 实际上，相等运算符的唯一合理用例是在单个比较中同时检查`null`和`undefined`以方便使用。
+- 当您希望确保值和类型都相同时，请使用`===`，这在大多数情况下是更安全、更可预测的选择。
 
 ### 笔记
 
-* 建议使用 `===`（严格相等）以避免类型强制转换的缺陷，这可能导致代码中出现意外行为和错误。它使您的比较意图更清晰，并确保您同时比较值和类型。
-* ESLint 的 [`eqeqeq`](https://eslint.org/docs/latest/rules/eqeqeq) 规则强制使用严格相等运算符 `===` 和 `!==`，甚至提供了一个选项，始终强制使用严格相等，除非与 `null` 字面量进行比较。
+- 建议使用 `===`（严格相等）以避免类型强制转换的缺陷，这可能导致代码中出现意外行为和错误。它使您的比较意图更清晰，并确保您同时比较值和类型。
+- ESLint 的 [`eqeqeq`](https://eslint.org/docs/latest/rules/eqeqeq) 规则强制使用严格相等运算符 `===` 和 `!==`，甚至提供了一个选项，始终强制使用严格相等，除非与 `null` 字面量进行比较。
 
 ### 延伸阅读
 
-* [Equality (==) | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality)
-* [Strict equality (===) | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality)
+- [Equality (==) | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality)
+- [Strict equality (===) | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality)

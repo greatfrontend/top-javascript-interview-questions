@@ -6,15 +6,15 @@ title: JavaScript 中使用 `let`、`var` 或 `const` 创建的变量有什么�
 
 在 JavaScript 中，`let`、`var` 和 `const` 都是用于声明变量的关键字，但它们在作用域、初始化规则、是否可以重新声明或重新赋值以及在声明前访问时的行为方面存在显着差异：
 
-| 行为 | `var` | `let` | `const` |
-| --- | --- | --- | --- |
-| 作用域 | 函数或全局 | 块 | 块 |
-| 初始化 | 可选 | 可选 | 必需 |
-| 重新声明 | 是 | 否 | 否 |
-| 重新赋值 | 是 | 是 | 否 |
+| 行为       | `var`       | `let`            | `const`          |
+| ---------- | ----------- | ---------------- | ---------------- |
+| 作用域     | 函数或全局  | 块               | 块               |
+| 初始化     | 可选        | 可选             | 必需             |
+| 重新声明   | 是          | 否               | 否               |
+| 重新赋值   | 是          | 是               | 否               |
 | 声明前访问 | `undefined` | `ReferenceError` | `ReferenceError` |
 
-***
+---
 
 ## 行为差异
 
@@ -113,11 +113,11 @@ const bar = 'bar';
 
 ## 笔记
 
-* 在现代 JavaScript 中，通常建议默认对不需要重新赋值的变量使用 `const`。这可以提高不变性并防止意外更改。
-* 当您需要在其范围内重新分配变量时，请使用 `let`。
-* 避免使用 `var`，因为它可能存在作用域问题和提升行为。
-* 如果您需要针对旧版浏览器，请使用 `let`/`const` 编写代码，并使用 Babel 等转译器将您的代码编译为旧语法。
+- 在现代 JavaScript 中，通常建议默认对不需要重新赋值的变量使用 `const`。这可以提高不变性并防止意外更改。
+- 当您需要在其范围内重新分配变量时，请使用 `let`。
+- 避免使用 `var`，因为它可能存在作用域问题和提升行为。
+- 如果您需要针对旧版浏览器，请使用 `let`/`const` 编写代码，并使用 Babel 等转译器将您的代码编译为旧语法。
 
 ## 延伸阅读
 
-* [Javascript 中 "var" vs "let" vs "const" 的区别](https://medium.com/swlh/the-difference-of-var-vs-let-vs-const-in-javascript-abe37e214d66)
+- [Javascript 中 "var" vs "let" vs "const" 的区别](https://medium.com/swlh/the-difference-of-var-vs-let-vs-const-in-javascript-abe37e214d66)

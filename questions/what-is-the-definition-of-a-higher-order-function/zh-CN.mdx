@@ -36,7 +36,7 @@ function transformNamesToUppercase(names) {
 console.log(transformNamesToUppercase(names)); // ['IRISH', 'DAISY', 'ANNA']
 ```
 
-***
+---
 
 ## 高阶函数
 
@@ -121,7 +121,7 @@ function memoize(fn) {
   };
 }
 
-const memoizedFibonacci = memoize(function(n) {
+const memoizedFibonacci = memoize(function (n) {
   if (n <= 1) return n;
   return memoizedFibonacci(n - 1) + memoizedFibonacci(n - 2);
 });
@@ -154,6 +154,6 @@ const sum = _.sum(numbers); // 15
 
 ## 延伸阅读
 
-* [高阶函数](https://eloquentjavascript.net/05_higher_order.html)
-* [理解 JavaScript 中的高阶函数](https://blog.bitsrc.io/understanding-higher-order-functions-in-javascript-75461803bad)
-* [高阶函数：如何使用 Filter、Map 和 Reduce 来获得更易于维护的代码](https://www.freecodecamp.org/news/higher-order-functions-in-javascript-d9101f9cf528/)
+- [高阶函数](https://eloquentjavascript.net/05_higher_order.html)
+- [理解 JavaScript 中的高阶函数](https://blog.bitsrc.io/understanding-higher-order-functions-in-javascript-75461803bad)
+- [高阶函数：如何使用 Filter、Map 和 Reduce 来获得更易于维护的代码](https://www.freecodecamp.org/news/higher-order-functions-in-javascript-d9101f9cf528/)

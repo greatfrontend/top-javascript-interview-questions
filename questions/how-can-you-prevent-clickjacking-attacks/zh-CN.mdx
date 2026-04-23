@@ -14,7 +14,7 @@ X-Frame-Options: DENY
 Content-Security-Policy: frame-ancestors 'self'
 ```
 
-***
+---
 
 ## 什么是点击劫持？
 
@@ -26,9 +26,9 @@ Content-Security-Policy: frame-ancestors 'self'
 
 `X-Frame-Options` HTTP 标头可用于控制是否应允许浏览器在 `<frame>`、`<iframe>`、`<embed>` 或 `<object>` 中呈现页面。此标头有三个可能的值：
 
-* `DENY`：阻止页面在框架中显示，无论尝试这样做的站点是什么。
-* `SAMEORIGIN`：允许页面在与页面本身相同的来源的框架中显示。
-* `ALLOW-FROM uri`：仅允许页面在指定的来源的框架中显示。
+- `DENY`：阻止页面在框架中显示，无论尝试这样做的站点是什么。
+- `SAMEORIGIN`：允许页面在与页面本身相同的来源的框架中显示。
+- `ALLOW-FROM uri`：仅允许页面在指定的来源的框架中显示。
 
 示例：
 
@@ -67,6 +67,6 @@ Content-Security-Policy: frame-ancestors 'self'
 
 ## 延伸阅读
 
-* [MDN Web 文档：X-Frame-Options](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/X-Frame-Options)
-* [MDN Web 文档：Content-Security-Policy](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP)
-* [OWASP：Clickjacking 防御备忘单](https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html)
+- [MDN Web 文档：X-Frame-Options](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/X-Frame-Options)
+- [MDN Web 文档：Content-Security-Policy](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CSP)
+- [OWASP：Clickjacking 防御备忘单](https://cheatsheetseries.owasp.org/cheatsheets/Clickjacking_Defense_Cheat_Sheet.html)

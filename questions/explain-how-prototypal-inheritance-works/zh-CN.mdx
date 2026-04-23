@@ -47,10 +47,10 @@ bolt.bark(); // "Woof!"
 
 需要注意的是：
 
-* `.makeSound` 未在 `Dog` 上定义，因此 JavaScript 引擎会向上查找原型链，并在继承的 `Animal` 上找到 `.makeSound`。
-* 不再推荐使用 `Object.create()` 来构建继承链。请改用 `Object.setPrototypeOf()`。
+- `.makeSound` 未在 `Dog` 上定义，因此 JavaScript 引擎会向上查找原型链，并在继承的 `Animal` 上找到 `.makeSound`。
+- 不再推荐使用 `Object.create()` 来构建继承链。请改用 `Object.setPrototypeOf()`。
 
-***
+---
 
 ## Javascript 中的原型继承
 
@@ -178,5 +178,5 @@ animal.describe(); // "Name of the animal is Rocky"
 
 ## 资源
 
-* [Inheritance and the prototype chain | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain)
-* [JavaScript Visualized: Prototypal Inheritance](https://dev.to/lydiahallie/javascript-visualized-prototypal-inheritance-47co)
+- [Inheritance and the prototype chain | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain)
+- [JavaScript Visualized: Prototypal Inheritance](https://dev.to/lydiahallie/javascript-visualized-prototypal-inheritance-47co)

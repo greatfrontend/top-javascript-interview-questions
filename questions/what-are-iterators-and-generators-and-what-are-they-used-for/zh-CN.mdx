@@ -8,10 +8,10 @@ title: JavaScript 中的迭代器和生成器是什么，它们有什么用途�
 
 **迭代器**是定义序列并可能在其终止时返回值的对象。它遵循一个特定的接口：
 
-* 迭代器对象必须实现一个 `next()` 方法。
-* `next()` 方法返回一个具有两个属性的对象：
-  * `value`：序列中的下一个值。
-  * `done`：一个布尔值，如果迭代器已完成其序列，则为 `true`，否则为 `false`。
+- 迭代器对象必须实现一个 `next()` 方法。
+- `next()` 方法返回一个具有两个属性的对象：
+  - `value`：序列中的下一个值。
+  - `done`：一个布尔值，如果迭代器已完成其序列，则为 `true`，否则为 `false`。
 
 这是一个实现迭代器接口的对象的示例。
 
@@ -57,18 +57,18 @@ console.log(gen.next()); // { value: undefined, done: true }
 
 生成器对于按需创建迭代器非常强大，尤其适用于无限序列或复杂的迭代逻辑。它们可用于：
 
-* 惰性求值 – 仅在需要时处理元素，提高大型数据集的内存效率。
-* 为自定义数据结构实现迭代器。
-* 创建异步迭代器以处理数据流。
+- 惰性求值 – 仅在需要时处理元素，提高大型数据集的内存效率。
+- 为自定义数据结构实现迭代器。
+- 创建异步迭代器以处理数据流。
 
-***
+---
 
 ## 迭代器
 
 迭代器是定义序列并提供 `next()` 方法以访问序列中下一个值的对象。它们用于迭代 `数组`、`字符串` 和自定义 `对象` 等数据结构。迭代器的主要用例包括：
 
-* 实现迭代器协议以使自定义对象可迭代，允许它们与 `for...of` 循环和其他期望可迭代对象的语言结构一起使用。
-* 提供一种标准方式来迭代不同的数据结构，使代码更具可重用性和可维护性。
+- 实现迭代器协议以使自定义对象可迭代，允许它们与 `for...of` 循环和其他期望可迭代对象的语言结构一起使用。
+- 提供一种标准方式来迭代不同的数据结构，使代码更具可重用性和可维护性。
 
 ### 为数字范围创建自定义迭代器
 
@@ -179,15 +179,15 @@ for (const number of range) {
 
 生成器是一种特殊的函数，可以暂停和恢复其执行，允许它们动态生成一系列值。它们通常用于创建迭代器，但也有其他应用。生成器的主要用例包括：
 
-* 与手动实现迭代器协议相比，以更简洁易读的方式创建迭代器。
-* 实现惰性求值，仅在需要时生成值，从而节省内存和计算时间。
-* 通过使用 `yield` 和 `await` 以同步风格编写代码，简化异步编程。
+- 与手动实现迭代器协议相比，以更简洁易读的方式创建迭代器。
+- 实现惰性求值，仅在需要时生成值，从而节省内存和计算时间。
+- 通过使用 `yield` 和 `await` 以同步风格编写代码，简化异步编程。
 
 生成器提供了一些好处：
 
-* **惰性求值**：它们动态生成值，并且仅在需要时才生成，这可以提高内存效率。
-* **暂停和恢复**：生成器可以暂停执行（通过 `yield`），并且可以在恢复时接收新数据。
-* **异步迭代**：随着 `async/await` 的出现，生成器可用于管理异步数据流。
+- **惰性求值**：它们动态生成值，并且仅在需要时才生成，这可以提高内存效率。
+- **暂停和恢复**：生成器可以暂停执行（通过 `yield`），并且可以在恢复时接收新数据。
+- **异步迭代**：随着 `async/await` 的出现，生成器可用于管理异步数据流。
 
 ### 使用生成器函数创建迭代器
 
@@ -299,8 +299,8 @@ fetchAndLogData();
 
 ## 延伸阅读
 
-* [迭代器和生成器](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators)
-* [异步迭代和生成器](https://javascript.info/async-iterators-generators)
-* [可迭代对象](https://javascript.info/iterable)
-* [探索 JavaScript 中的迭代器和生成器](https://blog.bitsrc.io/explore-iterators-and-generators-in-javascript-ea4102015377)
-* [JavaScript 中的迭代器和生成器](https://syntactic-sugar.dev/blog/nested-route/iterators-and-generators)
+- [迭代器和生成器](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators)
+- [异步迭代和生成器](https://javascript.info/async-iterators-generators)
+- [可迭代对象](https://javascript.info/iterable)
+- [探索 JavaScript 中的迭代器和生成器](https://blog.bitsrc.io/explore-iterators-and-generators-in-javascript-ea4102015377)
+- [JavaScript 中的迭代器和生成器](https://syntactic-sugar.dev/blog/nested-route/iterators-and-generators)

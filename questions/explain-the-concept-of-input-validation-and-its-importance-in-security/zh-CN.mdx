@@ -6,7 +6,7 @@ title: 解释输入验证的概念及其在安全中的重要性
 
 输入验证是确保用户输入正确、安全并满足应用程序要求的过程。它对安全至关重要，因为它有助于防止 SQL 注入、跨站点脚本 (XSS) 和其他形式的数据操纵等攻击。通过验证输入，您可以确保只有格式正确的数据才能进入您的系统，从而降低恶意数据造成损害的风险。
 
-***
+---
 
 ## 输入验证及其在安全中的重要性
 
@@ -14,10 +14,10 @@ title: 解释输入验证的概念及其在安全中的重要性
 
 输入验证是验证用户或其他外部来源提供的数据在应用程序处理之前是否满足预期格式、类型和约束的过程。这可以包括检查：
 
-* 正确的数据类型（例如，字符串、数字）
-* 适当的格式（例如，电子邮件地址、电话号码）
-* 可接受的数值范围（例如，年龄在 0 到 120 岁之间）
-* 必填字段已填写
+- 正确的数据类型（例如，字符串、数字）
+- 适当的格式（例如，电子邮件地址、电话号码）
+- 可接受的数值范围（例如，年龄在 0 到 120 岁之间）
+- 必填字段已填写
 
 ### 输入验证的类型
 
@@ -71,14 +71,14 @@ title: 解释输入验证的概念及其在安全中的重要性
 
 ### 输入验证的最佳实践
 
-* 始终在服务器端验证输入，即使您也在客户端进行验证
-* 尽可能使用内置验证函数和库
-* 清理输入以删除或转义潜在的有害字符
-* 实施白名单（仅允许已知的良好输入）而不是黑名单（阻止已知的错误输入）
-* 定期更新和审查您的验证规则以应对新的安全威胁
+- 始终在服务器端验证输入，即使您也在客户端进行验证
+- 尽可能使用内置验证函数和库
+- 清理输入以删除或转义潜在的有害字符
+- 实施白名单（仅允许已知的良好输入）而不是黑名单（阻止已知的错误输入）
+- 定期更新和审查您的验证规则以应对新的安全威胁
 
 ## 延伸阅读
 
-* [OWASP 输入验证备忘单](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html)
-* [MDN Web 文档：客户端表单验证](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation)
-* [Sanitize-html 库](https://www.npmjs.com/package/sanitize-html)
+- [OWASP 输入验证备忘单](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html)
+- [MDN Web 文档：客户端表单验证](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation)
+- [Sanitize-html 库](https://www.npmjs.com/package/sanitize-html)

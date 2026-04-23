@@ -36,7 +36,7 @@ const context = new Context(new ConcreteStrategyA());
 context.executeStrategy('someData'); // Output: Algorithm A was run on someData
 ```
 
-***
+---
 
 ## 策略模式
 
@@ -102,17 +102,17 @@ console.log(context.executeStrategy([...data])); // Output: [9, 5, 4, 3, 1, 1]
 
 ### 优点
 
-* **灵活性**：您可以在运行时更改算法。
-* **可维护性**：添加新的策略不会影响现有代码。
-* **封装**：每个算法都封装在自己的类中。
+- **灵活性**：您可以在运行时更改算法。
+- **可维护性**：添加新的策略不会影响现有代码。
+- **封装**：每个算法都封装在自己的类中。
 
 ### 缺点
 
-* **开销**：增加了类和对象的数量。
-* **复杂性**：如果使用不当，会使系统更加复杂。
+- **开销**：增加了类和对象的数量。
+- **复杂性**：如果使用不当，会使系统更加复杂。
 
 ## 延伸阅读
 
-* [维基百科上的策略模式](https://en.wikipedia.org/wiki/Strategy_pattern)
-* [Refactoring Guru: 策略模式](https://refactoring.guru/design-patterns/strategy)
-* [MDN Web Docs: JavaScript 类](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
+- [维基百科上的策略模式](https://en.wikipedia.org/wiki/Strategy_pattern)
+- [Refactoring Guru: 策略模式](https://refactoring.guru/design-patterns/strategy)
+- [MDN Web Docs: JavaScript 类](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)

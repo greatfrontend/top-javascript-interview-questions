@@ -6,11 +6,11 @@ title: JavaScript 中使用展开语法有什么好处？它与 rest 语法有�
 
 **展开语法** (`...`) 允许将可迭代对象（如数组或字符串）扩展为单个元素。这通常被用作一种方便且现代的方式，通过组合现有数组或对象来创建新的数组或对象。
 
-| 操作 | 传统方式 | 展开语法 |
-| -------------- | ------------------------------- | ---------------------- |
-| 数组克隆 | `arr.slice()` | `[...arr]` |
-| 数组合并 | `arr1.concat(arr2)` | `[...arr1, ...arr2]` |
-| 对象克隆 | `Object.assign({}, obj)` | `{ ...obj }` |
+| 操作     | 传统方式                        | 展开语法               |
+| -------- | ------------------------------- | ---------------------- |
+| 数组克隆 | `arr.slice()`                   | `[...arr]`             |
+| 数组合并 | `arr1.concat(arr2)`             | `[...arr1, ...arr2]`   |
+| 对象克隆 | `Object.assign({}, obj)`        | `{ ...obj }`           |
 | 对象合并 | `Object.assign({}, obj1, obj2)` | `{ ...obj1, ...obj2 }` |
 
 **Rest 语法**与展开语法的作用相反。它将可变数量的参数收集到一个数组中。这通常用于函数参数中，以处理动态数量的参数。
@@ -24,7 +24,7 @@ function sum(...numbers) {
 console.log(sum(1, 2, 3)); // Output: 6
 ```
 
-***
+---
 
 ## 展开语法
 
@@ -165,6 +165,6 @@ console.log(others); // Output: { g: 3, h: 4 }
 
 ## 延伸阅读
 
-* [展开语法 | MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
-* [Rest 参数 | MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions/rest_parameters)
-* [Rest 参数和展开语法 | JavaScript.info](https://zh.javascript.info/rest-parameters-spread)
+- [展开语法 | MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
+- [Rest 参数 | MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions/rest_parameters)
+- [Rest 参数和展开语法 | JavaScript.info](https://zh.javascript.info/rest-parameters-spread)

@@ -6,7 +6,7 @@ title: 什么是模拟和存根，以及它们在测试中如何使用？
 
 模拟和存根是用于测试的工具，用于模拟真实对象的行为。存根为函数调用提供预定义的响应，而模拟更复杂，可以验证交互，例如是否调用了函数以及使用什么参数。存根用于将正在测试的代码与外部依赖项隔离，而模拟用于确保代码与这些依赖项正确交互。
 
-***
+---
 
 ## 什么是模拟和存根，以及它们在测试中如何使用？
 
@@ -44,11 +44,11 @@ logUserDataMock.verify(); // 验证 log 方法是否使用指定的参数调用�
 
 ### 何时使用存根和模拟
 
-* **存根**：当您需要将正在测试的代码与外部依赖项隔离并控制这些依赖项提供的响应时，请使用存根。
-* **模拟**：当您需要验证代码是否与外部依赖项正确交互时，例如确保使用正确的参数调用函数时，请使用模拟。
+- **存根**：当您需要将正在测试的代码与外部依赖项隔离并控制这些依赖项提供的响应时，请使用存根。
+- **模拟**：当您需要验证代码是否与外部依赖项正确交互时，例如确保使用正确的参数调用函数时，请使用模拟。
 
 ## 延伸阅读
 
-* [Sinon.js documentation](https://sinonjs.org/releases/latest/)
-* [Mocks Aren't Stubs](https://martinfowler.com/articles/mocksArentStubs.html) by Martin Fowler
-* [Sinon Tutorial: JavaScript Testing with Mocks, Spies & Stubs](https://www.sitepoint.com/sinon-tutorial-javascript-testing-mocks-spies-stubs/) on SitePoint
+- [Sinon.js documentation](https://sinonjs.org/releases/latest/)
+- [Mocks Aren't Stubs](https://martinfowler.com/articles/mocksArentStubs.html) by Martin Fowler
+- [Sinon Tutorial: JavaScript Testing with Mocks, Spies & Stubs](https://www.sitepoint.com/sinon-tutorial-javascript-testing-mocks-spies-stubs/) on SitePoint

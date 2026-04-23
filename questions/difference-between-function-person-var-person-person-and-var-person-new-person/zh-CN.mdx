@@ -1,14 +1,13 @@
 ---
 title: >-
-  JavaScript 中：`function Person(){}`、`const person = Person()` 和 `const person =
-  new Person()` 的区别？
+  JavaScript 中：`function Person(){}`、`const person = Person()` 和 `const person = new Person()` 的区别？
 ---
 
 ## TL;DR
 
-* `function Person(){}`：JavaScript 中的函数声明。它可以作为常规函数或构造函数使用。
-* `const person = Person()`：将 `Person` 作为常规函数调用，而不是构造函数。如果 `Person` 旨在用作构造函数，这将导致意外行为。
-* `const person = new Person()`：创建 `Person` 的新实例，正确利用构造函数来初始化新对象。
+- `function Person(){}`：JavaScript 中的函数声明。它可以作为常规函数或构造函数使用。
+- `const person = Person()`：将 `Person` 作为常规函数调用，而不是构造函数。如果 `Person` 旨在用作构造函数，这将导致意外行为。
+- `const person = new Person()`：创建 `Person` 的新实例，正确利用构造函数来初始化新对象。
 
 | 方面 | `function Person(){}` | `const person = Person()` | `const person = new Person()` |
 | --- | --- | --- | --- |
@@ -17,7 +16,7 @@ title: >-
 | 实例创建 | 未创建实例 | 未创建实例 | 创建新实例 |
 | 常见错误 | N/A | 误用作构造函数，导致 `undefined` | 无（正确使用时） |
 
-***
+---
 
 ## 函数声明
 
@@ -71,11 +70,11 @@ console.log(person1.name); // 'John'
 
 ## 后续问题
 
-* 函数构造函数和 ES6 类语法之间有什么区别？
-* `Object.create` 的一些常见用例是什么？
+- 函数构造函数和 ES6 类语法之间有什么区别？
+- `Object.create` 的一些常见用例是什么？
 
 ## 延伸阅读
 
-* [MDN Web Docs: Object prototypes](https://developer.mozilla.org/zh-CN/docs/Learn/JavaScript/Objects/Object_prototypes)
-* [Differences between Class and Function Constructors](https://www.greatfrontend.com/questions/quiz/what-are-the-differences-between-es6-class-and-es5-function-constructors?fpr=yangshun)
-* [How `this` keyword works in JavaScript?](https://www.greatfrontend.com/questions/quiz/explain-how-this-works-in-javascript?fpr=yangshun)
+- [MDN Web Docs: Object prototypes](https://developer.mozilla.org/zh-CN/docs/Learn/JavaScript/Objects/Object_prototypes)
+- [Differences between Class and Function Constructors](https://www.greatfrontend.com/questions/quiz/what-are-the-differences-between-es6-class-and-es5-function-constructors?fpr=yangshun)
+- [How `this` keyword works in JavaScript?](https://www.greatfrontend.com/questions/quiz/explain-how-this-works-in-javascript?fpr=yangshun)

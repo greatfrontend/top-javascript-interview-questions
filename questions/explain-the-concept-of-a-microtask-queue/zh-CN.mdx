@@ -6,7 +6,7 @@ title: 解释微任务队列的概念
 
 微任务队列是一个任务队列，需要在当前执行的脚本之后和任何其他任务之前执行。微任务通常用于需要紧接在当前操作之后执行的任务，例如 promise 回调。微任务队列在宏任务队列之前处理，确保微任务尽快执行。
 
-***
+---
 
 ## 微任务队列的概念
 
@@ -54,9 +54,9 @@ setTimeout
 
 在这个例子中：
 
-* 同步代码（`console.log('Script start')` 和 `console.log('Script end')`）首先执行。
-* promise 回调（`Promise 1` 和 `Promise 2`）被添加到微任务队列中，然后执行。
-* `setTimeout` 回调被添加到宏任务队列中，最后执行。
+- 同步代码（`console.log('Script start')` 和 `console.log('Script end')`）首先执行。
+- promise 回调（`Promise 1` 和 `Promise 2`）被添加到微任务队列中，然后执行。
+- `setTimeout` 回调被添加到宏任务队列中，最后执行。
 
 ### 用例
 
@@ -65,6 +65,6 @@ setTimeout
 
 ## 延伸阅读
 
-* [MDN Web 文档：微任务](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide)
-* [JavaScript 事件循环解释](https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop)
-* [理解 JavaScript 微任务队列](https://javascript.info/microtask-queue)
+- [MDN Web 文档：微任务](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide)
+- [JavaScript 事件循环解释](https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop)
+- [理解 JavaScript 微任务队列](https://javascript.info/microtask-queue)

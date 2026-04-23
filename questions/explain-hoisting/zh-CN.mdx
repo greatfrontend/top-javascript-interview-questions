@@ -6,26 +6,26 @@ title: 解释 JavaScript 中的“hoisting”（变量提升）概念
 
 Hoisting（变量提升）是一种 JavaScript 机制，在编译阶段，变量和函数声明会被“提升”到其包含作用域的顶部。
 
-* **变量声明 (`var`)**：声明被提升，但未初始化。如果在使用前访问变量，则变量的值为 `undefined`。
-* **变量声明 (`let` 和 `const`)**：声明被提升，但未初始化。访问它们会导致 `ReferenceError`，直到遇到实际的声明。
-* **函数表达式 (`var`)**：声明被提升，但未初始化。如果在使用前访问变量，则变量的值为 `undefined`。
-* **函数声明 (`function`)**：声明和定义都被完全提升。
-* **类声明 (`class`)**：声明被提升，但未初始化。访问它们会导致 `ReferenceError`，直到遇到实际的声明。
-* **导入声明 (`import`)**：声明被提升，并且在执行其余代码之前，会执行导入模块的副作用。
+- **变量声明 (`var`)**：声明被提升，但未初始化。如果在使用前访问变量，则变量的值为 `undefined`。
+- **变量声明 (`let` 和 `const`)**：声明被提升，但未初始化。访问它们会导致 `ReferenceError`，直到遇到实际的声明。
+- **函数表达式 (`var`)**：声明被提升，但未初始化。如果在使用前访问变量，则变量的值为 `undefined`。
+- **函数声明 (`function`)**：声明和定义都被完全提升。
+- **类声明 (`class`)**：声明被提升，但未初始化。访问它们会导致 `ReferenceError`，直到遇到实际的声明。
+- **导入声明 (`import`)**：声明被提升，并且在执行其余代码之前，会执行导入模块的副作用。
 
 以下行为总结了在声明变量之前访问变量的结果。
 
-| 声明 | 在声明之前访问 |
-| ------------------------------ | ---------------------------- |
-| `var foo` | `undefined` |
-| `let foo` | `ReferenceError` |
-| `const foo` | `ReferenceError` |
-| `class Foo` | `ReferenceError` |
-| `var foo = function() { ... }` | `undefined` |
-| `function foo() { ... }` | 正常 |
-| `import` | 正常 |
+| 声明                           | 在声明之前访问   |
+| ------------------------------ | ---------------- |
+| `var foo`                      | `undefined`      |
+| `let foo`                      | `ReferenceError` |
+| `const foo`                    | `ReferenceError` |
+| `class Foo`                    | `ReferenceError` |
+| `var foo = function() { ... }` | `undefined`      |
+| `function foo() { ... }`       | 正常             |
+| `import`                       | 正常             |
 
-***
+---
 
 ## Hoisting（变量提升）
 
@@ -134,10 +134,10 @@ import foo from './modules/foo';
 
 ESLint 是一个静态代码分析器，可以发现违反此类情况，使用以下规则：
 
-* [`no-use-before-define`](https://eslint.org/docs/latest/rules/no-use-before-define): 当遇到对尚未声明的标识符的引用时，此规则将发出警告。
-* [`no-undef`](https://eslint.org/docs/latest/rules/no-undef): 当遇到对尚未声明的标识符的引用时，此规则将发出警告。
+- [`no-use-before-define`](https://eslint.org/docs/latest/rules/no-use-before-define): 当遇到对尚未声明的标识符的引用时，此规则将发出警告。
+- [`no-undef`](https://eslint.org/docs/latest/rules/no-undef): 当遇到对尚未声明的标识符的引用时，此规则将发出警告。
 
 ## 延伸阅读
 
-* [Hoisting | MDN](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting)
-* [What is Hoisting in JavaScript?](https://www.freecodecamp.org/news/what-is-hoisting-in-javascript)
+- [Hoisting | MDN](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting)
+- [What is Hoisting in JavaScript?](https://www.freecodecamp.org/news/what-is-hoisting-in-javascript)

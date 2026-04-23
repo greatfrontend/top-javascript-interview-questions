@@ -6,7 +6,7 @@ title: 你会在什么时候使用 `document.write()`？
 
 `document.write()` 在现代 Web 开发中很少使用，因为它在页面加载后调用时会覆盖整个文档。它主要用于在初始页面加载期间编写内容等简单任务，例如用于教育目的或快速调试。但是，通常建议使用其他方法，如 `innerHTML`、`appendChild()` 或现代框架来操作 DOM。
 
-***
+---
 
 ## 你会在什么时候使用 `document.write()`？
 
@@ -47,8 +47,8 @@ document.write(debugMessage);
 
 ### 为什么不使用 `document.write()`？
 
-* **覆盖文档**：如果在页面加载后调用，`document.write()` 将覆盖整个文档，这可能导致内容丢失和糟糕的用户体验。
-* **更好的替代方案**：像 `innerHTML`、`appendChild()` 和 React 或 Vue 等框架的现代方法提供了更多控制，并且使用起来更安全。
+- **覆盖文档**：如果在页面加载后调用，`document.write()` 将覆盖整个文档，这可能导致内容丢失和糟糕的用户体验。
+- **更好的替代方案**：像 `innerHTML`、`appendChild()` 和 React 或 Vue 等框架的现代方法提供了更多控制，并且使用起来更安全。
 
 ```javascript
 // 使用 innerHTML
@@ -62,6 +62,6 @@ document.getElementById('content').appendChild(newElement);
 
 ## 延伸阅读
 
-* [MDN Web Docs on document.write()](https://developer.mozilla.org/en-US/docs/Web/API/Document/write)
-* [Why is document.write() considered harmful?](https://stackoverflow.com/questions/802854/why-is-document-write-considered-a-bad-practice)
-* [Modern DOM manipulation methods](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction#modifying_the_document)
+- [MDN Web Docs on document.write()](https://developer.mozilla.org/en-US/docs/Web/API/Document/write)
+- [Why is document.write() considered harmful?](https://stackoverflow.com/questions/802854/why-is-document-write-considered-a-bad-practice)
+- [Modern DOM manipulation methods](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction#modifying_the_document)

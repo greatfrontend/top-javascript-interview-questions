@@ -16,7 +16,7 @@ window.addEventListener('load', function () {
 });
 ```
 
-***
+---
 
 ## document `load` 事件和 document `DOMContentLoaded` 事件的区别
 
@@ -42,11 +42,11 @@ window.addEventListener('load', function () {
 
 ### 关键区别
 
-*   **时序**：`DOMContentLoaded` 比 `load` 提前触发。`DOMContentLoaded` 在 HTML 完全解析后发生，而 `load` 等待所有资源加载完毕。
-*   **用例**：将 `DOMContentLoaded` 用于仅需要 DOM 就绪的任务，例如附加事件侦听器或操作 DOM。将 `load` 用于依赖所有资源完全加载的任务，例如依赖于图像的布局计算。
+- **时序**：`DOMContentLoaded` 比 `load` 提前触发。`DOMContentLoaded` 在 HTML 完全解析后发生，而 `load` 等待所有资源加载完毕。
+- **用例**：将 `DOMContentLoaded` 用于仅需要 DOM 就绪的任务，例如附加事件侦听器或操作 DOM。将 `load` 用于依赖所有资源完全加载的任务，例如依赖于图像的布局计算。
 
 ## 延伸阅读
 
-*   [MDN Web Docs: DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event)
-*   [MDN Web Docs: load event](https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event)
-*   [JavaScript.info: DOMContentLoaded, load, beforeunload, unload](https://javascript.info/onload-ondomcontentloaded)
+- [MDN Web Docs: DOMContentLoaded](https://developer.mozilla.org/en-US/docs/Web/API/Document/DOMContentLoaded_event)
+- [MDN Web Docs: load event](https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event)
+- [JavaScript.info: DOMContentLoaded, load, beforeunload, unload](https://javascript.info/onload-ondomcontentloaded)

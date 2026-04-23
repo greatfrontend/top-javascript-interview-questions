@@ -18,7 +18,7 @@ Promise.all([promise1, promise2, promise3]).then((values) => {
 });
 ```
 
-***
+---
 
 ## Promise.all() 的用途是什么
 
@@ -32,14 +32,14 @@ Promise.all([promise1, promise2, promise3]).then((values) => {
 Promise.all(iterable);
 ```
 
-* `iterable`：一个可迭代对象，例如包含 promise 的数组。
+- `iterable`：一个可迭代对象，例如包含 promise 的数组。
 
 ### 工作原理
 
 当您将一个 promise 数组传递给 `Promise.all()` 时，它将返回一个新的 promise。这个新的 promise：
 
-* 当数组中的所有 promise 都已解决时，将解析。解析后的值是输入 promise 的解析值的数组，顺序与输入 promise 相同。
-* 一旦任何输入 promise 被拒绝，就会被拒绝。拒绝原因是被拒绝的第一个 promise 的原因。
+- 当数组中的所有 promise 都已解决时，将解析。解析后的值是输入 promise 的解析值的数组，顺序与输入 promise 相同。
+- 一旦任何输入 promise 被拒绝，就会被拒绝。拒绝原因是被拒绝的第一个 promise 的原因。
 
 ### 示例
 
@@ -91,12 +91,12 @@ Promise.all([promise1, promise2])
 
 ### 用例
 
-* **并行 API 请求**：当您需要发出多个 API 请求并等待所有请求完成才能继续时。
-* **批量处理**：当您有多个可以并行执行的异步任务，并且需要等待所有任务完成时。
-* **数据聚合**：当您需要从多个来源收集数据并合并结果时。
+- **并行 API 请求**：当您需要发出多个 API 请求并等待所有请求完成才能继续时。
+- **批量处理**：当您有多个可以并行执行的异步任务，并且需要等待所有任务完成时。
+- **数据聚合**：当您需要从多个来源收集数据并合并结果时。
 
 ## 延伸阅读
 
-* [MDN Web Docs 上的 `Promise.all()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)
-* [JavaScript Promises：简介](https://developers.google.com/web/fundamentals/primers/promises)
-* [理解 JavaScript Promises](https://www.digitalocean.com/community/tutorials/understanding-javascript-promises)
+- [MDN Web Docs 上的 `Promise.all()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)
+- [JavaScript Promises：简介](https://developers.google.com/web/fundamentals/primers/promises)
+- [理解 JavaScript Promises](https://www.digitalocean.com/community/tutorials/understanding-javascript-promises)

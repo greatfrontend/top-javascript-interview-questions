@@ -34,16 +34,16 @@ console.log(proxiedObject.age);
 
 用例包括：
 
-* **属性访问拦截**：拦截和自定义对对象的属性访问。
-  * **属性赋值验证**：在将属性值设置到目标对象之前验证它们。
-  * **日志记录和调试**：创建用于记录和调试与对象交互的包装器
-  * **创建反应式系统**：当对象属性更改时，触发应用程序其他部分的更新（数据绑定）。
-  * **数据转换**：转换从对象设置或检索的数据。
-  * **在测试中模拟和存根**：为测试目的创建模拟或存根对象，允许您隔离依赖项并专注于被测单元
-* **函数调用拦截**：用于缓存和返回经常访问的方法的结果（如果它们涉及网络调用或计算密集型逻辑），从而提高性能
-* **动态属性创建**：用于即时定义具有默认值的属性，并避免在对象中存储冗余数据。
+- **属性访问拦截**：拦截和自定义对对象的属性访问。
+  - **属性赋值验证**：在将属性值设置到目标对象之前验证它们。
+  - **日志记录和调试**：创建用于记录和调试与对象交互的包装器
+  - **创建反应式系统**：当对象属性更改时，触发应用程序其他部分的更新（数据绑定）。
+  - **数据转换**：转换从对象设置或检索的数据。
+  - **在测试中模拟和存根**：为测试目的创建模拟或存根对象，允许您隔离依赖项并专注于被测单元
+- **函数调用拦截**：用于缓存和返回经常访问的方法的结果（如果它们涉及网络调用或计算密集型逻辑），从而提高性能
+- **动态属性创建**：用于即时定义具有默认值的属性，并避免在对象中存储冗余数据。
 
-***
+---
 
 ## JavaScript 代理
 
@@ -160,7 +160,7 @@ proxy.firstName = 'Jane'; // Output: Property firstName set to Jane
 
 访问拦截的其他用例包括：
 
-* **模拟和存根**：代理可用于创建用于测试目的的模拟或存根对象，允许您隔离依赖项并专注于被测单元。
+- **模拟和存根**：代理可用于创建用于测试目的的模拟或存根对象，允许您隔离依赖项并专注于被测单元。
 
 ### 函数调用拦截
 
@@ -216,9 +216,9 @@ console.log(proxy.anotherProp); // Output: Dynamic property anotherProp
 
 许多流行的库，尤其是状态管理解决方案，都是建立在 JavaScript 代理之上的：
 
-* **[Vue.js](https://vuejs.org/)**: Vue.js 是一个用于构建用户界面的渐进式框架。在 Vue 3 中，代理被广泛用于实现响应式系统。
-* **[MobX](https://mobx.js.org/)**: MobX 使用代理使对象和数组可观察，允许组件自动响应状态变化。
-* **[Immer](https://immerjs.github.io/immer/)**: Immer 是一个允许你以更方便的方式处理不可变状态的库。它使用代理来跟踪更改并生成下一个不可变状态。
+- **[Vue.js](https://vuejs.org/)**: Vue.js 是一个用于构建用户界面的渐进式框架。在 Vue 3 中，代理被广泛用于实现响应式系统。
+- **[MobX](https://mobx.js.org/)**: MobX 使用代理使对象和数组可观察，允许组件自动响应状态变化。
+- **[Immer](https://immerjs.github.io/immer/)**: Immer 是一个允许你以更方便的方式处理不可变状态的库。它使用代理来跟踪更改并生成下一个不可变状态。
 
 ## 总结
 
@@ -226,5 +226,5 @@ JavaScript 中的代理提供了一种强大而灵活的方式来拦截和自定
 
 ## 延伸阅读
 
-* [Proxy - JavaScript | MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy)
-* [Proxy and Reflect | JavaScript.info](https://zh.javascript.info/proxy)
+- [Proxy - JavaScript | MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy)
+- [Proxy and Reflect | JavaScript.info](https://zh.javascript.info/proxy)

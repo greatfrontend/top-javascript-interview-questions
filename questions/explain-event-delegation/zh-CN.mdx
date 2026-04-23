@@ -8,16 +8,16 @@ title: 解释 JavaScript 中的事件委托
 
 事件委托具有以下优点：
 
-* **提高性能**：附加单个事件监听器比将多个事件监听器附加到各个元素更有效，尤其是在处理大型或动态列表时。这减少了内存使用并提高了整体性能。
-* **简化事件处理**：使用事件委托，您只需要在父元素的事件监听器中编写一次事件处理逻辑。这使得代码更易于维护和更新。
-* **动态元素支持**：事件委托会自动处理父元素中动态添加或删除元素的事件。当 DOM 结构发生变化时，无需手动附加或删除事件监听器
+- **提高性能**：附加单个事件监听器比将多个事件监听器附加到各个元素更有效，尤其是在处理大型或动态列表时。这减少了内存使用并提高了整体性能。
+- **简化事件处理**：使用事件委托，您只需要在父元素的事件监听器中编写一次事件处理逻辑。这使得代码更易于维护和更新。
+- **动态元素支持**：事件委托会自动处理父元素中动态添加或删除元素的事件。当 DOM 结构发生变化时，无需手动附加或删除事件监听器
 
 但是，请注意：
 
-* 确定触发事件的目标元素非常重要。
-* 并非所有事件都可以被委托，因为它们不会冒泡。不冒泡的事件包括：`focus`、`blur`、`scroll`、`mouseenter`、`mouseleave`、`resize` 等。
+- 确定触发事件的目标元素非常重要。
+- 并非所有事件都可以被委托，因为它们不会冒泡。不冒泡的事件包括：`focus`、`blur`、`scroll`、`mouseenter`、`mouseleave`、`resize` 等。
 
-***
+---
 
 ## 事件委托
 
@@ -114,9 +114,9 @@ userForm.addEventListener('input', (event) => {
 
 请注意，事件委托会带来某些陷阱：
 
-* **目标处理不正确：** 确保正确识别事件目标，以避免意外操作。
-* **并非所有事件都可以委托/冒泡**：并非所有事件都可以委托，因为它们不会冒泡。 不冒泡的事件包括：`focus`、`blur`、`scroll`、`mouseenter`、`mouseleave`、`resize` 等。
-* **事件开销：** 虽然事件委托通常更有效，但需要在根事件侦听器中编写复杂的逻辑来识别触发元素并做出适当的响应。 如果管理不当，这可能会引入开销，并且可能更复杂。
+- **目标处理不正确：** 确保正确识别事件目标，以避免意外操作。
+- **并非所有事件都可以委托/冒泡**：并非所有事件都可以委托，因为它们不会冒泡。 不冒泡的事件包括：`focus`、`blur`、`scroll`、`mouseenter`、`mouseleave`、`resize` 等。
+- **事件开销：** 虽然事件委托通常更有效，但需要在根事件侦听器中编写复杂的逻辑来识别触发元素并做出适当的响应。 如果管理不当，这可能会引入开销，并且可能更复杂。
 
 ## JavaScript 框架中的事件委托
 
@@ -128,5 +128,5 @@ userForm.addEventListener('input', (event) => {
 
 ## 延伸阅读
 
-* [MDN Web Docs on Event Delegation](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#event_delegation)
-* [JavaScript.info - Event Delegation](https://javascript.info/event-delegation)
+- [MDN Web Docs on Event Delegation](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#event_delegation)
+- [JavaScript.info - Event Delegation](https://javascript.info/event-delegation)

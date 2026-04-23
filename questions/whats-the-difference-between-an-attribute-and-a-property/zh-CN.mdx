@@ -6,7 +6,7 @@ title: DOM 中“attribute”和“property”有什么区别？
 
 Attributes 在 HTML 中定义，为属性提供初始值。属性是 DOM 的一部分，表示元素的当前状态。例如，`<input>` 元素的 `value` 属性设置其初始值，而 `value` 属性反映用户与之交互时的当前值。
 
-***
+---
 
 ## DOM 中“attribute”和“property”有什么区别
 
@@ -38,9 +38,9 @@ inputElement.value = 'new value'; // 更改输入元素的当前值
 
 ### 关键区别
 
-* **初始化**：Attributes 初始化 DOM 属性。
-* **状态**：Attributes 是静态的，而属性是动态的。
-* **访问**：可以使用 `getAttribute` 和 `setAttribute` 方法访问 Attributes，而可以直接在 DOM 对象上访问属性。
+- **初始化**：Attributes 初始化 DOM 属性。
+- **状态**：Attributes 是静态的，而属性是动态的。
+- **访问**：可以使用 `getAttribute` 和 `setAttribute` 方法访问 Attributes，而可以直接在 DOM 对象上访问属性。
 
 #### 示例
 
@@ -67,6 +67,6 @@ console.log(inputElement.getAttribute('value')); // "initial value"
 
 ## 延伸阅读
 
-* [MDN Web 文档：Element.getAttribute()](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/getAttribute)
-* [MDN Web 文档：Element.setAttribute()](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/setAttribute)
-* [MDN Web 文档：HTML 属性与 DOM 属性](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Attributes#html_attributes_vs_dom_properties)
+- [MDN Web 文档：Element.getAttribute()](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/getAttribute)
+- [MDN Web 文档：Element.setAttribute()](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/setAttribute)
+- [MDN Web 文档：HTML 属性与 DOM 属性](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Attributes#html_attributes_vs_dom_properties)

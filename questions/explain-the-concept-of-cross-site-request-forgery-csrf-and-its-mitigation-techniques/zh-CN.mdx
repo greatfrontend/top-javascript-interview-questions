@@ -6,7 +6,7 @@ title: 解释跨站点请求伪造 (CSRF) 的概念及其缓解技术
 
 跨站点请求伪造 (CSRF) 是一种攻击，恶意网站会诱骗用户的浏览器向用户已通过身份验证的另一个站点发出不需要的请求。这可能导致代表用户执行未经授权的操作。缓解技术包括使用反 CSRF 令牌、SameSite cookie 和确保适当的 CORS 配置。
 
-***
+---
 
 ## 跨站点请求伪造 (CSRF) 及其缓解技术
 
@@ -44,9 +44,9 @@ cookie 上的 `SameSite` 属性可以通过限制 cookie 如何与跨站点请�
 Set-Cookie: sessionId=abc123; SameSite=Strict
 ```
 
-* `Strict`：Cookie 仅在第一方上下文中发送，而不是与第三方网站发起的请求一起发送。
-* `Lax`：Cookie 不会通过正常的跨站点子请求（例如，加载图像）发送，但会在用户从外部站点导航到 URL 时发送（例如，点击链接）。
-* `None`：Cookie 在所有上下文中发送，包括跨源请求。
+- `Strict`：Cookie 仅在第一方上下文中发送，而不是与第三方网站发起的请求一起发送。
+- `Lax`：Cookie 不会通过正常的跨站点子请求（例如，加载图像）发送，但会在用户从外部站点导航到 URL 时发送（例如，点击链接）。
+- `None`：Cookie 在所有上下文中发送，包括跨源请求。
 
 #### CORS（跨源资源共享）
 
@@ -58,6 +58,6 @@ Access-Control-Allow-Origin: https://trustedwebsite.com
 
 ### 延伸阅读
 
-* [OWASP CSRF 预防备忘单](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html)
-* [MDN Web 文档：SameSite cookies](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Set-Cookie/SameSite)
-* [MDN Web 文档：跨域资源共享 (CORS)](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CORS)
+- [OWASP CSRF 预防备忘单](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html)
+- [MDN Web 文档：SameSite cookies](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Set-Cookie/SameSite)
+- [MDN Web 文档：跨域资源共享 (CORS)](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CORS)

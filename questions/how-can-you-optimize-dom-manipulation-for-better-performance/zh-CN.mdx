@@ -6,7 +6,7 @@ title: 如何优化 DOM 操作以获得更好的性能？
 
 要优化 DOM 操作以获得更好的性能，请尽量减少直接访问和更新 DOM。使用诸如批处理 DOM 更改、使用 `documentFragment` 处理多个元素以及利用 React 等虚拟 DOM 库等技术。此外，还可以考虑使用 `requestAnimationFrame` 进行动画处理，并通过分别读取和写入 DOM 属性来避免布局抖动。
 
-***
+---
 
 ## 如何优化 DOM 操作以获得更好的性能？
 
@@ -106,7 +106,7 @@ element.style.height = `${height + 10}px`; // Write
 
 ## 延伸阅读
 
-* [FreeCodeCamp: DOM Manipulation in JavaScript](https://www.freecodecamp.org/news/dom-manipulation-in-javascript/)
-* [Google Developers: Avoid large, complex layouts and layout thrashing](https://developers.google.com/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing)
-* [React documentation](https://react.dev/learn)
-* [MDN Web Docs: Using requestAnimationFrame](https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame)
+- [FreeCodeCamp: DOM Manipulation in JavaScript](https://www.freecodecamp.org/news/dom-manipulation-in-javascript/)
+- [Google Developers: Avoid large, complex layouts and layout thrashing](https://developers.google.com/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing)
+- [React documentation](https://react.dev/learn)
+- [MDN Web Docs: Using requestAnimationFrame](https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame)

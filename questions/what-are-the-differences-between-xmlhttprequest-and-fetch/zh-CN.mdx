@@ -6,17 +6,17 @@ title: JavaScript 和浏览器中 `XMLHttpRequest` 和 `fetch()` 之间有什么
 
 `XMLHttpRequest` (XHR) 和 `fetch()` API 都用于 JavaScript (AJAX) 中的异步 HTTP 请求。与 XHR 相比，`fetch()` 提供了更简洁的语法、基于 Promise 的方法和更现代的功能集。但是，存在一些差异：
 
-* `XMLHttpRequest` 事件回调，而 `fetch()` 使用 promise 链。
-* `fetch()` 在标头和请求体方面提供了更大的灵活性。
-* `fetch()` 通过 `catch()` 支持更简洁的错误处理。
-* 使用 `XMLHttpRequest` 处理缓存很困难，但 `fetch()` 默认在 `options.cache` 对象（第二个参数的 `cache` 值）中支持缓存到 `fetch()` 或 `Request()`。
-* `fetch()` 需要 `AbortController` 来取消，而对于 `XMLHttpRequest`，它提供了 `abort()` 属性。
-* `XMLHttpRequest` 对进度跟踪有很好的支持，而 `fetch()` 缺乏。
-* `XMLHttpRequest` 仅在浏览器中可用，并且在 Node.js 环境中不受原生支持。另一方面，`fetch()` 是 JavaScript 语言的一部分，并且在所有现代 JavaScript 运行时中都受支持。
+- `XMLHttpRequest` 事件回调，而 `fetch()` 使用 promise 链。
+- `fetch()` 在标头和请求体方面提供了更大的灵活性。
+- `fetch()` 通过 `catch()` 支持更简洁的错误处理。
+- 使用 `XMLHttpRequest` 处理缓存很困难，但 `fetch()` 默认在 `options.cache` 对象（第二个参数的 `cache` 值）中支持缓存到 `fetch()` 或 `Request()`。
+- `fetch()` 需要 `AbortController` 来取消，而对于 `XMLHttpRequest`，它提供了 `abort()` 属性。
+- `XMLHttpRequest` 对进度跟踪有很好的支持，而 `fetch()` 缺乏。
+- `XMLHttpRequest` 仅在浏览器中可用，并且在 Node.js 环境中不受原生支持。另一方面，`fetch()` 是 JavaScript 语言的一部分，并且在所有现代 JavaScript 运行时中都受支持。
 
 如今，由于其更简洁的语法和现代功能，更倾向于使用 `fetch()`。
 
-***
+---
 
 ## `XMLHttpRequest` vs `fetch()`
 
@@ -223,8 +223,8 @@ xhr.upload.onprogress = (event) => {
 
 分配给 `onprogress` 的回调函数会传递一个 [`ProgressEvent`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/progress_event):
 
-* `ProgressEvent`上的`loaded`字段是一个64位整数，表示底层进程已经完成的工作量（已上传/下载的字节数）。
-* `ProgressEvent`上的`total`字段是一个64位整数，表示底层进程正在执行的总工作量。下载资源时，这是HTTP响应的`Content-Length`值。
+- `ProgressEvent`上的`loaded`字段是一个64位整数，表示底层进程已经完成的工作量（已上传/下载的字节数）。
+- `ProgressEvent`上的`total`字段是一个64位整数，表示底层进程正在执行的总工作量。下载资源时，这是HTTP响应的`Content-Length`值。
 
 另一方面，`fetch()` API 并没有提供任何方便的方法来跟踪上传进度。 它可以实现为监视 `Response` 对象的 `body` 作为 `Content-Length` 标头的分数，但这非常复杂。
 
@@ -234,8 +234,8 @@ xhr.upload.onprogress = (event) => {
 
 ## 延伸阅读
 
-* [Fetch API | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)
-* [XMLHttpRequest | MDN](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
-* [Request: cache property | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Request/cache)
-* [XMLHttpRequest | Javascript.info](https://javascript.info/xmlhttprequest)
-* [This API is so Fetching! - Mozilla Hacks](https://hacks.mozilla.org/2015/03/this-api-is-so-fetching/)
+- [Fetch API | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)
+- [XMLHttpRequest | MDN](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
+- [Request: cache property | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Request/cache)
+- [XMLHttpRequest | Javascript.info](https://javascript.info/xmlhttprequest)
+- [This API is so Fetching! - Mozilla Hacks](https://hacks.mozilla.org/2015/03/this-api-is-so-fetching/)

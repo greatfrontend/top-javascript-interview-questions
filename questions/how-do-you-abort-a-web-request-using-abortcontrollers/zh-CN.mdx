@@ -28,11 +28,11 @@ controller.abort();
 
 终止 Web 请求对于以下情况很有用：
 
-* 根据用户操作取消请求。
-* 在有多个并发请求的情况下，优先处理最新的请求。
-* 取消不再需要的请求，例如，在用户已从页面导航离开之后。
+- 根据用户操作取消请求。
+- 在有多个并发请求的情况下，优先处理最新的请求。
+- 取消不再需要的请求，例如，在用户已从页面导航离开之后。
 
-***
+---
 
 ## `AbortController`s
 
@@ -152,11 +152,11 @@ setTimeout(() => {
 
 ## 笔记
 
-* `AbortController` 不仅限于 `fetch()`，它也可以用于中止其他异步任务。
-* 一个单独的 `AbortContoller` 实例可以在多个异步任务上重复使用，并一次取消所有任务。
-* 在 `AbortController` 上调用 `abort()` 不会向服务器发送任何通知或信号。服务器不知道取消操作，并将继续处理请求，直到它完成或超时。
+- `AbortController` 不仅限于 `fetch()`，它也可以用于中止其他异步任务。
+- 一个单独的 `AbortContoller` 实例可以在多个异步任务上重复使用，并一次取消所有任务。
+- 在 `AbortController` 上调用 `abort()` 不会向服务器发送任何通知或信号。服务器不知道取消操作，并将继续处理请求，直到它完成或超时。
 
 ## 延伸阅读
 
-* [AbortController | MDN](https://developer.mozilla.org/en-US/docs/Web/API/AbortController)
-* [Fetch: Abort | Javascript.info](https://javascript.info/fetch-abort)
+- [AbortController | MDN](https://developer.mozilla.org/en-US/docs/Web/API/AbortController)
+- [Fetch: Abort | Javascript.info](https://javascript.info/fetch-abort)

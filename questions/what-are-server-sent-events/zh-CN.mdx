@@ -6,11 +6,11 @@ title: 什么是服务器发送事件？
 
 [服务器发送事件 (SSE)](https://html.spec.whatwg.org/multipage/comms.html#the-eventsource-interface) 是一种标准，允许网页通过 HTTP 连接从服务器接收自动更新。服务器发送事件与 `EventSource` 实例一起使用，该实例打开与服务器的连接，并允许客户端从服务器接收事件。服务器发送事件创建的连接是持久的（类似于 `WebSocket`），但是有一些区别：
 
-| 属性 | `WebSocket` | `EventSource` |
-| --- | --- | --- |
-| 方向 | 双向 – 客户端和服务器都可以交换消息 | 单向 – 只有服务器发送数据 |
-| 数据类型 | 二进制和文本数据 | 仅文本数据 |
-| 协议 | WebSocket 协议 (`ws://`) | 常规 HTTP (`http://`) |
+| 属性     | `WebSocket`                         | `EventSource`             |
+| -------- | ----------------------------------- | ------------------------- |
+| 方向     | 双向 – 客户端和服务器都可以交换消息 | 单向 – 只有服务器发送数据 |
+| 数据类型 | 二进制和文本数据                    | 仅文本数据                |
+| 协议     | WebSocket 协议 (`ws://`)            | 常规 HTTP (`http://`)     |
 
 **创建事件源**
 
@@ -67,7 +67,7 @@ app.listen(3000, () => console.log('服务器已在端口 3000 启动'));
 
 在此示例中，服务器最初发送“来自服务器的问候”消息，然后每秒发送当前日期。连接保持活动状态，直到客户端将其关闭
 
-***
+---
 
 ## 服务器发送事件 (SSE)
 
@@ -110,21 +110,21 @@ app.listen(3000, () => console.log('服务器已在端口 3000 启动'));
 
 ## SSE 功能
 
-* **单向**：只有服务器才能向客户端发送数据。对于双向通信，Web 套接字将更合适。
-* **重试机制**：如果连接失败，客户端将重试连接，重试间隔由服务器的 `retry:` 字段指定。
-* **仅文本数据**：SSE 只能传输文本数据，这意味着在传输之前需要对二进制数据进行编码（例如，Base64）。对于需要传输大型二进制有效负载的应用程序，这可能会导致开销增加和效率低下。
-* **内置浏览器支持**：受大多数现代浏览器支持，无需其他库。
-* **事件类型**：SSE 使用 `event:` 字段支持自定义事件类型，允许对消息进行分类。
-* **`Last-Event-Id`**：客户端在重新连接时发送 `Last-Event-Id` 标头，允许服务器从上次接收到的事件恢复流。但是，没有内置的机制来重放断开连接期间错过的事件。您可能需要实现一种机制来处理错过的事件，例如使用 `Last-Event-Id` 标头。
-* **连接限制**：浏览器对并发 SSE 连接的最大数量有限制，通常每个域大约 6 个。如果需要从同一客户端建立多个 SSE 连接，这可能会成为瓶颈。使用 HTTP/2 将缓解此问题。
+- **单向**：只有服务器才能向客户端发送数据。对于双向通信，Web 套接字将更合适。
+- **重试机制**：如果连接失败，客户端将重试连接，重试间隔由服务器的 `retry:` 字段指定。
+- **仅文本数据**：SSE 只能传输文本数据，这意味着在传输之前需要对二进制数据进行编码（例如，Base64）。对于需要传输大型二进制有效负载的应用程序，这可能会导致开销增加和效率低下。
+- **内置浏览器支持**：受大多数现代浏览器支持，无需其他库。
+- **事件类型**：SSE 使用 `event:` 字段支持自定义事件类型，允许对消息进行分类。
+- **`Last-Event-Id`**：客户端在重新连接时发送 `Last-Event-Id` 标头，允许服务器从上次接收到的事件恢复流。但是，没有内置的机制来重放断开连接期间错过的事件。您可能需要实现一种机制来处理错过的事件，例如使用 `Last-Event-Id` 标头。
+- **连接限制**：浏览器对并发 SSE 连接的最大数量有限制，通常每个域大约 6 个。如果需要从同一客户端建立多个 SSE 连接，这可能会成为瓶颈。使用 HTTP/2 将缓解此问题。
 
 ## 在 JavaScript 中实现 SSE
 
 以下代码演示了客户端和服务器上 SSE 的最小实现：
 
-* 服务器设置适当的标头以建立 SSE 连接。
-* 消息每 5 秒发送到客户端。
-* 当客户端断开连接时，服务器清理间隔并结束响应。
+- 服务器设置适当的标头以建立 SSE 连接。
+- 消息每 5 秒发送到客户端。
+- 当客户端断开连接时，服务器清理间隔并结束响应。
 
 在客户端上：
 
@@ -194,7 +194,7 @@ http
 
 ## 延伸阅读
 
-* [使用服务器发送事件 - MDN](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
-* [服务器发送事件 - javascript.info](https://javascript.info/server-sent-events)
-* [服务器发送事件：一个准备好再次审视的 WebSockets 替代方案](https://ably.com/topic/server-sent-events)
-* [什么是 SSE（服务器发送事件）以及它们如何工作？](https://bunny.net/academy/http/what-is-sse-server-sent-events-and-how-do-they-work/)
+- [使用服务器发送事件 - MDN](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
+- [服务器发送事件 - javascript.info](https://javascript.info/server-sent-events)
+- [服务器发送事件：一个准备好再次审视的 WebSockets 替代方案](https://ably.com/topic/server-sent-events)
+- [什么是 SSE（服务器发送事件）以及它们如何工作？](https://bunny.net/academy/http/what-is-sse-server-sent-events-and-how-do-they-work/)

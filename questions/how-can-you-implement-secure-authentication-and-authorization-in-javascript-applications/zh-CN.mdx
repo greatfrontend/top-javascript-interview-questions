@@ -6,7 +6,7 @@ title: 如何在 JavaScript 应用程序中实现安全的身份验证和授权�
 
 要在 JavaScript 应用程序中实现安全的身份验证和授权，请使用 HTTPS 加密传输中的数据，并使用 `localStorage` 或 `sessionStorage` 安全地存储令牌等敏感数据。使用 JWT 实现基于令牌的身份验证，并在服务器端验证令牌。使用 OAuth 等库进行第三方身份验证，并确保为授权使用适当的基于角色的访问控制 (RBAC)。
 
-***
+---
 
 ## 如何在 JavaScript 应用程序中实现安全的身份验证和授权？
 
@@ -112,7 +112,7 @@ app.get('/admin', checkRole('admin'), (req, res) => {
 
 ## 延伸阅读
 
-* [JWT.io](https://jwt.io/)
-* [Passport.js documentation](http://www.passportjs.org/docs/)
-* [OWASP Secure Coding Practices-Quick Reference Guide](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/)
-* [MDN Web Docs on HTTPS](https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security)
+- [JWT.io](https://jwt.io/)
+- [Passport.js documentation](http://www.passportjs.org/docs/)
+- [OWASP Secure Coding Practices-Quick Reference Guide](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/)
+- [MDN Web Docs on HTTPS](https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security)

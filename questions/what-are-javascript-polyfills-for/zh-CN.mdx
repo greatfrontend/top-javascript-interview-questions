@@ -10,12 +10,12 @@ JavaScript 中的 Polyfill 是一段代码，它为较旧的浏览器提供现�
 
 常见用例包括：
 
-* **新的 JavaScript 方法**：例如，`Array.prototype.includes()`、`Object.assign()` 等。
-* **新的 API**：例如 `fetch()`、`Promise`、`IntersectionObserver` 等。现代浏览器现在支持这些，但很长一段时间内它们必须被 polyfilled。
+- **新的 JavaScript 方法**：例如，`Array.prototype.includes()`、`Object.assign()` 等。
+- **新的 API**：例如 `fetch()`、`Promise`、`IntersectionObserver` 等。现代浏览器现在支持这些，但很长一段时间内它们必须被 polyfilled。
 
 用于 polyfill 的库和服务：
 
-* **`core-js`**：一个用于 JavaScript 的模块化标准库，其中包括各种 ECMAScript 特性的 polyfill。
+- **`core-js`**：一个用于 JavaScript 的模块化标准库，其中包括各种 ECMAScript 特性的 polyfill。
 
   ```js
   import 'core-js/actual/array/flat-map'; // With this, Array.prototype.flatMap is available to be used.
@@ -23,13 +23,13 @@ JavaScript 中的 Polyfill 是一段代码，它为较旧的浏览器提供现�
   [1, 2].flatMap((it) => [it, it]); // => [1, 1, 2, 2]
   ```
 
-* **Polyfill.io**：一项服务，根据请求中指定的功能和用户代理提供 polyfill。
+- **Polyfill.io**：一项服务，根据请求中指定的功能和用户代理提供 polyfill。
 
   ```js
   <script src="https://polyfill.io/v3/polyfill.min.js"></script>
   ```
 
-***
+---
 
 ## JavaScript 中的 Polyfill
 
@@ -70,14 +70,14 @@ console.log([1, 2, 3].includes(4)); // false
 
 ### 考虑事项
 
-* **选择性加载**：polyfill 应该仅针对需要它们的浏览器加载，以优化性能。
-* **功能检测**：在应用 polyfill 之前执行功能检测，以避免覆盖原生实现或应用不必要的 polyfill。
-* **大小和性能**：polyfill 可能会增加 JavaScript 捆绑包的大小，因此应使用缩小和压缩技术来减轻这种影响。
-* **现有库**：考虑使用现有的库和工具，这些库和工具为多个功能提供全面的 polyfill 解决方案，有效地处理功能检测、条件加载和后备
+- **选择性加载**：polyfill 应该仅针对需要它们的浏览器加载，以优化性能。
+- **功能检测**：在应用 polyfill 之前执行功能检测，以避免覆盖原生实现或应用不必要的 polyfill。
+- **大小和性能**：polyfill 可能会增加 JavaScript 捆绑包的大小，因此应使用缩小和压缩技术来减轻这种影响。
+- **现有库**：考虑使用现有的库和工具，这些库和工具为多个功能提供全面的 polyfill 解决方案，有效地处理功能检测、条件加载和后备
 
 ### 用于 polyfill 的库和服务
 
-* **`core-js`**：一个用于 JavaScript 的模块化标准库，其中包括各种 ECMAScript 特性的 polyfill。
+- **`core-js`**：一个用于 JavaScript 的模块化标准库，其中包括各种 ECMAScript 特性的 polyfill。
 
   ```js
   import 'core-js/actual/array/flat-map'; // With this, Array.prototype.flatMap is available to be used.
@@ -85,7 +85,7 @@ console.log([1, 2, 3].includes(4)); // false
   [1, 2].flatMap((it) => [it, it]); // => [1, 1, 2, 2]
   ```
 
-* **Polyfill.io**：一项服务，根据请求中指定的功能和用户代理提供 polyfill。
+- **Polyfill.io**：一项服务，根据请求中指定的功能和用户代理提供 polyfill。
 
   ```js
   <script src="https://polyfill.io/v3/polyfill.min.js"></script>
@@ -93,8 +93,8 @@ console.log([1, 2, 3].includes(4)); // false
 
 ## 延伸阅读
 
-* [Polyfill - MDN](https://developer.mozilla.org/en-US/docs/Glossary/Polyfill)
-* [Polyfills and transpilers](https://javascript.info/polyfills)
-* [Polyfills: How do they work?](https://medium.com/alienbrains/polyfills-how-do-they-work-ea6a12b792b)
-* [Polyfill in Javascript](https://www.linkedin.com/pulse/polyfill-javascript-divyansh-singh)
-* [Shubham Dutta](https://dev.to/shubhamdutta2000/polyfills-for-javascript-a-full-overview-3f7m)
+- [Polyfill - MDN](https://developer.mozilla.org/en-US/docs/Glossary/Polyfill)
+- [Polyfills and transpilers](https://javascript.info/polyfills)
+- [Polyfills: How do they work?](https://medium.com/alienbrains/polyfills-how-do-they-work-ea6a12b792b)
+- [Polyfill in Javascript](https://www.linkedin.com/pulse/polyfill-javascript-divyansh-singh)
+- [Shubham Dutta](https://dev.to/shubhamdutta2000/polyfills-for-javascript-a-full-overview-3f7m)

@@ -6,7 +6,7 @@ title: 在 JavaScript 中使用 Promise 而不是回调有什么优缺点？
 
 Promise 提供了一种比回调更简洁的替代方案，有助于避免回调地狱，并使异步代码更具可读性。它们有助于轻松编写顺序和并行的异步操作。但是，使用 Promise 可能会引入稍微复杂的代码。
 
-***
+---
 
 ## 优点
 
@@ -160,21 +160,21 @@ getFirstData()
 
 ### 使用 Promise，以下情况不会发生，这些情况存在于仅使用回调的编码中：
 
-* 过早调用回调
-* 过晚调用回调（或从不调用）
-* 调用回调的次数太少或太多
-* 未能传递任何必要的环境/参数
-* 吞噬可能发生的任何错误/异常
+- 过早调用回调
+- 过晚调用回调（或从不调用）
+- 调用回调的次数太少或太多
+- 未能传递任何必要的环境/参数
+- 吞噬可能发生的任何错误/异常
 
 ## 缺点
 
-* 稍微复杂的代码（有争议）。
+- 稍微复杂的代码（有争议）。
 
 ## 实践
 
-* Try implementing your own [`Promise.resolve()` method](/questions/javascript/promise-resolve), [`Promise.reject()` method](/questions/javascript/promise-reject) and [`Promise.all()` method](/questions/javascript/promise-all) on GreatFrontEnd.
+- Try implementing your own [`Promise.resolve()` method](/questions/javascript/promise-resolve), [`Promise.reject()` method](/questions/javascript/promise-reject) and [`Promise.all()` method](/questions/javascript/promise-all) on GreatFrontEnd.
 
 ## Further reading
 
-* [Promise | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
-* [Callback function | MDN](https://developer.mozilla.org/en-US/docs/Glossary/Callback_function)
+- [Promise | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+- [Callback function | MDN](https://developer.mozilla.org/en-US/docs/Glossary/Callback_function)

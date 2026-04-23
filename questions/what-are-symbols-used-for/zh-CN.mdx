@@ -22,7 +22,7 @@ console.log(obj[sym]); // "value"
 
 **注意**：`Symbol()` 函数必须在没有 `new` 关键字的情况下调用。它并不完全是一个构造函数，因为它只能作为函数调用，而不是使用 `new Symbol()`。
 
-***
+---
 
 ## JavaScript 中的 `Symbol`
 
@@ -30,9 +30,9 @@ JavaScript 中的 Symbols 是一种独特且不可变的数据类型，主要用
 
 ## 关键特征
 
-* **唯一性**：每个 Symbol 值都是唯一的，即使它们具有相同的描述。
-* **不可变性**：Symbol 值是不可变的，这意味着它们的值不能被更改。
-* **不可枚举性**：Symbol 属性不包含在 for...in 循环或 Object.keys() 中。
+- **唯一性**：每个 Symbol 值都是唯一的，即使它们具有相同的描述。
+- **不可变性**：Symbol 值是不可变的，这意味着它们的值不能被更改。
+- **不可枚举性**：Symbol 属性不包含在 for...in 循环或 Object.keys() 中。
 
 ## 创建 `Symbol`
 
@@ -62,9 +62,9 @@ console.log(obj[sym]); // "value"
 
 ## `Symbol` 不可枚举
 
-* `Symbol` 属性不包含在 `for...in` 循环或 `Object.keys()` 中。
-* 这使得它们适合创建私有/内部对象状态。
-* 使用 `Object.getOwnPropertySymbols(obj)` 获取对象上的所有 symbol 属性。
+- `Symbol` 属性不包含在 `for...in` 循环或 `Object.keys()` 中。
+- 这使得它们适合创建私有/内部对象状态。
+- 使用 `Object.getOwnPropertySymbols(obj)` 获取对象上的所有 symbol 属性。
 
 ```js live
 const mySymbol = Symbol('privateProperty');
@@ -95,9 +95,9 @@ console.log(key); // "globalKey"
 
 JavaScript 包含几个内置的 `Symbol`，称为众所周知的 `Symbol`。
 
-* **`Symbol.iterator`**：定义对象的默认 `iterator`。
-* **`Symbol.toStringTag`**：用于创建对象的字符串描述。
-* **`Symbol.hasInstance`**：用于确定对象是否是构造函数的实例。
+- **`Symbol.iterator`**：定义对象的默认 `iterator`。
+- **`Symbol.toStringTag`**：用于创建对象的字符串描述。
+- **`Symbol.hasInstance`**：用于确定对象是否是构造函数的实例。
 
 ### `Symbol.iterator`
 
@@ -138,7 +138,7 @@ Symbol 是 JavaScript 中一项强大的功能，尤其适用于创建唯一的�
 
 ## 延伸阅读
 
-* [Symbol - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)
-* [Symbol type](https://javascript.info/symbol)
-* [A quick overview of JavaScript symbols](https://www.freecodecamp.org/news/how-did-i-miss-javascript-symbols-c1f1c0e1874a/)
-* [Symbol Values - You Don't Know JS Yet](https://github.com/getify/You-Dont-Know-JS/blob/2nd-ed/types-grammar/ch1.md#symbol-values)
+- [Symbol - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)
+- [Symbol type](https://javascript.info/symbol)
+- [A quick overview of JavaScript symbols](https://www.freecodecamp.org/news/how-did-i-miss-javascript-symbols-c1f1c0e1874a/)
+- [Symbol Values - You Don't Know JS Yet](https://github.com/getify/You-Dont-Know-JS/blob/2nd-ed/types-grammar/ch1.md#symbol-values)

@@ -6,7 +6,7 @@ title: Currying 和部分应用之间有什么区别？
 
 Currying 将具有多个参数的函数转换为一系列函数，每个函数只接受一个参数。例如，函数 `f(a, b, c)` 变为 `f(a)(b)(c)`。另一方面，部分应用会固定函数的几个参数，并生成另一个具有较少参数的函数。例如，如果使用 `a` 部分应用 `f(a, b, c)`，则会得到一个新函数 `f'(b, c)`。
 
-***
+---
 
 ## Currying vs 部分应用
 
@@ -51,9 +51,9 @@ console.log(result); // 6
 
 ### 主要区别
 
-* **Currying**：将具有多个参数的函数转换为一系列函数，每个函数只接受一个参数。
-* **部分应用**：固定函数的几个参数，并生成另一个具有较少参数的函数。
+- **Currying**：将具有多个参数的函数转换为一系列函数，每个函数只接受一个参数。
+- **部分应用**：固定函数的几个参数，并生成另一个具有较少参数的函数。
 
 ## 延伸阅读
 
-* [JavaScript.info on currying and partial application](https://javascript.info/currying-partials)
+- [JavaScript.info on currying and partial application](https://javascript.info/currying-partials)

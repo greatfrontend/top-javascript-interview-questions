@@ -36,7 +36,7 @@ console.log(value); // 42
 | Module Syntax | `require()` for importing `module.exports` for exporting | `import` for importing `export` for exporting |
 | Environment | Primarily used in Node.js for server-side development | Designed for both browser and server-side JavaScript (Node.js) |
 | Loading | Synchronous loading of modules | Asynchronous loading of modules |
-| Structure | Dynamic imports, can be conditionally called | Static imports/exports at the top level |
+| Structure | Dynamic imports, can be conditionally called | ES modules use static top-level import/export statements, while dynamic loading is supported separately via the `import()` |
 | File extensions | `.js` (default) | `.mjs` or `.js` (with `type: "module"` in `package.json`) |
 | Browser support | Not natively supported in browsers | Natively supported in modern browsers |
 | Optimization | Limited optimization due to dynamic nature | Allows for optimizations like tree-shaking due to static structure |

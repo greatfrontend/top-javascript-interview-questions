@@ -63,6 +63,50 @@ console.log(counter()); // Outputs: 1
 console.log(counter()); // Outputs: 2
 ```
 
+## Closures compared with classes
+
+Closures and classes can both encapsulate state and expose operations on it. The two approaches differ in privacy mechanism, memory characteristics, and idiomatic fit.
+
+```js live
+// Closure-based implementation
+function makeCounter() {
+  let count = 0;
+  return {
+    inc: () => ++count,
+    get: () => count,
+  };
+}
+
+// Class-based implementation with private fields
+class Counter {
+  #count = 0;
+  inc() {
+    return ++this.#count;
+  }
+  get() {
+    return this.#count;
+  }
+}
+
+const a = makeCounter();
+const b = new Counter();
+console.log(a.inc(), a.inc()); // 1 2
+console.log(b.inc(), b.inc()); // 1 2
+```
+
+| Concern | Closure | Class with `#private` fields |
+| --- | --- | --- |
+| Privacy | Lexical scope; inaccessible from outside the closure | Private slot; access outside the class throws `TypeError` |
+| Memory per instance | New closure scope and new function objects per call | Instance state per `new`; methods shared via the prototype |
+| `this` binding | Not required; methods close over outer variables | Methods use `this`; additional care required for callbacks |
+| Prototype sharing | Not supported; each instance has its own methods | Supported; instance methods share the prototype |
+| Typical use | Factories, event handlers, partial application, FP | Long-lived domain objects, inheritance hierarchies |
+
+General guidance:
+
+- A closure is appropriate when a small number of instances with encapsulated state are needed and inheritance is not a concern.
+- A class is appropriate when many instances share the same behavior (prototype sharing avoids duplicating methods per instance), when `instanceof` checks or inheritance are needed, or when the API is consumed through type annotations in TypeScript.
+
 ## Closures in React
 
 Closures are everywhere. The code below shows a simple example of increasing a counter on a button click. In this code, `handleClick` forms a closure. It has access to its outer scope variables `count` and `setCount`.
@@ -71,12 +115,10 @@ Closures are everywhere. The code below shows a simple example of increasing a c
 import React, { useState } from 'react';
 
 function Counter() {
-  // Define a state variable using the useState hook
   const [count, setCount] = useState(0);
 
-  // This handleClick function is a closure
+  // `handleClick` is a closure over `count` and `setCount`.
   function handleClick() {
-    // It can access the 'count' state variable
     setCount(count + 1);
   }
 
@@ -87,18 +129,137 @@ function Counter() {
     </div>
   );
 }
+```
 
-function App() {
-  return (
-    <div>
-      <h1>Counter App</h1>
-      <Counter />
-    </div>
-  );
+### Stale closures in `useEffect`
+
+A closure inside a `useEffect` callback captures the values of the variables it references at the time the effect runs. When those values change on subsequent renders, the closure continues to reference the originally captured values unless the effect re-runs or a different mechanism is used to read live state. This is a common cause of hooks-related bugs.
+
+```jsx
+function Chat() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // `count` here refers to the value captured when the effect ran.
+      // With an empty dependency array, the effect runs only once, so this
+      // value is always 0.
+      console.log('current count:', count);
+      setCount(count + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return <div>{count}</div>;
+}
+```
+
+There are three ways to correct this:
+
+**Declare the dependency.** The effect re-runs whenever `count` changes, and a new closure captures the current value:
+
+```jsx
+useEffect(() => {
+  const interval = setInterval(() => {
+    setCount(count + 1);
+  }, 1000);
+  return () => clearInterval(interval);
+}, [count]);
+```
+
+This is correct, but creates a new interval every second.
+
+**Use the functional updater form of `setState`.** The updater receives the current state as an argument, so no value needs to be captured:
+
+```jsx
+useEffect(() => {
+  const interval = setInterval(() => {
+    setCount((prev) => prev + 1);
+  }, 1000);
+  return () => clearInterval(interval);
+}, []);
+```
+
+**Use a ref.** Useful when the callback should read live state but not re-run when the state changes:
+
+```jsx
+const countRef = useRef(0);
+useEffect(() => {
+  countRef.current = count;
+});
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    console.log('current count:', countRef.current);
+  }, 1000);
+  return () => clearInterval(interval);
+}, []);
+```
+
+The functional updater is usually the simplest correct option when the callback only needs to update state. The ref approach is appropriate when live state must be read without re-running the subscription.
+
+## Memoization with closures
+
+Function memoization caches results of a computation against the arguments used to produce them. A closure holds the cache, keeping it scoped to the memoized wrapper.
+
+```js live
+function memoize(fn) {
+  const cache = new Map();
+  return function (...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) return cache.get(key);
+    const result = fn.apply(this, args);
+    cache.set(key, result);
+    return result;
+  };
 }
 
-export default App;
+const slowSquare = (n) => {
+  console.log('computing', n);
+  return n * n;
+};
+
+const fastSquare = memoize(slowSquare);
+console.log(fastSquare(4)); // 'computing 4' then 16
+console.log(fastSquare(4)); // 16 (cache hit; no 'computing' log)
+console.log(fastSquare(5)); // 'computing 5' then 25
 ```
+
+Observations:
+
+1. The `cache` variable is accessible only through the returned function. This is the "private state" property of closures applied to a practical utility.
+2. The cache grows unbounded by default, which can cause memory issues on long-running inputs. Production memoization implementations typically use an LRU cache or a `WeakMap` keyed on object identity. Further discussion of this and related issues is on the [closure pitfalls page](/questions/quiz/what-are-the-potential-pitfalls-of-using-closures).
+3. The same pattern appears in widely used utilities, including React's `useMemo` and `useCallback`, Reselect's `createSelector`, and Lodash's `_.memoize`.
+
+## Common example: `var` in a loop
+
+```js live
+for (var i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 0);
+}
+// Output: 3, 3, 3
+```
+
+`var i` is function-scoped, so all three callbacks close over the same binding. The loop completes and sets `i` to `3` before any `setTimeout` callback runs, because `setTimeout(fn, 0)` still queues the callback as a macrotask that runs after the current synchronous code.
+
+Two corrections:
+
+- Replace `var` with `let`. `let` is block-scoped, so each iteration creates a fresh binding, and each callback closes over a different value.
+- Use an IIFE to create a new function scope per iteration: `(i => setTimeout(() => console.log(i), 0))(i)`. This is the pre-ES6 alternative.
+
+## Common questions
+
+### When is a closure preferable to a class?
+
+A closure is generally preferable when the expected number of instances is small, when inheritance and `instanceof` are not needed, and when avoiding `this` is desirable. A class is preferable when many instances will share the same behavior (prototype sharing), when inheritance is used, or when the API is consumed through TypeScript type annotations.
+
+### Can closures cause memory leaks?
+
+Yes. A closure that references a large object and is itself reachable from long-lived state (module scope, event listener registrations, or a Redux store, for example) will keep the referenced object alive. The [closure pitfalls page](/questions/quiz/what-are-the-potential-pitfalls-of-using-closures) covers specific patterns and how to detect them.
+
+### Are closures synchronous or asynchronous?
+
+A closure is simply a function that captures its lexical scope. The function may be invoked synchronously or asynchronously; the closure mechanism itself is independent of the invocation timing. The `var`-in-loop example above is a common source of confusion because the variable referenced by the closure changes between the closure's creation and its asynchronous invocation.
 
 ## Why use closures?
 
@@ -109,9 +270,14 @@ Using closures provides the following benefits:
 1. **Event handlers and callbacks**: In JavaScript, closures are often used in event handlers and callbacks to maintain state or access variables that were in scope when the handler or callback was defined.
 1. **Module patterns**: Closures enable the [module pattern](https://www.patterns.dev/vanilla/module-pattern) in JavaScript, allowing the creation of modules with private and public parts.
 
+## Related questions
+
+You can read more about [memory leaks and other pitfalls of closures](/questions/quiz/what-are-the-potential-pitfalls-of-using-closures) and the [module pattern and private state](/questions/quiz/how-can-closures-be-used-to-create-private-variables) on their dedicated pages.
+
 ## Further reading
 
 - [Closures - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)
 - [Closures - Javascript.info](https://javascript.info/closure)
 - [Closure - Eloquent Javascript](https://eloquentjavascript.net/03_functions.html)
 - [You Don't Know JS Yet: Scope & Closures](https://github.com/getify/You-Dont-Know-JS/tree/2nd-ed/scope-closures)
+- [React: Referencing values with refs](https://react.dev/learn/referencing-values-with-refs)

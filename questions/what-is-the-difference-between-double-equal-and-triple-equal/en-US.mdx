@@ -4,88 +4,169 @@ title: What is the difference between `==` and `===` in JavaScript?
 
 ## TL;DR
 
-`==` is the abstract equality operator while `===` is the strict equality operator. The `==` operator will compare for equality after doing any necessary type conversions. The `===` operator will not do type conversion, so if two values are not the same type `===` will simply return `false`.
+`==` is the abstract equality operator while `===` is the strict equality operator. `==` performs type coercion before comparing, following the Abstract Equality Comparison algorithm defined in the ECMAScript specification. `===` does not perform coercion and returns `false` whenever the operand types differ. `===` is generally preferred in application code because it eliminates a class of bugs caused by unexpected coercion. The most common exception is `x == null`, which checks for both `null` and `undefined` in a single comparison.
 
 | Operator | `==` | `===` |
 | --- | --- | --- |
-| Name | (Loose) Equality operator | Strict equality operator |
-| Type coercion | Yes | No |
-| Compares value and type | No | Yes |
+| Name | Loose (abstract) equality operator | Strict equality operator |
+| Type coercion | Yes — per the Abstract Equality Comparison algorithm | No |
+| Comparison behavior | Types may be coerced before the value comparison | Types are compared first |
+
+> **Don't confuse `=` with `==` and `===`.** `=` is the [assignment operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Assignment) — it sets a variable's value (`x = 5`) and does not compare anything.
 
 ---
 
-### Equality operator (`==`)
+## The Abstract Equality Comparison algorithm
 
-The `==` operator checks for equality between two values but performs type coercion if the values are of different types. This means that JavaScript will attempt to convert the values to a common type before making the comparison.
+The behavior of `==` is defined by the [`IsLooselyEqual`](https://tc39.es/ecma262/#sec-islooselyequal) algorithm in ECMA-262 §7.2.15. Given operands `x` and `y`, the algorithm proceeds as follows:
+
+1. If `Type(x)` is the same as `Type(y)`, return the result of `x === y` (strict equality, without coercion).
+2. If `x` is `null` and `y` is `undefined`, return `true`.
+3. If `x` is `undefined` and `y` is `null`, return `true`.
+4. If `Type(x)` is Number and `Type(y)` is String, return `x == ToNumber(y)`.
+5. If `Type(x)` is String and `Type(y)` is Number, return `ToNumber(x) == y`.
+6. If `Type(x)` is BigInt and `Type(y)` is String, convert `y` with `StringToBigInt`. Return `false` if the conversion is undefined; otherwise compare the resulting BigInts.
+7. If `Type(x)` is String and `Type(y)` is BigInt, swap operands and apply step 6.
+8. If `Type(x)` is Boolean, return `ToNumber(x) == y`.
+9. If `Type(y)` is Boolean, return `x == ToNumber(y)`.
+10. If `Type(x)` is String, Number, BigInt, or Symbol, and `Type(y)` is Object, return `x == ToPrimitive(y)`.
+11. If `Type(x)` is Object and `Type(y)` is String, Number, BigInt, or Symbol, return `ToPrimitive(x) == y`.
+12. If one operand is a BigInt and the other is a Number, return `true` if the mathematical values are equal; otherwise `false`.
+13. Return `false`.
+
+Four properties of the algorithm that are not apparent from a truth table alone:
+
+- Boolean operands are always converted to Number first (via step 8 or 9). This is why `true == '1'` is `true`: `true` becomes `1`, then step 5 converts `'1'` to `1`, producing `1 == 1`.
+- Object operands are reduced to primitives via `ToPrimitive` (steps 10 and 11), which invokes `Symbol.toPrimitive`, then `valueOf`, then `toString`. For example, `[1] == 1` is `true` because `[1].toString()` is `'1'`, which then coerces to `1`.
+- `null` and `undefined` are only loose-equal to each other and to themselves (steps 2 and 3). They are not coerced to `0` or `false` elsewhere in the algorithm, which is why `a == null` is a valid idiom for testing "null or undefined".
+- `NaN` is not equal to any value, including itself, under any equality operator. Use `Number.isNaN(x)` or `Object.is(x, NaN)` to test for it.
+
+### The coercion helpers used by `==`
+
+`==` dispatches to three type-conversion routines defined in ECMA-262 §7.1:
+
+- **[`ToPrimitive(input, hint)`](https://tc39.es/ecma262/#sec-toprimitive)** — returns the input unchanged if it is already a primitive. Otherwise invokes `input[Symbol.toPrimitive](hint)`, then falls back to `valueOf()` and `toString()`. If none returns a primitive, a `TypeError` is thrown.
+- **[`ToNumber(argument)`](https://tc39.es/ecma262/#sec-tonumber)** — `undefined` becomes `NaN`; `null` becomes `+0`; `true` and `false` become `1` and `+0`; strings are parsed with whitespace trimming, with the empty string becoming `0`; Symbols and BigInts throw `TypeError`; objects are first reduced via `ToPrimitive(argument, "number")` and the result is recursed on.
+- **[`ToString(argument)`](https://tc39.es/ecma262/#sec-tostring)** — `undefined` becomes `"undefined"`; `null` becomes `"null"`; Booleans become `"true"` and `"false"`; Numbers use `Number::toString`; Symbols throw `TypeError`; objects are first reduced via `ToPrimitive(argument, "string")`.
+
+## Examples
+
+The examples below apply the algorithm above to values that commonly produce unexpected results.
+
+### Array compared with boolean
 
 ```js live
-console.log(42 == '42'); // true
-console.log(0 == false); // true
-console.log(null == undefined); // true
 console.log([] == false); // true
-console.log('' == false); // true
+console.log([0] == false); // true
+console.log([1] == true); // true
+console.log([1, 2] == '1,2'); // true
 ```
 
-In these examples, JavaScript converts the operands to the same type before making the comparison. For example, `42 == '42'` is true because the string `'42'` is converted to the number `42` before comparison.
+Walking through `[] == false`:
 
-However, when using `==`, unintuitive results can happen:
+1. Step 9: `false` is coerced to `0`, producing `[] == 0`.
+2. Step 11: the array is coerced via `ToPrimitive`. `Array.prototype.toString` joins elements with commas, so `[].toString()` is `''`, producing `'' == 0`.
+3. Step 5: `'' == 0` coerces the string to `0`, producing `0 == 0`.
+4. Step 1: same types, strict equality returns `true`.
+
+The same process explains the remaining cases.
+
+### `[] == ![]`
 
 ```js live
-console.log(1 == [1]); // true
+console.log([] == ![]); // true
+```
+
+Evaluation order:
+
+1. `![]` is evaluated first. Applying `ToBoolean` to any object yields `true`, so `![]` is `false`.
+2. The expression is now `[] == false`, which evaluates to `true` via the steps shown above.
+
+### Object compared with boolean
+
+```js live
+console.log({} == false); // false
+```
+
+Walking through:
+
+1. Step 9: `false` becomes `0`, producing `{} == 0`.
+2. Step 11: the plain object is coerced via `ToPrimitive`. `Object.prototype.toString` returns `'[object Object]'`.
+3. Step 5: `'[object Object]' == 0` calls `ToNumber('[object Object]')`, which produces `NaN`.
+4. Step 1 with `NaN == 0`: strict equality returns `false`.
+
+This differs from `[] == false` because the two objects have different `toString` results. This case is a frequent source of incorrect output in AI-generated explanations that treat all objects as equivalent to `[]` for coercion purposes.
+
+### `null` and `undefined`
+
+```js live
+console.log(null == undefined); // true
+console.log(null == 0); // false
+console.log(null == false); // false
+console.log(null >= 0); // true
+```
+
+- `null == undefined` is `true` by the special case in step 2.
+- `null == 0` is `false` because no step in `==` converts `null` to `0`.
+- `null == false` is `false` for the same reason — `false` becomes `0`, but `null` is not coerced, and step 13 returns `false`.
+- `null >= 0` is `true` because relational operators do not use the Abstract Equality algorithm. They apply `ToNumber` directly, converting `null` to `0`, producing `0 >= 0`.
+
+A consequence: the three expressions `null >= 0`, `null <= 0`, and `null != 0` are all `true` simultaneously.
+
+### Same-type string comparison does not coerce
+
+```js live
 console.log(0 == ''); // true
 console.log(0 == '0'); // true
 console.log('' == '0'); // false
 ```
 
-As a general rule of thumb, never use the `==` operator, except for convenience when comparing against `null` or `undefined`, where `a == null` will return `true` if `a` is `null` or `undefined`.
+`0 == ''` and `0 == '0'` both convert the string to a number (step 5). `'' == '0'` is a comparison between two strings; step 1 defers to strict equality, which compares the string contents directly. The strings `''` and `'0'` are not equal.
+
+A consequence: `==` is not transitive. `a == b` and `a == c` together do not imply `b == c`.
+
+### `Symbol` equality
 
 ```js live
-var a = null;
-console.log(a == null); // true
-console.log(a == undefined); // true
+const s = Symbol('x');
+console.log(s == s); // true
+console.log(s == 'x'); // false
+console.log(s === s); // true
 ```
 
-### Strict equality operator (`===`)
+Two Symbols are loosely equal only if they are the same value (step 1). A Symbol compared with a string falls through the algorithm to step 13 and returns `false` without attempting any coercion that would throw.
 
-The `===` operator, also known as the strict equality operator, checks for equality between two values without performing type coercion. This means that both the value and the type must be the same for the comparison to return true.
+## Common misconceptions
 
-```js live
-console.log(42 === '42'); // false
-console.log(0 === false); // false
-console.log(null === undefined); // false
-console.log([] === false); // false
-console.log('' === false); // false
-```
+The following statements appear frequently in documentation, teaching material, and responses generated by large language models, but are incorrect:
 
-For these comparisons, no type conversion is performed, so the statement returns `false` if the types are different. For instance, `42 === '42'` is `false` because the types (number and string) are different.
+1. **`{} == false` is `true`: ** It is `false`. `{}` coerces to `'[object Object]'`, which coerces to `NaN`, which is not equal to `0`.
+2. **`[] == ![]` is `false`: ** It is `true`. `![]` is `false`, and `[] == false` follows the coercion steps to `true`.
+3. **`null == false` is `true` because `null` is falsy: ** It is `false`. The `==` algorithm has no step that coerces `null` to a boolean or number; `ToBoolean` is a separate operation used by conditional expressions, not by `==`.
+4. **`==` is transitive: ** It is not. `0 == ''` and `0 == '0'` are both `true`, but `'' == '0'` is `false`.
+5. **`NaN == NaN` is `true`: ** `NaN` is not equal to any value under `==`, `===`, or a relational comparison. Use `Number.isNaN(x)` or `Object.is(x, NaN)`.
 
-```js live
-// Comparison with type coercion (==)
-console.log(42 == '42'); // true
-console.log(0 == false); // true
-console.log(null == undefined); // true
+## `Object.is()`
 
-// Strict comparison without type coercion (===)
-console.log(42 === '42'); // false
-console.log(0 === false); // false
-console.log(null === undefined); // false
-```
+[`Object.is(x, y)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is) returns the same result as `===` with two exceptions:
 
-### Bonus: `Object.is()`
+- `Object.is(NaN, NaN)` is `true`, whereas `NaN === NaN` is `false`.
+- `Object.is(+0, -0)` is `false`, whereas `+0 === -0` is `true`.
 
 There's one final value-comparison operation within JavaScript: the [`Object.is()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is) static method. The only difference between `Object.is()` and `===` is how they treat signed zeros and `NaN` values. The `===` operator (and the `==` operator) treats the number values `-0` and `+0` as equal, but treats `NaN` as not equal to each other.
 
 ## Conclusion
 
-- Use `==` when you want to compare values with type coercion (and understand the implications of it). In practice, the only reasonable use case for the equality operator is to check for both `null` and `undefined` in a single comparison for convenience.
-- Use `===` when you want to ensure both the value and the type are the same, which is the safer and more predictable choice in most cases.
-
-### Notes
-
 - Using `===` (strict equality) is generally recommended to avoid the pitfalls of type coercion, which can lead to unexpected behavior and bugs in your code. It makes the intent of your comparisons clearer and ensures that you are comparing both the value and the type.
-- ESLint's [`eqeqeq`](https://eslint.org/docs/latest/rules/eqeqeq) rule enforces the use of strict equality operators `===` and `!==` and even provides an option to always enforce strict equality except when comparing with the `null` literal.
+- Use `x == null` when a single check for `null` or `undefined` is required. ESLint's [`eqeqeq`](https://eslint.org/docs/latest/rules/eqeqeq) rule allows this pattern via the `{ "null": "ignore" }` option.
+- Use `Object.is` when `NaN` equality or distinguishing `+0` from `-0` is required.
+- When questioned about an unexpected `==` result, work through the algorithm steps rather than relying on memorized truth tables. The algorithm is short and fully specifies the behavior.
 
-### Further reading
+## Further reading
 
+- [ECMA-262 §7.2.15 `IsLooselyEqual`](https://tc39.es/ecma262/#sec-islooselyequal)
+- [ECMA-262 §7.1 Type conversion](https://tc39.es/ecma262/#sec-type-conversion)
 - [Equality (==) | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Equality)
 - [Strict equality (===) | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Strict_equality)
+- [`Object.is()` | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is)
+- [ESLint `eqeqeq` rule](https://eslint.org/docs/latest/rules/eqeqeq)

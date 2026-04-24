@@ -19,7 +19,7 @@ mutableObject.name = 'Jane';
 console.log(mutableObject); // Output: { name: 'Jane', age: 30 }
 ```
 
-**Immutable objects** cannot be directly modified after creation. Its content cannot be changed without creating an entirely new value.
+**Immutable objects** cannot be directly modified after creation. Their contents cannot be changed without creating an entirely new value.
 
 ```js live
 const immutableObject = Object.freeze({
@@ -88,7 +88,7 @@ name = name.toUpperCase();
 console.log(name); // Now prints "ALICE"
 ```
 
-Some built-in immutable JavaScript objects are `Math`, `Date` but custom objects are generally mutable.
+Some built-in immutable JavaScript objects are `Math`, `Date`, but custom objects are generally mutable.
 
 ### `const` vs immutable objects
 
@@ -200,7 +200,7 @@ let immutableObject = Object.freeze({});
 
 Freezing an object does not allow new properties to be added to an object and prevents users from removing or altering the existing properties. `Object.freeze()` preserves the enumerability, configurability, writability and the `prototype` of the object. It returns the passed object and does not create a frozen copy.
 
-`Object.freeze()` makes the object immutable. However, it is not necessarily constant. `Object.freeze` prevents modifications to the object itself and its direct properties, nested objects within the frozen object can still be modified.
+`Object.freeze()` makes the object immutable. However, it is not necessarily constant. While `Object.freeze` prevents modifications to the object itself and its direct properties, nested objects within the frozen object can still be modified.
 
 ```js live
 let obj = {
@@ -220,13 +220,13 @@ console.log(obj.user.name); //Output: 'John'
 - **Easier change detection**: Object equality can be determined in a performant and easy manner through referential equality. This is useful for comparing object differences in React and Redux.
 - **Less complicated**: Programs with immutable objects are less complicated to think about, since you don't need to worry about how an object may evolve over time.
 - Easy sharing via references: One copy of an object is just as good as another, so you can cache objects or reuse the same object multiple times.
-- **Thread-safe**: Immutable objects can be safely used between threads in a multi-threaded environment since there is no risk of them being modified in other concurrently running threads. In the most cases, JavaScript runs in a single-threaded environment
+- **Thread-safe**: Immutable objects can be safely used between threads in a multi-threaded environment since there is no risk of them being modified in other concurrently running threads. In most cases, JavaScript runs in a single-threaded environment.
 - **Less memory needed**: Using libraries like [Immer](https://immerjs.github.io/immer/) and [Immutable.js](https://immutable-js.com/), objects are modified using structural sharing and less memory is needed for having multiple objects with similar structures.
-- **No need for defensive copying**: Defensive copies are no longer necessary when immutable objects are returning from or passed to functions, since there is no possibility an immutable object will be modified by it.
+- **No need for defensive copying**: Defensive copies are no longer necessary when immutable objects are returned from or passed to functions, since there is no possibility an immutable object will be modified by it.
 
 ### Cons
 
-- **Complex to create yourself**: Naive implementations of immutable data structures and its operations can result in extremely poor performance because new objects are created each time. It is recommended to use libraries for efficient immutable data structures and operations that leverage on structural sharing.
+- **Complex to create yourself**: Naive implementations of immutable data structures and their operations can result in extremely poor performance because new objects are created each time. It is recommended to use libraries for efficient immutable data structures and operations that leverage structural sharing.
 - **Potential negative performance**: Allocation (and deallocation) of many small objects rather than modifying existing ones can cause a performance impact. The complexity of either the allocator or the garbage collector usually depends on the number of objects on the heap.
 - **Complexity for cyclic data structures**: Cyclic data structures such as graphs are difficult to implement.
 

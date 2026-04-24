@@ -40,7 +40,7 @@ Aborting web requests is useful for:
 
 ## Using `AbortController`s
 
-Using `AbortController`s involve the following steps:
+Using `AbortController`s involves the following steps:
 
 1. **Create an `AbortController` instance**: Initialize an `AbortController` instance, which creates a signal that can be used to abort requests.
 1. **Pass the signal to the request**: Pass the signal to the request, typically through the `signal` property in the request options.
@@ -102,7 +102,7 @@ document.getElementById('cancel-button').addEventListener('click', () => {
 document.getElementById('cancel-button').click(); // Simulate clicking the cancel button
 ```
 
-When you click the "Cancel upload" button, in-flight request will be aborted.
+When you click the "Cancel upload" button, the in-flight request will be aborted.
 
 ### Prioritizing latest requests in a race condition
 
@@ -148,12 +148,12 @@ In this example, when the `fetchData()` function is called multiple times trigge
 
 ### Canceling requests that are no longer needed
 
-In situations where the user has navigated away from the page, aborting the request can prevent unnecessary operations (e.g. success callback handling), and freeing up resources by lowering the likelihood of memory leaks.
+In situations where the user has navigated away from the page, aborting the request can prevent unnecessary operations (e.g. success callback handling) and free up resources by lowering the likelihood of memory leaks.
 
 ## Notes
 
-- `AbortController`s is not `fetch()`-specific, it can be used to abort other asynchronous tasks as well.
-- A singular `AbortContoller` instance can be reused on multiple async tasks and cancel all of them at once.
+- `AbortController`s are not `fetch()`-specific, they can be used to abort other asynchronous tasks as well.
+- A singular `AbortController` instance can be reused on multiple async tasks and cancel all of them at once.
 - Calling `abort()` on `AbortController`s does not send any notification or signal to the server. The server is unaware of the cancelation and will continue processing the request until it completes or times out.
 
 ## Further reading

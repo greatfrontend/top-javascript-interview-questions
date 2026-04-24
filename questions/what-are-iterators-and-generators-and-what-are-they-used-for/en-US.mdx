@@ -6,7 +6,7 @@ title: What are iterators and generators in JavaScript and what are they used fo
 
 In JavaScript, iterators and generators are powerful tools for managing sequences of data and controlling the flow of execution in a more flexible way.
 
-**Iterators** are objects that define a sequence and potentially a return value upon its termination. It adheres to a specific interface:
+**Iterators** are objects that define a sequence and potentially a return value upon its termination. They adhere to a specific interface:
 
 - An iterator object must implement a `next()` method.
 - The `next()` method returns an object with two properties:
@@ -35,7 +35,7 @@ while (!result.done) {
 }
 ```
 
-**Generators** are a special functions that **can pause execution and resume at a later point**. It uses the `function*` syntax and the `yield` keyword to control the flow of execution. When you call a generator function, it doesn't execute completely like a regular function. Instead, it returns an iterator object. Calling the `next()` method on the returned iterator advances the generator to the next `yield` statement, and the value after `yield` becomes the return value of `next()`.
+**Generators** are special functions that **can pause execution and resume at a later point**. They use the `function*` syntax and the `yield` keyword to control the flow of execution. When you call a generator function, it doesn't execute completely like a regular function. Instead, it returns an iterator object. Calling the `next()` method on the returned iterator advances the generator to the next `yield` statement, and the value after `yield` becomes the return value of `next()`.
 
 ```js live
 function* numberGenerator() {
@@ -65,14 +65,14 @@ Generators are powerful for creating iterators on-demand, especially for infinit
 
 ## Iterators
 
-Iterators are objects that define a sequence and provide a `next()` method to access the next value in the sequence. They are used to iterate over data structures like `arrays`, `strings`, and custom `objects`. The key use case of iterators include:
+Iterators are objects that define a sequence and provide a `next()` method to access the next value in the sequence. They are used to iterate over data structures like `arrays`, `strings`, and custom `objects`. The key use cases of iterators include:
 
 - Implementing the iterator protocol to make custom objects iterable, allowing them to be used with `for...of` loops and other language constructs that expect iterables.
 - Providing a standard way to iterate over different data structures, making code more reusable and maintainable.
 
 ### Creating a custom iterator for a range of numbers
 
-In JavaScript, we can provide a default implementation for iterator by implementing `[Symbol.iterator]()` in any custom object.
+In JavaScript, we can provide a default implementation for an iterator by implementing `[Symbol.iterator]()` in any custom object.
 
 ```js live
 // Define a class named Range

@@ -4,7 +4,7 @@ title: Describe event bubbling in JavaScript and browsers
 
 ## TL;DR
 
-Event bubbling is a DOM event propagation mechanism where an event (e.g. a click), starts at the target element and bubbles up to the root of the document. This allows ancestor elements to also respond to the event.
+Event bubbling is a DOM event propagation mechanism where an event (e.g. a click) starts at the target element and bubbles up to the root of the document. This allows ancestor elements to also respond to the event.
 
 Event bubbling is essential for event delegation, where a single event handler manages events for multiple child elements, enhancing performance and code simplicity. While convenient, failing to manage event propagation properly can lead to unintended behavior, such as multiple handlers firing for a single event.
 
@@ -14,7 +14,7 @@ Event bubbling is essential for event delegation, where a single event handler m
 
 Event bubbling is a propagation mechanism in the DOM (Document Object Model) where an event, such as a click or a keyboard event, is first triggered on the target element that initiated the event and then propagates upward (bubbles) through the DOM tree to the root of the document.
 
-**Note**: even before the event bubbling phase happens is the [event capturing](/questions/quiz/describe-event-capturing) phase which is the opposite of bubbling where the event goes down from the document root to the target element.
+**Note**: before the event bubbling phase, there is the [event capturing](/questions/quiz/describe-event-capturing) phase, which is the opposite of bubbling, where the event travels down from the document root to the target element.
 
 ## Bubbling phase
 
@@ -49,7 +49,7 @@ child.addEventListener('click', () => {
 child.click();
 ```
 
-When you click the "Click me!" button, both the child and parent event handlers will be triggered due to the event bubbling.
+When you click the "Click me!" button, both the child and parent event handlers will be triggered due to event bubbling.
 
 ## Stopping the bubbling
 
@@ -85,7 +85,7 @@ child.click();
 
 ## Event delegation
 
-Event bubbling is the basis for a technique called [event delegation](/questions/quiz/explain-event-delegation), where you attach a single event handler to a common ancestor of multiple elements and use event delegation to handle events for those elements efficiently. This is particularly useful when you have a large number of similar elements, like a list of items, and you want to avoid attaching individual event handlers to each item.
+Event bubbling is the basis for a technique called [event delegation](/questions/quiz/explain-event-delegation), where you attach a single event handler to a common ancestor of multiple elements to handle events for those elements efficiently. This is particularly useful when you have a large number of similar elements, like a list of items, and you want to avoid attaching individual event handlers to each item.
 
 ```js
 parent.addEventListener('click', (event) => {
@@ -156,7 +156,7 @@ function handleBuyClick(event) {
 }
 ```
 
-By attaching the listener to the parent (`productList`) and checking the clicked element (`event.target`) within the handler, you achieve the same functionality with less code. This approach scales well when the items are dynamic as no new event handlers have to be added or removed when the list of items change.
+By attaching the listener to the parent (`productList`) and checking the clicked element (`event.target`) within the handler, you achieve the same functionality with less code. This approach scales well when the items are dynamic, as no new event handlers have to be added or removed when the list of items changes.
 
 ### Dropdown menus
 

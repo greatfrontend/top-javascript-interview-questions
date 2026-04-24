@@ -54,7 +54,7 @@ console.log(descriptor); // {value: "John Doe", writable: true, enumerable: true
 
 ### `writable` flag
 
-The `writable` flag specifies whether a property can be written to. When `writable` is `false`, trying to assign value to the property fails silently in non-strict mode, and it throws a `TypeError` in strict mode.
+The `writable` flag specifies whether a property can be written to. When `writable` is `false`, trying to assign a value to the property fails silently in non-strict mode, and it throws a `TypeError` in strict mode.
 
 ```js live
 const obj = {};
@@ -71,7 +71,7 @@ console.log(obj.name); // Output: John Doe (unchanged)
 
 ### `enumerable` flag
 
-The `enumerable` flag specifies whether a property is enumerable. The `enumerable flag` is set to `true`, which means the property is visible in a `for...in` loop.
+The `enumerable` flag specifies whether a property is enumerable. When the `enumerable` flag is set to `true`, the property is visible in a `for...in` loop.
 
 ```js live
 const obj = {};

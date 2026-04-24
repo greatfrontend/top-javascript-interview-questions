@@ -10,7 +10,7 @@ Event delegation provides the following benefits:
 
 - **Improved performance**: Attaching a single event listener is more efficient than attaching multiple event listeners to individual elements, especially for large or dynamic lists. This reduces memory usage and improves overall performance.
 - **Simplified event handling**: With event delegation, you only need to write the event handling logic once in the parent element's event listener. This makes the code more maintainable and easier to update.
-- **Dynamic element support**: Event delegation automatically handles events for dynamically added or removed elements within the parent element. There's no need to manually attach or remove event listeners when the DOM structure changes
+- **Dynamic element support**: Event delegation automatically handles events for dynamically added or removed elements within the parent element. There's no need to manually attach or remove event listeners when the DOM structure changes.
 
 However, do note that:
 
@@ -112,11 +112,11 @@ In this example, a single input event listener is attached to the form element. 
 
 ## Pitfalls
 
-Do note that event delegation come with certain pitfalls:
+Do note that event delegation comes with certain pitfalls:
 
 - **Incorrect target handling:** Ensure correct identification of the event target to avoid unintended actions.
 - **Not all events can be delegated/bubbled**: Not all events can be delegated because they are not bubbled. Non-bubbling events include: `focus`, `blur`, `scroll`, `mouseenter`, `mouseleave`, `resize`, etc.
-- **Event overhead:** While event delegation is generally more efficient, there needs to be complex logic written within the root event listener to identify the triggering element and respond appropriately. This can introduce overhead and can be potentially more complex if not managed properly.
+- **Event overhead:** While event delegation is generally more efficient, complex logic may need to be written within the root event listener to identify the triggering element and respond appropriately. This can introduce overhead and can be potentially more complex if not managed properly.
 
 ## Event delegation in JavaScript frameworks
 

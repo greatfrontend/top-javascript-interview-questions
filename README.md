@@ -330,7 +330,7 @@ The following behavior summarizes the result of accessing the variables before t
 
 <!-- Update here: /questions/what-are-the-differences-between-variables-created-using-let-var-or-const/en-US.mdx -->
 
-In JavaScript, `let`, `var`, and `const` are all keywords used to declare variables, but they differ significantly in terms of scope, initialization rules, whether they can be redeclared or reassigned and the behavior when they are accessed before declaration:
+In JavaScript, `let`, `var`, and `const` are all keywords used to declare variables, but they differ significantly in terms of scope, initialization rules, whether they can be redeclared or reassigned, and the behavior when they are accessed before declaration:
 
 | Behavior | `var` | `let` | `const` |
 | --- | --- | --- | --- |
@@ -392,7 +392,7 @@ The unfortunate truth is that it is extremely hard to explain the event loop wel
 
 - [JavaScript Visualized - Event Loop, Web APIs, (Micro)task Queue](https://www.youtube.com/watch?v=eiC58R16hb8) (2024): Lydia Hallie is a popular educator on JavaScript and this is the best recent video explaining the event loop. There's also an [accompanying blog post](https://www.lydiahallie.com/blog/event-loop) for those who prefer detailed text-based explanations.
 - [In the Loop](https://www.youtube.com/watch?v=cCOL7MC4Pl0) (2018): Jake Archibald previously from the Chrome team provides a visual demonstration of the event loop during JSConf 2018, accounting for different types of tasks.
-- [What the heck is the event loop anyway?](https://www.youtube.com/watch?v=8aGhZQkoFbQ) (2014): Philip Robert's gave this epic talk at JSConf 2014 and it is one of the most viewed JavaScript videos on YouTube.
+- [What the heck is the event loop anyway?](https://www.youtube.com/watch?v=8aGhZQkoFbQ) (2014): Philip Roberts gave this epic talk at JSConf 2014 and it is one of the most viewed JavaScript videos on YouTube.
 
 We recommend watching [Lydia's video](https://www.youtube.com/watch?v=eiC58R16hb8) as it is the most modern and concise explanation standing at only 13 minutes long whereas the other videos are at least 30 minutes long. Her video is sufficient for the purpose of interviews.
 
@@ -416,7 +416,7 @@ Event delegation provides the following benefits:
 
 - **Improved performance**: Attaching a single event listener is more efficient than attaching multiple event listeners to individual elements, especially for large or dynamic lists. This reduces memory usage and improves overall performance.
 - **Simplified event handling**: With event delegation, you only need to write the event handling logic once in the parent element's event listener. This makes the code more maintainable and easier to update.
-- **Dynamic element support**: Event delegation automatically handles events for dynamically added or removed elements within the parent element. There's no need to manually attach or remove event listeners when the DOM structure changes
+- **Dynamic element support**: Event delegation automatically handles events for dynamically added or removed elements within the parent element. There's no need to manually attach or remove event listeners when the DOM structure changes.
 
 However, do note that:
 
@@ -437,7 +437,7 @@ However, do note that:
 
 <!-- Update here: /questions/explain-how-this-works-in-javascript/en-US.mdx -->
 
-There's no simple explanation for `this`; it is one of the most confusing concepts in JavaScript because it's behavior differs from many other programming languages. The one-liner explanation of the `this` keyword is that it is a dynamic reference to the context in which a function is executed.
+There's no simple explanation for `this`; it is one of the most confusing concepts in JavaScript because its behavior differs from many other programming languages. The one-liner explanation of the `this` keyword is that it is a dynamic reference to the context in which a function is executed.
 
 A longer explanation is that `this` follows these rules:
 
@@ -500,10 +500,10 @@ Here's a table summarizing the 3 client storage mechanisms.
 All of these ways (`<script>`, `<script async>`, and `<script defer>`) are used to load and execute JavaScript files in an HTML document, but they differ in how the browser handles loading and execution of the script:
 
 - `<script>` is the default way of including JavaScript. The browser blocks HTML parsing while the script is being downloaded and executed. The browser will not continue rendering the page until the script has finished executing.
-- `<script async>` downloads the script asynchronously, in parallel with parsing the HTML. Executes the script as soon as it is available, potentially interrupting the HTML parsing. `<script async>` do not wait for each other and execute in no particular order.
+- `<script async>` downloads the script asynchronously, in parallel with parsing the HTML. Executes the script as soon as it is available, potentially interrupting the HTML parsing. Multiple `<script async>` tags do not wait for each other and execute in no particular order.
 - `<script defer>` downloads the script asynchronously, in parallel with parsing the HTML. However, the execution of the script is deferred until HTML parsing is complete, in the order they appear in the HTML.
 
-Here's a table summarizing the 3 ways of loading `<script>`s in a HTML document.
+Here's a table summarizing the 3 ways of loading `<script>`s in an HTML document.
 
 | Feature | `<script>` | `<script async>` | `<script defer>` |
 | --- | --- | --- | --- |
@@ -575,7 +575,7 @@ console.log(add.apply(null, [1, 2])); // 3
 
 <!-- Update here: /questions/explain-function-prototype-bind/en-US.mdx -->
 
-`Function.prototype.bind` is a method in JavaScript that allows you to create a new function with a specific `this` value and optional initial arguments. It's primary purpose is to:
+`Function.prototype.bind` is a method in JavaScript that allows you to create a new function with a specific `this` value and optional initial arguments. Its primary purpose is to:
 
 - **Binding `this` value to preserve context**: The primary purpose of `bind` is to bind the `this` value of a function to a specific object. When you call `func.bind(thisArg)`, it creates a new function with the same body as `func`, but with `this` permanently bound to `thisArg`.
 - **Partial application of arguments**: `bind` also allows you to pre-specify arguments for the new function. Any arguments passed to `bind` after `thisArg` will be prepended to the arguments list when the new function is called.
@@ -599,7 +599,7 @@ The `bind` method is particularly useful in scenarios where you need to ensure t
 
 The main advantage of using an arrow function as a method inside a constructor is that the value of `this` gets set at the time of the function creation and can't change after that. When the constructor is used to create a new object, `this` will always refer to that object.
 
-For example, let's say we have a `Person` constructor that takes a first name as an argument has two methods to `console.log()` that name, one as a regular function and one as an arrow function:
+For example, let's say we have a `Person` constructor that takes a first name as an argument and has two methods to `console.log()` that name, one as a regular function and one as an arrow function:
 
 ```js live
 const Person = function (name) {
@@ -736,7 +736,7 @@ Things to note are:
 
 <!-- Update here: /questions/explain-the-differences-on-the-usage-of-foo-between-function-foo-and-var-foo-function/en-US.mdx -->
 
-`function foo() {}` a function declaration while the `var foo = function() {}` is a function expression. The key difference is that function declarations have its body hoisted but the bodies of function expressions are not (they have the same hoisting behavior as `var`-declared variables).
+`function foo() {}` is a function declaration while `var foo = function() {}` is a function expression. The key difference is that function declarations have their bodies hoisted but the bodies of function expressions are not (they have the same hoisting behavior as `var`-declared variables).
 
 If you try to invoke a function expression before it is declared, you will get an `Uncaught TypeError: XXX is not a function` error.
 
@@ -758,7 +758,7 @@ var foo = function () {
 };
 ```
 
-Another key difference is in the scope of the function name. Function expressions can be named by defining it after the `function` and before the parenthesis. However when using named function expressions, the function name is only accessible within the function itself. Trying to access it outside will result in an error or `undefined`.
+Another key difference is in the scope of the function name. Function expressions can be named by defining a name after the `function` keyword and before the parentheses. However, when using named function expressions, the function name is only accessible within the function itself. Trying to access it outside will result in an error or `undefined`.
 
 ```js live
 const myFunc = function namedFunc() {
@@ -769,7 +769,7 @@ myFunc(); // Runs the function and logs the function reference
 console.log(namedFunc); // ReferenceError: namedFunc is not defined
 ```
 
-**Note**: The examples uses `var` due to legacy reasons. Function expressions can be defined using `let` and `const` and the key difference is in the hoisting behavior of those keywords.
+**Note**: The examples use `var` due to legacy reasons. Function expressions can be defined using `let` and `const`, and the key difference is in the hoisting behavior of those keywords.
 
 <!-- Update here: /questions/explain-the-differences-on-the-usage-of-foo-between-function-foo-and-var-foo-function/en-US.mdx -->
 
@@ -785,7 +785,7 @@ console.log(namedFunc); // ReferenceError: namedFunc is not defined
 
 <!-- Update here: /questions/whats-a-typical-use-case-for-anonymous-functions/en-US.mdx -->
 
-Anonymous function in Javascript is a function that does not have any name associated with it. They are typically used as arguments to other functions or assigned to variables.
+An anonymous function in JavaScript is a function that does not have any name associated with it. They are typically used as arguments to other functions or assigned to variables.
 
 ```js live
 const arr = [-1, 0, 5, 6];
@@ -855,7 +855,7 @@ In the book ["You Don't Know JS"](https://github.com/getify/You-Dont-Know-JS/tre
 
 > Closure is when a function is able to remember and access its lexical scope even when that function is executing outside its lexical scope
 
-In simple terms, functions have access to variables that were in their scope at the time of their creation. This is what we call the function's lexical scope. A closure is a function that retains access to these variables even after the outer function has finished executing. This is like the function has a memory of its original environment.
+In simple terms, functions have access to variables that were in their scope at the time of their creation. This is what we call the function's lexical scope. A closure is a function that retains access to these variables even after the outer function has finished executing. It is as if the function has a memory of its original environment.
 
 ```js live
 function outerFunction() {
@@ -956,7 +956,7 @@ class Person {
 }
 ```
 
-For simple constructors, they look pretty similar. The main difference in the constructor comes when using inheritance. If we want to create a `Student` class that subclasses `Person` and add a `studentId` field, this is what we have to do.
+For simple constructors, they look pretty similar. The main difference in the constructor comes when using inheritance. If we want to create a `Student` class that subclasses `Person` and adds a `studentId` field, this is what we have to do.
 
 ```js live
 // ES5 inheritance
@@ -999,7 +999,7 @@ const student2 = new Student2('Alice', 5678);
 console.log(student2.name, student2.studentId); // "Alice" 5678
 ```
 
-It's much more verbose to use inheritance in ES5 and the ES2015 version is easier to understand and remember.
+It's much more verbose to use inheritance in ES5, and the ES2015 version is easier to understand and remember.
 
 **Comparison of ES5 function constructors vs ES2015 classes**
 
@@ -1026,7 +1026,7 @@ It's much more verbose to use inheritance in ES5 and the ES2015 version is easie
 
 <!-- Update here: /questions/describe-event-bubbling/en-US.mdx -->
 
-Event bubbling is a DOM event propagation mechanism where an event (e.g. a click), starts at the target element and bubbles up to the root of the document. This allows ancestor elements to also respond to the event.
+Event bubbling is a DOM event propagation mechanism where an event (e.g. a click) starts at the target element and bubbles up to the root of the document. This allows ancestor elements to also respond to the event.
 
 Event bubbling is essential for event delegation, where a single event handler manages events for multiple child elements, enhancing performance and code simplicity. While convenient, failing to manage event propagation properly can lead to unintended behavior, such as multiple handlers firing for a single event.
 
@@ -1064,7 +1064,7 @@ Event capturing is rarely used as compared to event bubbling, but it can be used
 
 The main difference lies in the bubbling behavior of `mouseenter` and `mouseover` events. `mouseenter` does not bubble while `mouseover` bubbles.
 
-`mouseenter` events do not bubble. The `mouseenter` event is triggered only when the mouse pointer enters the element itself, not its descendants. If a parent element has child elements, and the mouse pointer enters child elements, the `mouseenter` event will not be triggered on the parent element again, it's only triggered once upon entry of parent element without regard for its contents. If both parent and child have `mouseenter` listeners attached and the mouse pointer moves from the parent element to the child element, `mouseenter` will only fire for the child.
+`mouseenter` events do not bubble. The `mouseenter` event is triggered only when the mouse pointer enters the element itself, not its descendants. If a parent element has child elements, and the mouse pointer enters child elements, the `mouseenter` event will not be triggered on the parent element again; it is only triggered once upon entry of the parent element, without regard for its contents. If both parent and child have `mouseenter` listeners attached and the mouse pointer moves from the parent element to the child element, `mouseenter` will only fire for the child.
 
 `mouseover` events bubble up the DOM tree. The `mouseover` event is triggered when the mouse pointer enters the element or one of its descendants. If a parent element has child elements, and the mouse pointer enters child elements, the `mouseover` event will be triggered on the parent element again as well. If the parent element has multiple child elements, this can result in multiple event callbacks fired. If there are child elements, and the mouse pointer moves from the parent element to the child element, `mouseover` will fire for both the parent and the child.
 
@@ -1121,7 +1121,7 @@ Overall, the benefits outweigh the disadvantages and there is not really a need 
 
 <!-- Update here: /questions/explain-the-difference-between-synchronous-and-asynchronous-functions/en-US.mdx -->
 
-Synchronous functions are blocking while asynchronous functions are not. In synchronous functions, statements complete before the next statement is run. As a result, programs containing only synchronous code are evaluated exactly in order of the statements. The execution of the program is paused if one of the statements take a very long time.
+Synchronous functions are blocking while asynchronous functions are not. In synchronous functions, statements complete before the next statement is run. As a result, programs containing only synchronous code are evaluated exactly in order of the statements. The execution of the program is paused if one of the statements takes a very long time.
 
 ```js live
 function sum(a, b) {
@@ -1133,7 +1133,7 @@ const result = sum(2, 3); // The program waits for sum() to complete before assi
 console.log('Result: ', result); // Output: 5
 ```
 
-Asynchronous functions usually accept a callback as a parameter and execution continue on to the next line immediately after the asynchronous function is invoked. The callback is only invoked when the asynchronous operation is complete and the call stack is empty. Heavy duty operations such as loading data from a web server or querying a database should be done asynchronously so that the main thread can continue executing other operations instead of blocking until that long operation to complete (in the case of browsers, the UI will freeze).
+Asynchronous functions usually accept a callback as a parameter and execution continues on to the next line immediately after the asynchronous function is invoked. The callback is only invoked when the asynchronous operation is complete and the call stack is empty. Heavy duty operations such as loading data from a web server or querying a database should be done asynchronously so that the main thread can continue executing other operations instead of blocking until that long operation completes (in the case of browsers, the UI will freeze).
 
 ```js live
 function fetchData(callback) {
@@ -1234,15 +1234,15 @@ AJAX (Asynchronous JavaScript and XML) is a technique in JavaScript that allows 
 **Advantages**
 
 - **Smoother user experience**: Updates happen without full page reloads, like in mail and chat applications.
-- **Lighter server Load**: Only necessary data is fetched via AJAX, reducing server load and improving perceived performance of webpages.
+- **Lighter server load**: Only necessary data is fetched via AJAX, reducing server load and improving perceived performance of webpages.
 - **Maintains client state**: User interactions and any client states are persisted within the page.
 
 **Disadvantages**
 
-- **Reliance on JavaScript**: If disabled, Ajax functionality breaks.
+- **Reliance on JavaScript**: If disabled, AJAX functionality breaks.
 - **Bookmarking issues**: Dynamic content makes bookmarking specific page states difficult.
-- **SEO Challenges**: Search engines may struggle to index dynamic content.
-- **Performance Concerns**: Processing Ajax data on low-end devices can be slow.
+- **SEO challenges**: Search engines may struggle to index dynamic content.
+- **Performance concerns**: Processing AJAX data on low-end devices can be slow.
 
 <!-- Update here: /questions/what-are-the-advantages-and-disadvantages-of-using-ajax/en-US.mdx -->
 
@@ -1260,11 +1260,11 @@ AJAX (Asynchronous JavaScript and XML) is a technique in JavaScript that allows 
 
 `XMLHttpRequest` (XHR) and `fetch()` API are both used for asynchronous HTTP requests in JavaScript (AJAX). `fetch()` offers a cleaner syntax, promise-based approach, and more modern feature set compared to XHR. However, there are some differences:
 
-- `XMLHttpRequest` event callbacks, while `fetch()` utilizes promise chaining.
+- `XMLHttpRequest` uses event callbacks, while `fetch()` utilizes promise chaining.
 - `fetch()` provides more flexibility in headers and request bodies.
-- `fetch()` support cleaner error handling with `catch()`.
-- Handling caching with `XMLHttpRequest` is difficult but caching is supported by `fetch()` by default in the `options.cache` object (`cache` value of second parameter) to `fetch()` or `Request()`.
-- `fetch()` requires an `AbortController` for cancelation, while for `XMLHttpRequest`, it provides `abort()` property.
+- `fetch()` supports cleaner error handling with `catch()`.
+- Handling caching with `XMLHttpRequest` is difficult, but caching is supported by `fetch()` by default via the `cache` value of the second parameter to `fetch()` or `Request()`.
+- `fetch()` requires an `AbortController` for cancelation, while `XMLHttpRequest` provides an `abort()` method.
 - `XMLHttpRequest` has good support for progress tracking, which `fetch()` lacks.
 - `XMLHttpRequest` is only available in the browser and not natively supported in Node.js environments. On the other hand `fetch()` is part of the JavaScript language and is supported on all modern JavaScript runtimes.
 
@@ -1333,7 +1333,7 @@ They can be implemented manually or included through libraries and are often use
 Common use cases include:
 
 - **New JavaScript Methods**: For example, `Array.prototype.includes()`, `Object.assign()`, etc.
-- **New APIs**: Such as `fetch()`, `Promise`, `IntersectionObserver`, etc. Modern browsers support these now but for a long time they have to be polyfilled.
+- **New APIs**: Such as `fetch()`, `Promise`, `IntersectionObserver`, etc. Modern browsers support these now, but for a long time they had to be polyfilled.
 
 Libraries and services for polyfills:
 
@@ -1365,7 +1365,7 @@ Libraries and services for polyfills:
 
 <!-- Update here: /questions/why-is-extending-built-in-javascript-objects-not-a-good-idea/en-US.mdx -->
 
-Extending a built-in/native JavaScript object means adding properties/functions to its `prototype`. While this may seem like a good idea at first, it is dangerous in practice. Imagine your code uses a few libraries that both extend the `Array.prototype` by adding the same `contains` method, the implementations will overwrite each other and your code will have unpredictable behavior if these two methods do not work the same way.
+Extending a built-in/native JavaScript object means adding properties/functions to its `prototype`. While this may seem like a good idea at first, it is dangerous in practice. Imagine your code uses two libraries that both extend the `Array.prototype` by adding the same `contains` method; the implementations will overwrite each other and your code will have unpredictable behavior if these two methods do not work the same way.
 
 The only time you may want to extend a native object is when you want to create a polyfill, essentially providing your own implementation for a method that is part of the JavaScript specification but might not exist in the user's browser due to it being an older browser.
 
@@ -1474,7 +1474,7 @@ In JavaScript, data types can be categorized into `primitive` and `non-primitive
 - **Boolean**: Represents `true` or `false` values.
 - **Undefined**: A variable that has been declared but not assigned a value.
 - **Null**: Represents the intentional absence of any object value.
-- **Symbol**: A unique and immutable value used as object property keys. Read more in our [deep dive on `Symbol`s](https://www.greatfrontend.com/questions/quiz/what-are-symbols-used-for)
+- **Symbol**: A unique and immutable value used as object property keys. Read more in our [deep dive on `Symbol`s](https://www.greatfrontend.com/questions/quiz/what-are-symbols-used-for).
 - **BigInt**: Represents integers with arbitrary precision.
 
 **Non-primitive (Reference) data types**
@@ -1507,7 +1507,7 @@ There are multiple ways to iterate over object properties as well as arrays in J
 
 **`for...in` loop**
 
-The `for...in` loop iterates over all enumerable properties of an object, including inherited enumerable properties. So it is important to have a check if you only want to iterate over object's own properties
+The `for...in` loop iterates over all enumerable properties of an object, including inherited enumerable properties. So it is important to have a check if you only want to iterate over the object's own properties.
 
 ```js live
 const obj = {
@@ -1540,7 +1540,7 @@ Object.keys(obj).forEach((key) => {
 });
 ```
 
-Most common ways to iterate over array are using `for` loop and `Array.prototype.forEach` method.
+The most common ways to iterate over an array are using a `for` loop and the `Array.prototype.forEach` method.
 
 **Using `for` loop**
 
@@ -1572,7 +1572,7 @@ for (const number of numbers) {
 }
 ```
 
-There are also other inbuilt methods available which are suitable for specific scenarios for example:
+There are also other built-in methods available which are suitable for specific scenarios, for example:
 
 - `Array.prototype.filter`: You can use the `filter` method to create a new array containing only the elements that satisfy a certain condition.
 - `Array.prototype.map`: You can use the `map` method to create a new array based on the existing one, transforming each element with a provided function.
@@ -1628,7 +1628,7 @@ console.log(sum(1, 2, 3)); // Output: 6
 
 In JavaScript, iterators and generators are powerful tools for managing sequences of data and controlling the flow of execution in a more flexible way.
 
-**Iterators** are objects that define a sequence and potentially a return value upon its termination. It adheres to a specific interface:
+**Iterators** are objects that define a sequence and potentially a return value upon its termination. They adhere to a specific interface:
 
 - An iterator object must implement a `next()` method.
 - The `next()` method returns an object with two properties:
@@ -1657,7 +1657,7 @@ while (!result.done) {
 }
 ```
 
-**Generators** are a special functions that **can pause execution and resume at a later point**. It uses the `function*` syntax and the `yield` keyword to control the flow of execution. When you call a generator function, it doesn't execute completely like a regular function. Instead, it returns an iterator object. Calling the `next()` method on the returned iterator advances the generator to the next `yield` statement, and the value after `yield` becomes the return value of `next()`.
+**Generators** are special functions that **can pause execution and resume at a later point**. They use the `function*` syntax and the `yield` keyword to control the flow of execution. When you call a generator function, it doesn't execute completely like a regular function. Instead, it returns an iterator object. Calling the `next()` method on the returned iterator advances the generator to the next `yield` statement, and the value after `yield` becomes the return value of `next()`.
 
 ```js live
 function* numberGenerator() {
@@ -1712,7 +1712,7 @@ mutableObject.name = 'Jane';
 console.log(mutableObject); // Output: { name: 'Jane', age: 30 }
 ```
 
-**Immutable objects** cannot be directly modified after creation. Its content cannot be changed without creating an entirely new value.
+**Immutable objects** cannot be directly modified after creation. Their contents cannot be changed without creating an entirely new value.
 
 ```js live
 const immutableObject = Object.freeze({
@@ -1773,9 +1773,9 @@ The primary difference between `Map`/`Set` and `WeakMap`/`WeakSet` in JavaScript
 
 **`Map` vs. `WeakMap`**
 
-`Map`s allows any data type (strings, numbers, objects) as keys. The key-value pairs remain in memory as long as the `Map` object itself is referenced. Thus they are suitable for general-purpose key-value storage where you want to maintain references to both keys and values. Common use cases include storing user data, configuration settings, or relationships between objects.
+`Map`s allow any data type (strings, numbers, objects) as keys. The key-value pairs remain in memory as long as the `Map` object itself is referenced. Thus they are suitable for general-purpose key-value storage where you want to maintain references to both keys and values. Common use cases include storing user data, configuration settings, or relationships between objects.
 
-`WeakMap`s only allows objects as keys. However, these object keys are held weakly. This means the garbage collector can remove them from memory even if the `WeakMap` itself still exists, as long as there are no other references to those objects. `WeakMap`s are ideal for scenarios where you want to associate data with objects without preventing those objects from being garbage collected. This can be useful for things like:
+`WeakMap`s only allow objects as keys. However, these object keys are held weakly. This means the garbage collector can remove them from memory even if the `WeakMap` itself still exists, as long as there are no other references to those objects. `WeakMap`s are ideal for scenarios where you want to associate data with objects without preventing those objects from being garbage collected. This can be useful for things like:
 
 - Caching data based on objects without preventing garbage collection of the objects themselves.
 - Storing private data associated with DOM nodes without affecting their lifecycle.
@@ -1816,7 +1816,7 @@ On the other hand, `WeakSet` only allows objects as elements, and these object e
 
 <!-- Update here: /questions/why-you-might-want-to-create-static-class-members/en-US.mdx -->
 
-Static class members (properties/methods) has a `static` keyword prepended. Such members cannot be directly accessed on instances of the class. Instead, they're accessed on the class itself.
+Static class members (properties/methods) have a `static` keyword prepended. Such members cannot be directly accessed on instances of the class. Instead, they're accessed on the class itself.
 
 ```js live
 class Car {
@@ -1849,7 +1849,7 @@ Static members are useful under the following scenarios:
 
 <!-- Update here: /questions/what-are-symbols-used-for/en-US.mdx -->
 
-`Symbol`s in JavaScript are a new primitive data type introduced in ES6 (ECMAScript 2015). They are unique and immutable identifiers that is primarily for object property keys to avoid name collisions. These values can be created using `Symbol(...)` function, and each `Symbol` value is guaranteed to be unique, even if they have the same key/description. `Symbol` properties are not enumerable in `for...in` loops or `Object.keys()`, making them suitable for creating private/internal object state.
+`Symbol`s in JavaScript are a new primitive data type introduced in ES6 (ECMAScript 2015). They are unique and immutable identifiers that are primarily used for object property keys to avoid name collisions. These values can be created using the `Symbol(...)` function, and each `Symbol` value is guaranteed to be unique, even if they have the same key/description. `Symbol` properties are not enumerable in `for...in` loops or `Object.keys()`, making them suitable for creating private/internal object state.
 
 ```js live
 let sym1 = Symbol();
@@ -1881,7 +1881,7 @@ console.log(obj[sym]); // "value"
 
 <!-- Update here: /questions/what-are-server-sent-events/en-US.mdx -->
 
-[Server-sent events (SSE)](https://html.spec.whatwg.org/multipage/comms.html#the-eventsource-interface) is a standard that allows a web page to receive automatic updates from a server via an HTTP connection. Server-sent events are used with `EventSource` instances that opens a connection with a server and allows client to receive events from the server. Connections created by server-sent events are persistent (similar to the `WebSocket`s), however there are a few differences:
+[Server-sent events (SSE)](https://html.spec.whatwg.org/multipage/comms.html#the-eventsource-interface) is a standard that allows a web page to receive automatic updates from a server via an HTTP connection. Server-sent events are used with `EventSource` instances that open a connection with a server and allow the client to receive events from the server. Connections created by server-sent events are persistent (similar to the `WebSocket`s), however there are a few differences:
 
 | Property | `WebSocket` | `EventSource` |
 | --- | --- | --- |
@@ -1942,7 +1942,7 @@ app.get('/sse-stream', (req, res) => {
 app.listen(3000, () => console.log('Server started on port 3000'));
 ```
 
-In this example, the server sends a "Hello from server" message initially, and then sends the current date every second. The connection is kept alive until the client closes it
+In this example, the server sends a "Hello from server" message initially, and then sends the current date every second. The connection is kept alive until the client closes it.
 
 <!-- Update here: /questions/what-are-server-sent-events/en-US.mdx -->
 
@@ -2074,12 +2074,12 @@ Use cases include:
 
 - **Property access interception**: Intercept and customize property access on an object.
   - **Property assignment validation**: Validate property values before they are set on the target object.
-  - **Logging and debugging**: Create wrappers for logging and debugging interactions with an object
+  - **Logging and debugging**: Create wrappers for logging and debugging interactions with an object.
   - **Creating reactive systems**: Trigger updates in other parts of your application when object properties change (data binding).
   - **Data transformation**: Transforming data being set or retrieved from an object.
-  - **Mocking and stubbing in tests**: Create mock or stub objects for testing purposes, allowing you to isolate dependencies and focus on the unit under test
-- **Function invocation interception**: Used to cache and return the result of frequently accessed methods if they involve network calls or computationally intensive logic, improving performance
-- **Dynamic property creation**: Useful for defining properties on-the-fly with default values and avoid storing redundant data in objects.
+  - **Mocking and stubbing in tests**: Create mock or stub objects for testing purposes, allowing you to isolate dependencies and focus on the unit under test.
+- **Function invocation interception**: Used to cache and return the result of frequently accessed methods if they involve network calls or computationally intensive logic, improving performance.
+- **Dynamic property creation**: Useful for defining properties on the fly with default values and avoiding storing redundant data in objects.
 
 <!-- Update here: /questions/what-are-proxies-in-javascript-used-for/en-US.mdx -->
 
@@ -2131,8 +2131,8 @@ Some of the most commonly used tools and techniques for debugging JavaScript:
 
 Workers in JavaScript are background threads that allow you to run scripts in parallel with the main execution thread, without blocking or interfering with the user interface. Their key features include:
 
-- **Parallel processing**: Workers run in a separate thread from the main thread, allowing your web page to remain responsive to user interactions while the worker performs its tasks. It's useful for moving CPU-intensive work off the main thread and be free from JavaScript's single-threaded nature.
-- **Communication**: Uses `postMessage()` and `onmessage`/ `'message'` event for messaging.
+- **Parallel processing**: Workers run in a separate thread from the main thread, allowing your web page to remain responsive to user interactions while the worker performs its tasks. It's useful for moving CPU-intensive work off the main thread and freeing you from JavaScript's single-threaded nature.
+- **Communication**: Uses `postMessage()` and `onmessage`/`'message'` event for messaging.
 - **Access to web APIs**: Workers have access to various Web APIs, including `fetch()`, IndexedDB, and Web Storage, allowing them to perform tasks like data fetching and persisting data independently.
 - **No DOM access**: Workers cannot directly manipulate the DOM, thus cannot interact with the UI, ensuring they don't accidentally interfere with the main thread's operation.
 
@@ -2145,7 +2145,7 @@ There are three main types of workers in JavaScript:
 - **Service workers**
   - Act as network proxies, handling requests between the app and network.
   - Enable offline functionality, caching, and push notifications.
-  - Runs independently of the web page, even when it's closed.
+  - Run independently of the web page, even when it's closed.
 - **Shared workers**
   - Can be shared by multiple scripts running in different windows or frames, as long as they're in the same domain.
   - Scripts communicate with the shared worker by sending and receiving messages.
@@ -2180,7 +2180,7 @@ This algorithm effectively identifies and removes objects that have become unrea
 
 Leveraged by modern JavaScript engines, objects are divided into different generations based on their age and usage patterns. Frequently accessed objects are moved to younger generations, while less frequently used objects are promoted to older generations. This optimization reduces the overhead of garbage collection by focusing on the younger generations, where most objects are short-lived.
 
-Different JavaScript engines (differs according to browsers) implement different garbage collection algorithms and there's no standard way of doing garbage collection.
+Different JavaScript engines (which differ across browsers) implement different garbage collection algorithms and there's no standard way of doing garbage collection.
 
 <!-- Update here: /questions/how-does-javascript-garbage-collection-work/en-US.mdx -->
 
@@ -2212,7 +2212,7 @@ In JavaScript, data types can be categorized into `primitive` and `non-primitive
 - **Boolean**: Represents `true` or `false` values.
 - **Undefined**: A variable that has been declared but not assigned a value.
 - **Null**: Represents the intentional absence of any object value.
-- **Symbol**: A unique and immutable value used as object property keys. Read more in our [deep dive on `Symbol`s](https://www.greatfrontend.com/questions/quiz/what-are-symbols-used-for)
+- **Symbol**: A unique and immutable value used as object property keys. Read more in our [deep dive on `Symbol`s](https://www.greatfrontend.com/questions/quiz/what-are-symbols-used-for).
 - **BigInt**: Represents integers with arbitrary precision.
 
 **Non-primitive (Reference) data types**
@@ -2271,7 +2271,7 @@ To check the data type of a variable in JavaScript, you can use the `typeof` ope
 
 <!-- Update here: /questions/what-are-the-differences-between-variables-created-using-let-var-or-const/en-US.mdx -->
 
-In JavaScript, `let`, `var`, and `const` are all keywords used to declare variables, but they differ significantly in terms of scope, initialization rules, whether they can be redeclared or reassigned and the behavior when they are accessed before declaration:
+In JavaScript, `let`, `var`, and `const` are all keywords used to declare variables, but they differ significantly in terms of scope, initialization rules, whether they can be redeclared or reassigned, and the behavior when they are accessed before declaration:
 
 | Behavior | `var` | `let` | `const` |
 | --- | --- | --- | --- |
@@ -2406,7 +2406,7 @@ console.log(combinedObj); // { a: 1, b: 2, c: 3, d: 4 }
 
 <!-- Update here: /questions/what-are-symbols-used-for/en-US.mdx -->
 
-`Symbol`s in JavaScript are a new primitive data type introduced in ES6 (ECMAScript 2015). They are unique and immutable identifiers that is primarily for object property keys to avoid name collisions. These values can be created using `Symbol(...)` function, and each `Symbol` value is guaranteed to be unique, even if they have the same key/description. `Symbol` properties are not enumerable in `for...in` loops or `Object.keys()`, making them suitable for creating private/internal object state.
+`Symbol`s in JavaScript are a new primitive data type introduced in ES6 (ECMAScript 2015). They are unique and immutable identifiers that are primarily used for object property keys to avoid name collisions. These values can be created using the `Symbol(...)` function, and each `Symbol` value is guaranteed to be unique, even if they have the same key/description. `Symbol` properties are not enumerable in `for...in` loops or `Object.keys()`, making them suitable for creating private/internal object state.
 
 ```js live
 let sym1 = Symbol();
@@ -2468,12 +2468,12 @@ Use cases include:
 
 - **Property access interception**: Intercept and customize property access on an object.
   - **Property assignment validation**: Validate property values before they are set on the target object.
-  - **Logging and debugging**: Create wrappers for logging and debugging interactions with an object
+  - **Logging and debugging**: Create wrappers for logging and debugging interactions with an object.
   - **Creating reactive systems**: Trigger updates in other parts of your application when object properties change (data binding).
   - **Data transformation**: Transforming data being set or retrieved from an object.
-  - **Mocking and stubbing in tests**: Create mock or stub objects for testing purposes, allowing you to isolate dependencies and focus on the unit under test
-- **Function invocation interception**: Used to cache and return the result of frequently accessed methods if they involve network calls or computationally intensive logic, improving performance
-- **Dynamic property creation**: Useful for defining properties on-the-fly with default values and avoid storing redundant data in objects.
+  - **Mocking and stubbing in tests**: Create mock or stub objects for testing purposes, allowing you to isolate dependencies and focus on the unit under test.
+- **Function invocation interception**: Used to cache and return the result of frequently accessed methods if they involve network calls or computationally intensive logic, improving performance.
+- **Dynamic property creation**: Useful for defining properties on the fly with default values and avoiding storing redundant data in objects.
 
 <!-- Update here: /questions/what-are-proxies-in-javascript-used-for/en-US.mdx -->
 
@@ -2635,7 +2635,7 @@ There are multiple ways to iterate over object properties as well as arrays in J
 
 **`for...in` loop**
 
-The `for...in` loop iterates over all enumerable properties of an object, including inherited enumerable properties. So it is important to have a check if you only want to iterate over object's own properties
+The `for...in` loop iterates over all enumerable properties of an object, including inherited enumerable properties. So it is important to have a check if you only want to iterate over the object's own properties.
 
 ```js live
 const obj = {
@@ -2668,7 +2668,7 @@ Object.keys(obj).forEach((key) => {
 });
 ```
 
-Most common ways to iterate over array are using `for` loop and `Array.prototype.forEach` method.
+The most common ways to iterate over an array are using a `for` loop and the `Array.prototype.forEach` method.
 
 **Using `for` loop**
 
@@ -2700,7 +2700,7 @@ for (const number of numbers) {
 }
 ```
 
-There are also other inbuilt methods available which are suitable for specific scenarios for example:
+There are also other built-in methods available which are suitable for specific scenarios, for example:
 
 - `Array.prototype.filter`: You can use the `filter` method to create a new array containing only the elements that satisfy a certain condition.
 - `Array.prototype.map`: You can use the `map` method to create a new array based on the existing one, transforming each element with a provided function.
@@ -2903,7 +2903,7 @@ console.log(sum(1, 2, 3)); // Output: 6
 
 In JavaScript, iterators and generators are powerful tools for managing sequences of data and controlling the flow of execution in a more flexible way.
 
-**Iterators** are objects that define a sequence and potentially a return value upon its termination. It adheres to a specific interface:
+**Iterators** are objects that define a sequence and potentially a return value upon its termination. They adhere to a specific interface:
 
 - An iterator object must implement a `next()` method.
 - The `next()` method returns an object with two properties:
@@ -2932,7 +2932,7 @@ while (!result.done) {
 }
 ```
 
-**Generators** are a special functions that **can pause execution and resume at a later point**. It uses the `function*` syntax and the `yield` keyword to control the flow of execution. When you call a generator function, it doesn't execute completely like a regular function. Instead, it returns an iterator object. Calling the `next()` method on the returned iterator advances the generator to the next `yield` statement, and the value after `yield` becomes the return value of `next()`.
+**Generators** are special functions that **can pause execution and resume at a later point**. They use the `function*` syntax and the `yield` keyword to control the flow of execution. When you call a generator function, it doesn't execute completely like a regular function. Instead, it returns an iterator object. Calling the `next()` method on the returned iterator advances the generator to the next `yield` statement, and the value after `yield` becomes the return value of `next()`.
 
 ```js live
 function* numberGenerator() {
@@ -2970,7 +2970,7 @@ Generators are powerful for creating iterators on-demand, especially for infinit
 
 <!-- Update here: /questions/explain-the-differences-on-the-usage-of-foo-between-function-foo-and-var-foo-function/en-US.mdx -->
 
-`function foo() {}` a function declaration while the `var foo = function() {}` is a function expression. The key difference is that function declarations have its body hoisted but the bodies of function expressions are not (they have the same hoisting behavior as `var`-declared variables).
+`function foo() {}` is a function declaration while `var foo = function() {}` is a function expression. The key difference is that function declarations have their bodies hoisted but the bodies of function expressions are not (they have the same hoisting behavior as `var`-declared variables).
 
 If you try to invoke a function expression before it is declared, you will get an `Uncaught TypeError: XXX is not a function` error.
 
@@ -2992,7 +2992,7 @@ var foo = function () {
 };
 ```
 
-Another key difference is in the scope of the function name. Function expressions can be named by defining it after the `function` and before the parenthesis. However when using named function expressions, the function name is only accessible within the function itself. Trying to access it outside will result in an error or `undefined`.
+Another key difference is in the scope of the function name. Function expressions can be named by defining a name after the `function` keyword and before the parentheses. However, when using named function expressions, the function name is only accessible within the function itself. Trying to access it outside will result in an error or `undefined`.
 
 ```js live
 const myFunc = function namedFunc() {
@@ -3003,7 +3003,7 @@ myFunc(); // Runs the function and logs the function reference
 console.log(namedFunc); // ReferenceError: namedFunc is not defined
 ```
 
-**Note**: The examples uses `var` due to legacy reasons. Function expressions can be defined using `let` and `const` and the key difference is in the hoisting behavior of those keywords.
+**Note**: The examples use `var` due to legacy reasons. Function expressions can be defined using `let` and `const`, and the key difference is in the hoisting behavior of those keywords.
 
 <!-- Update here: /questions/explain-the-differences-on-the-usage-of-foo-between-function-foo-and-var-foo-function/en-US.mdx -->
 
@@ -3202,7 +3202,7 @@ fetchData(handleData);
 
 <!-- Update here: /questions/whats-a-typical-use-case-for-anonymous-functions/en-US.mdx -->
 
-Anonymous function in Javascript is a function that does not have any name associated with it. They are typically used as arguments to other functions or assigned to variables.
+An anonymous function in JavaScript is a function that does not have any name associated with it. They are typically used as arguments to other functions or assigned to variables.
 
 ```js live
 const arr = [-1, 0, 5, 6];
@@ -3527,7 +3527,7 @@ mutableObject.name = 'Jane';
 console.log(mutableObject); // Output: { name: 'Jane', age: 30 }
 ```
 
-**Immutable objects** cannot be directly modified after creation. Its content cannot be changed without creating an entirely new value.
+**Immutable objects** cannot be directly modified after creation. Their contents cannot be changed without creating an entirely new value.
 
 ```js live
 const immutableObject = Object.freeze({
@@ -3766,7 +3766,7 @@ The unfortunate truth is that it is extremely hard to explain the event loop wel
 
 - [JavaScript Visualized - Event Loop, Web APIs, (Micro)task Queue](https://www.youtube.com/watch?v=eiC58R16hb8) (2024): Lydia Hallie is a popular educator on JavaScript and this is the best recent video explaining the event loop. There's also an [accompanying blog post](https://www.lydiahallie.com/blog/event-loop) for those who prefer detailed text-based explanations.
 - [In the Loop](https://www.youtube.com/watch?v=cCOL7MC4Pl0) (2018): Jake Archibald previously from the Chrome team provides a visual demonstration of the event loop during JSConf 2018, accounting for different types of tasks.
-- [What the heck is the event loop anyway?](https://www.youtube.com/watch?v=8aGhZQkoFbQ) (2014): Philip Robert's gave this epic talk at JSConf 2014 and it is one of the most viewed JavaScript videos on YouTube.
+- [What the heck is the event loop anyway?](https://www.youtube.com/watch?v=8aGhZQkoFbQ) (2014): Philip Roberts gave this epic talk at JSConf 2014 and it is one of the most viewed JavaScript videos on YouTube.
 
 We recommend watching [Lydia's video](https://www.youtube.com/watch?v=eiC58R16hb8) as it is the most modern and concise explanation standing at only 13 minutes long whereas the other videos are at least 30 minutes long. Her video is sufficient for the purpose of interviews.
 
@@ -3782,7 +3782,7 @@ We recommend watching [Lydia's video](https://www.youtube.com/watch?v=eiC58R16hb
 
 <!-- Update here: /questions/explain-the-difference-between-synchronous-and-asynchronous-functions/en-US.mdx -->
 
-Synchronous functions are blocking while asynchronous functions are not. In synchronous functions, statements complete before the next statement is run. As a result, programs containing only synchronous code are evaluated exactly in order of the statements. The execution of the program is paused if one of the statements take a very long time.
+Synchronous functions are blocking while asynchronous functions are not. In synchronous functions, statements complete before the next statement is run. As a result, programs containing only synchronous code are evaluated exactly in order of the statements. The execution of the program is paused if one of the statements takes a very long time.
 
 ```js live
 function sum(a, b) {
@@ -3794,7 +3794,7 @@ const result = sum(2, 3); // The program waits for sum() to complete before assi
 console.log('Result: ', result); // Output: 5
 ```
 
-Asynchronous functions usually accept a callback as a parameter and execution continue on to the next line immediately after the asynchronous function is invoked. The callback is only invoked when the asynchronous operation is complete and the call stack is empty. Heavy duty operations such as loading data from a web server or querying a database should be done asynchronously so that the main thread can continue executing other operations instead of blocking until that long operation to complete (in the case of browsers, the UI will freeze).
+Asynchronous functions usually accept a callback as a parameter and execution continues on to the next line immediately after the asynchronous function is invoked. The callback is only invoked when the asynchronous operation is complete and the call stack is empty. Heavy duty operations such as loading data from a web server or querying a database should be done asynchronously so that the main thread can continue executing other operations instead of blocking until that long operation completes (in the case of browsers, the UI will freeze).
 
 ```js live
 function fetchData(callback) {
@@ -4272,7 +4272,7 @@ class Person {
 }
 ```
 
-For simple constructors, they look pretty similar. The main difference in the constructor comes when using inheritance. If we want to create a `Student` class that subclasses `Person` and add a `studentId` field, this is what we have to do.
+For simple constructors, they look pretty similar. The main difference in the constructor comes when using inheritance. If we want to create a `Student` class that subclasses `Person` and adds a `studentId` field, this is what we have to do.
 
 ```js live
 // ES5 inheritance
@@ -4315,7 +4315,7 @@ const student2 = new Student2('Alice', 5678);
 console.log(student2.name, student2.studentId); // "Alice" 5678
 ```
 
-It's much more verbose to use inheritance in ES5 and the ES2015 version is easier to understand and remember.
+It's much more verbose to use inheritance in ES5, and the ES2015 version is easier to understand and remember.
 
 **Comparison of ES5 function constructors vs ES2015 classes**
 
@@ -4342,7 +4342,7 @@ It's much more verbose to use inheritance in ES5 and the ES2015 version is easie
 
 The main advantage of using an arrow function as a method inside a constructor is that the value of `this` gets set at the time of the function creation and can't change after that. When the constructor is used to create a new object, `this` will always refer to that object.
 
-For example, let's say we have a `Person` constructor that takes a first name as an argument has two methods to `console.log()` that name, one as a regular function and one as an arrow function:
+For example, let's say we have a `Person` constructor that takes a first name as an argument and has two methods to `console.log()` that name, one as a regular function and one as an arrow function:
 
 ```js live
 const Person = function (name) {
@@ -4392,7 +4392,7 @@ The main takeaway here is that `this` can be changed for a normal function, but 
 
 <!-- Update here: /questions/why-you-might-want-to-create-static-class-members/en-US.mdx -->
 
-Static class members (properties/methods) has a `static` keyword prepended. Such members cannot be directly accessed on instances of the class. Instead, they're accessed on the class itself.
+Static class members (properties/methods) have a `static` keyword prepended. Such members cannot be directly accessed on instances of the class. Instead, they're accessed on the class itself.
 
 ```js live
 class Car {
@@ -4427,7 +4427,7 @@ In the book ["You Don't Know JS"](https://github.com/getify/You-Dont-Know-JS/tre
 
 > Closure is when a function is able to remember and access its lexical scope even when that function is executing outside its lexical scope
 
-In simple terms, functions have access to variables that were in their scope at the time of their creation. This is what we call the function's lexical scope. A closure is a function that retains access to these variables even after the outer function has finished executing. This is like the function has a memory of its original environment.
+In simple terms, functions have access to variables that were in their scope at the time of their creation. This is what we call the function's lexical scope. A closure is a function that retains access to these variables even after the outer function has finished executing. It is as if the function has a memory of its original environment.
 
 ```js live
 function outerFunction() {
@@ -4619,7 +4619,7 @@ myFunction();
 
 <!-- Update here: /questions/explain-how-this-works-in-javascript/en-US.mdx -->
 
-There's no simple explanation for `this`; it is one of the most confusing concepts in JavaScript because it's behavior differs from many other programming languages. The one-liner explanation of the `this` keyword is that it is a dynamic reference to the context in which a function is executed.
+There's no simple explanation for `this`; it is one of the most confusing concepts in JavaScript because its behavior differs from many other programming languages. The one-liner explanation of the `this` keyword is that it is a dynamic reference to the context in which a function is executed.
 
 A longer explanation is that `this` follows these rules:
 
@@ -4645,7 +4645,7 @@ For an in-depth explanation, do check out [Arnav Aggrawal's article on Medium](h
 
 <!-- Update here: /questions/explain-function-prototype-bind/en-US.mdx -->
 
-`Function.prototype.bind` is a method in JavaScript that allows you to create a new function with a specific `this` value and optional initial arguments. It's primary purpose is to:
+`Function.prototype.bind` is a method in JavaScript that allows you to create a new function with a specific `this` value and optional initial arguments. Its primary purpose is to:
 
 - **Binding `this` value to preserve context**: The primary purpose of `bind` is to bind the `this` value of a function to a specific object. When you call `func.bind(thisArg)`, it creates a new function with the same body as `func`, but with `this` permanently bound to `thisArg`.
 - **Partial application of arguments**: `bind` also allows you to pre-specify arguments for the new function. Any arguments passed to `bind` after `thisArg` will be prepended to the arguments list when the new function is called.
@@ -4826,7 +4826,7 @@ In a browser, events go through three phases: capturing, target, and bubbling. D
 
 <!-- Update here: /questions/describe-event-bubbling/en-US.mdx -->
 
-Event bubbling is a DOM event propagation mechanism where an event (e.g. a click), starts at the target element and bubbles up to the root of the document. This allows ancestor elements to also respond to the event.
+Event bubbling is a DOM event propagation mechanism where an event (e.g. a click) starts at the target element and bubbles up to the root of the document. This allows ancestor elements to also respond to the event.
 
 Event bubbling is essential for event delegation, where a single event handler manages events for multiple child elements, enhancing performance and code simplicity. While convenient, failing to manage event propagation properly can lead to unintended behavior, such as multiple handlers firing for a single event.
 
@@ -4864,7 +4864,7 @@ Event delegation provides the following benefits:
 
 - **Improved performance**: Attaching a single event listener is more efficient than attaching multiple event listeners to individual elements, especially for large or dynamic lists. This reduces memory usage and improves overall performance.
 - **Simplified event handling**: With event delegation, you only need to write the event handling logic once in the parent element's event listener. This makes the code more maintainable and easier to update.
-- **Dynamic element support**: Event delegation automatically handles events for dynamically added or removed elements within the parent element. There's no need to manually attach or remove event listeners when the DOM structure changes
+- **Dynamic element support**: Event delegation automatically handles events for dynamically added or removed elements within the parent element. There's no need to manually attach or remove event listeners when the DOM structure changes.
 
 However, do note that:
 
@@ -4921,7 +4921,7 @@ This method stops the default action associated with the event from occurring.
 
 The main difference lies in the bubbling behavior of `mouseenter` and `mouseover` events. `mouseenter` does not bubble while `mouseover` bubbles.
 
-`mouseenter` events do not bubble. The `mouseenter` event is triggered only when the mouse pointer enters the element itself, not its descendants. If a parent element has child elements, and the mouse pointer enters child elements, the `mouseenter` event will not be triggered on the parent element again, it's only triggered once upon entry of parent element without regard for its contents. If both parent and child have `mouseenter` listeners attached and the mouse pointer moves from the parent element to the child element, `mouseenter` will only fire for the child.
+`mouseenter` events do not bubble. The `mouseenter` event is triggered only when the mouse pointer enters the element itself, not its descendants. If a parent element has child elements, and the mouse pointer enters child elements, the `mouseenter` event will not be triggered on the parent element again; it is only triggered once upon entry of the parent element, without regard for its contents. If both parent and child have `mouseenter` listeners attached and the mouse pointer moves from the parent element to the child element, `mouseenter` will only fire for the child.
 
 `mouseover` events bubble up the DOM tree. The `mouseover` event is triggered when the mouse pointer enters the element or one of its descendants. If a parent element has child elements, and the mouse pointer enters child elements, the `mouseover` event will be triggered on the parent element again as well. If the parent element has multiple child elements, this can result in multiple event callbacks fired. If there are child elements, and the mouse pointer moves from the parent element to the child element, `mouseover` will fire for both the parent and the child.
 
@@ -4993,10 +4993,10 @@ document.getElementById('myDiv').classList.toggle('toggleClass');
 All of these ways (`<script>`, `<script async>`, and `<script defer>`) are used to load and execute JavaScript files in an HTML document, but they differ in how the browser handles loading and execution of the script:
 
 - `<script>` is the default way of including JavaScript. The browser blocks HTML parsing while the script is being downloaded and executed. The browser will not continue rendering the page until the script has finished executing.
-- `<script async>` downloads the script asynchronously, in parallel with parsing the HTML. Executes the script as soon as it is available, potentially interrupting the HTML parsing. `<script async>` do not wait for each other and execute in no particular order.
+- `<script async>` downloads the script asynchronously, in parallel with parsing the HTML. Executes the script as soon as it is available, potentially interrupting the HTML parsing. Multiple `<script async>` tags do not wait for each other and execute in no particular order.
 - `<script defer>` downloads the script asynchronously, in parallel with parsing the HTML. However, the execution of the script is deferred until HTML parsing is complete, in the order they appear in the HTML.
 
-Here's a table summarizing the 3 ways of loading `<script>`s in a HTML document.
+Here's a table summarizing the 3 ways of loading `<script>`s in an HTML document.
 
 | Feature | `<script>` | `<script async>` | `<script defer>` |
 | --- | --- | --- | --- |
@@ -5164,15 +5164,15 @@ AJAX (Asynchronous JavaScript and XML) is a technique in JavaScript that allows 
 **Advantages**
 
 - **Smoother user experience**: Updates happen without full page reloads, like in mail and chat applications.
-- **Lighter server Load**: Only necessary data is fetched via AJAX, reducing server load and improving perceived performance of webpages.
+- **Lighter server load**: Only necessary data is fetched via AJAX, reducing server load and improving perceived performance of webpages.
 - **Maintains client state**: User interactions and any client states are persisted within the page.
 
 **Disadvantages**
 
-- **Reliance on JavaScript**: If disabled, Ajax functionality breaks.
+- **Reliance on JavaScript**: If disabled, AJAX functionality breaks.
 - **Bookmarking issues**: Dynamic content makes bookmarking specific page states difficult.
-- **SEO Challenges**: Search engines may struggle to index dynamic content.
-- **Performance Concerns**: Processing Ajax data on low-end devices can be slow.
+- **SEO challenges**: Search engines may struggle to index dynamic content.
+- **Performance concerns**: Processing AJAX data on low-end devices can be slow.
 
 <!-- Update here: /questions/what-are-the-advantages-and-disadvantages-of-using-ajax/en-US.mdx -->
 
@@ -5188,11 +5188,11 @@ AJAX (Asynchronous JavaScript and XML) is a technique in JavaScript that allows 
 
 `XMLHttpRequest` (XHR) and `fetch()` API are both used for asynchronous HTTP requests in JavaScript (AJAX). `fetch()` offers a cleaner syntax, promise-based approach, and more modern feature set compared to XHR. However, there are some differences:
 
-- `XMLHttpRequest` event callbacks, while `fetch()` utilizes promise chaining.
+- `XMLHttpRequest` uses event callbacks, while `fetch()` utilizes promise chaining.
 - `fetch()` provides more flexibility in headers and request bodies.
-- `fetch()` support cleaner error handling with `catch()`.
-- Handling caching with `XMLHttpRequest` is difficult but caching is supported by `fetch()` by default in the `options.cache` object (`cache` value of second parameter) to `fetch()` or `Request()`.
-- `fetch()` requires an `AbortController` for cancelation, while for `XMLHttpRequest`, it provides `abort()` property.
+- `fetch()` supports cleaner error handling with `catch()`.
+- Handling caching with `XMLHttpRequest` is difficult, but caching is supported by `fetch()` by default via the `cache` value of the second parameter to `fetch()` or `Request()`.
+- `fetch()` requires an `AbortController` for cancelation, while `XMLHttpRequest` provides an `abort()` method.
 - `XMLHttpRequest` has good support for progress tracking, which `fetch()` lacks.
 - `XMLHttpRequest` is only available in the browser and not natively supported in Node.js environments. On the other hand `fetch()` is part of the JavaScript language and is supported on all modern JavaScript runtimes.
 
@@ -5250,7 +5250,7 @@ Aborting web requests is useful for:
 
 <!-- Update here: /questions/explain-how-jsonp-works-and-how-its-not-really-ajax/en-US.mdx -->
 
-JSONP (JSON with Padding) is a technique used to overcome the same-origin policy in web browsers, allowing you to request data from a server in a different domain. It works by dynamically creating a `<script>` tag and setting its `src` attribute to the URL of the data source. The server responds with a script that calls a predefined callback function with the data as its argument. Unlike Ajax, JSONP does not use the XMLHttpRequest object and is limited to GET requests.
+JSONP (JSON with Padding) is a technique used to overcome the same-origin policy in web browsers, allowing you to request data from a server on a different domain. It works by dynamically creating a `<script>` tag and setting its `src` attribute to the URL of the data source. The server responds with a script that calls a predefined callback function with the data as its argument. Unlike Ajax, JSONP does not use the XMLHttpRequest object and is limited to GET requests.
 
 <!-- Update here: /questions/explain-how-jsonp-works-and-how-its-not-really-ajax/en-US.mdx -->
 
@@ -5266,8 +5266,8 @@ JSONP (JSON with Padding) is a technique used to overcome the same-origin policy
 
 Workers in JavaScript are background threads that allow you to run scripts in parallel with the main execution thread, without blocking or interfering with the user interface. Their key features include:
 
-- **Parallel processing**: Workers run in a separate thread from the main thread, allowing your web page to remain responsive to user interactions while the worker performs its tasks. It's useful for moving CPU-intensive work off the main thread and be free from JavaScript's single-threaded nature.
-- **Communication**: Uses `postMessage()` and `onmessage`/ `'message'` event for messaging.
+- **Parallel processing**: Workers run in a separate thread from the main thread, allowing your web page to remain responsive to user interactions while the worker performs its tasks. It's useful for moving CPU-intensive work off the main thread and freeing you from JavaScript's single-threaded nature.
+- **Communication**: Uses `postMessage()` and `onmessage`/`'message'` event for messaging.
 - **Access to web APIs**: Workers have access to various Web APIs, including `fetch()`, IndexedDB, and Web Storage, allowing them to perform tasks like data fetching and persisting data independently.
 - **No DOM access**: Workers cannot directly manipulate the DOM, thus cannot interact with the UI, ensuring they don't accidentally interfere with the main thread's operation.
 
@@ -5280,7 +5280,7 @@ There are three main types of workers in JavaScript:
 - **Service workers**
   - Act as network proxies, handling requests between the app and network.
   - Enable offline functionality, caching, and push notifications.
-  - Runs independently of the web page, even when it's closed.
+  - Run independently of the web page, even when it's closed.
 - **Shared workers**
   - Can be shared by multiple scripts running in different windows or frames, as long as they're in the same domain.
   - Scripts communicate with the shared worker by sending and receiving messages.
@@ -5336,7 +5336,7 @@ They can be implemented manually or included through libraries and are often use
 Common use cases include:
 
 - **New JavaScript Methods**: For example, `Array.prototype.includes()`, `Object.assign()`, etc.
-- **New APIs**: Such as `fetch()`, `Promise`, `IntersectionObserver`, etc. Modern browsers support these now but for a long time they have to be polyfilled.
+- **New APIs**: Such as `fetch()`, `Promise`, `IntersectionObserver`, etc. Modern browsers support these now, but for a long time they had to be polyfilled.
 
 Libraries and services for polyfills:
 
@@ -5537,7 +5537,7 @@ console.log(value);
 
 <!-- Update here: /questions/what-are-server-sent-events/en-US.mdx -->
 
-[Server-sent events (SSE)](https://html.spec.whatwg.org/multipage/comms.html#the-eventsource-interface) is a standard that allows a web page to receive automatic updates from a server via an HTTP connection. Server-sent events are used with `EventSource` instances that opens a connection with a server and allows client to receive events from the server. Connections created by server-sent events are persistent (similar to the `WebSocket`s), however there are a few differences:
+[Server-sent events (SSE)](https://html.spec.whatwg.org/multipage/comms.html#the-eventsource-interface) is a standard that allows a web page to receive automatic updates from a server via an HTTP connection. Server-sent events are used with `EventSource` instances that open a connection with a server and allow the client to receive events from the server. Connections created by server-sent events are persistent (similar to the `WebSocket`s), however there are a few differences:
 
 | Property | `WebSocket` | `EventSource` |
 | --- | --- | --- |
@@ -5598,7 +5598,7 @@ app.get('/sse-stream', (req, res) => {
 app.listen(3000, () => console.log('Server started on port 3000'));
 ```
 
-In this example, the server sends a "Hello from server" message initially, and then sends the current date every second. The connection is kept alive until the client closes it
+In this example, the server sends a "Hello from server" message initially, and then sends the current date every second. The connection is kept alive until the client closes it.
 
 <!-- Update here: /questions/what-are-server-sent-events/en-US.mdx -->
 
@@ -6063,9 +6063,9 @@ The primary difference between `Map`/`Set` and `WeakMap`/`WeakSet` in JavaScript
 
 **`Map` vs. `WeakMap`**
 
-`Map`s allows any data type (strings, numbers, objects) as keys. The key-value pairs remain in memory as long as the `Map` object itself is referenced. Thus they are suitable for general-purpose key-value storage where you want to maintain references to both keys and values. Common use cases include storing user data, configuration settings, or relationships between objects.
+`Map`s allow any data type (strings, numbers, objects) as keys. The key-value pairs remain in memory as long as the `Map` object itself is referenced. Thus they are suitable for general-purpose key-value storage where you want to maintain references to both keys and values. Common use cases include storing user data, configuration settings, or relationships between objects.
 
-`WeakMap`s only allows objects as keys. However, these object keys are held weakly. This means the garbage collector can remove them from memory even if the `WeakMap` itself still exists, as long as there are no other references to those objects. `WeakMap`s are ideal for scenarios where you want to associate data with objects without preventing those objects from being garbage collected. This can be useful for things like:
+`WeakMap`s only allow objects as keys. However, these object keys are held weakly. This means the garbage collector can remove them from memory even if the `WeakMap` itself still exists, as long as there are no other references to those objects. `WeakMap`s are ideal for scenarios where you want to associate data with objects without preventing those objects from being garbage collected. This can be useful for things like:
 
 - Caching data based on objects without preventing garbage collection of the objects themselves.
 - Storing private data associated with DOM nodes without affecting their lifecycle.
@@ -6760,7 +6760,7 @@ context.executeStrategy('someData'); // Output: Algorithm A was run on someData
 
 <!-- Update here: /questions/what-is-the-command-pattern-and-how-is-it-used/en-US.mdx -->
 
-The Command pattern is a behavioral design pattern that turns a request into a stand-alone object containing all information about the request. This transformation allows for parameterization of methods with different requests, queuing of requests, and logging of the requests. It also supports undoable operations. In JavaScript, it can be implemented by creating command objects with `execute` and `undo` methods.
+The Command pattern is a behavioral design pattern that turns a request into a stand-alone object containing all information about the request. This transformation allows for parameterization of methods with different requests, queuing of requests, and logging of requests. It also supports undoable operations. In JavaScript, it can be implemented by creating command objects with `execute` and `undo` methods.
 
 ```js live
 class Command {
@@ -6808,7 +6808,7 @@ lightOnCommand.undo(); // Light is off
 
 <!-- Update here: /questions/why-is-extending-built-in-javascript-objects-not-a-good-idea/en-US.mdx -->
 
-Extending a built-in/native JavaScript object means adding properties/functions to its `prototype`. While this may seem like a good idea at first, it is dangerous in practice. Imagine your code uses a few libraries that both extend the `Array.prototype` by adding the same `contains` method, the implementations will overwrite each other and your code will have unpredictable behavior if these two methods do not work the same way.
+Extending a built-in/native JavaScript object means adding properties/functions to its `prototype`. While this may seem like a good idea at first, it is dangerous in practice. Imagine your code uses two libraries that both extend the `Array.prototype` by adding the same `contains` method; the implementations will overwrite each other and your code will have unpredictable behavior if these two methods do not work the same way.
 
 The only time you may want to extend a native object is when you want to create a polyfill, essentially providing your own implementation for a method that is part of the JavaScript specification but might not exist in the user's browser due to it being an older browser.
 
@@ -7076,7 +7076,7 @@ This algorithm effectively identifies and removes objects that have become unrea
 
 Leveraged by modern JavaScript engines, objects are divided into different generations based on their age and usage patterns. Frequently accessed objects are moved to younger generations, while less frequently used objects are promoted to older generations. This optimization reduces the overhead of garbage collection by focusing on the younger generations, where most objects are short-lived.
 
-Different JavaScript engines (differs according to browsers) implement different garbage collection algorithms and there's no standard way of doing garbage collection.
+Different JavaScript engines (which differ across browsers) implement different garbage collection algorithms and there's no standard way of doing garbage collection.
 
 <!-- Update here: /questions/how-does-javascript-garbage-collection-work/en-US.mdx -->
 

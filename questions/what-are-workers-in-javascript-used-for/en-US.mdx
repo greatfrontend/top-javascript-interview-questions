@@ -6,8 +6,8 @@ title: What are workers in JavaScript used for?
 
 Workers in JavaScript are background threads that allow you to run scripts in parallel with the main execution thread, without blocking or interfering with the user interface. Their key features include:
 
-- **Parallel processing**: Workers run in a separate thread from the main thread, allowing your web page to remain responsive to user interactions while the worker performs its tasks. It's useful for moving CPU-intensive work off the main thread and be free from JavaScript's single-threaded nature.
-- **Communication**: Uses `postMessage()` and `onmessage`/ `'message'` event for messaging.
+- **Parallel processing**: Workers run in a separate thread from the main thread, allowing your web page to remain responsive to user interactions while the worker performs its tasks. It's useful for moving CPU-intensive work off the main thread and freeing you from JavaScript's single-threaded nature.
+- **Communication**: Uses `postMessage()` and `onmessage`/`'message'` event for messaging.
 - **Access to web APIs**: Workers have access to various Web APIs, including `fetch()`, IndexedDB, and Web Storage, allowing them to perform tasks like data fetching and persisting data independently.
 - **No DOM access**: Workers cannot directly manipulate the DOM, thus cannot interact with the UI, ensuring they don't accidentally interfere with the main thread's operation.
 
@@ -20,7 +20,7 @@ There are three main types of workers in JavaScript:
 - **Service workers**
   - Act as network proxies, handling requests between the app and network.
   - Enable offline functionality, caching, and push notifications.
-  - Runs independently of the web page, even when it's closed.
+  - Run independently of the web page, even when it's closed.
 - **Shared workers**
   - Can be shared by multiple scripts running in different windows or frames, as long as they're in the same domain.
   - Scripts communicate with the shared worker by sending and receiving messages.
@@ -35,9 +35,9 @@ Workers in JavaScript are a way to run scripts in background threads, separate f
 ## Web workers / Dedicated workers
 
 - Run scripts in background threads separate from the main UI thread.
-- Designed for CPU-intensive tasks like data processing, mathematical computations, etc. Generally the non-async work.
+- Designed for CPU-intensive tasks like data processing, mathematical computations, etc. Generally for non-async work.
 - Cannot directly access the DOM or other main thread resources for security.
-- Communicates with main thread via asynchronous message passing – `postMessage()` and `onmessage`/ `'message'`.
+- Communicates with main thread via asynchronous message passing – `postMessage()` and `onmessage`/`'message'`.
 - Terminated when main script is unloaded or explicitly terminated.
 
 Web workers can be used for:
@@ -148,10 +148,10 @@ self.addEventListener('fetch', function (event) {
 
 In this example:
 
-- The main script registers a service worker at `/service-worker.js`
-- The service worker listens for the `fetch()` event, which is fired whenever the browser makes a network request
-- The service worker first checks if the requested resource is cached using `caches.match(event.request)`
-- If it is, it returns the cached response. Otherwise, it fetches the resource from the network using `fetch(event.request)`
+- The main script registers a service worker at `/service-worker.js`.
+- The service worker listens for the `fetch` event, which is fired whenever the browser makes a network request within the worker's scope.
+- The service worker first checks if the requested resource is cached using `caches.match(event.request)`.
+- If it is, it returns the cached response. Otherwise, it fetches the resource from the network using `fetch(event.request)`.
 
 ### Bonus: Shared workers
 

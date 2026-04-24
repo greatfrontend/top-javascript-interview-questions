@@ -33,7 +33,7 @@ Hoisting is a term used to explain the behavior of variable declarations in Java
 
 Variables declared or initialized with the `var` keyword will have their declaration "moved" up to the top of their containing scope during compilation, which we refer to as hoisting.
 
-Only the declaration is hoisted, the initialization/assignment (if there is one), will stay where it is. Note that the declaration is not actually moved – the JavaScript engine parses the declarations during compilation and becomes aware of variables and their scopes, but it is easier to understand this behavior by visualizing the declarations as being "hoisted" to the top of their scope.
+Only the declaration is hoisted; the initialization/assignment (if there is one) will stay where it is. Note that the declaration is not actually moved – the JavaScript engine parses the declarations during compilation and becomes aware of variables and their scopes, but it is easier to understand this behavior by visualizing the declarations as being "hoisted" to the top of their scope.
 
 Let's explain with a few code samples. Note that the code for these examples should be executed within a module scope instead of being entered line by line into a REPL like the browser console.
 
@@ -118,9 +118,9 @@ import foo from './modules/foo';
 
 ## Under the hood
 
-In reality, JavaScript creates all variables in the current scope before it even tries to execute the code. Variables created using `var` keyword will have the value of `undefined` where variables created using `let` and `const` keywords will be marked as `<value unavailable>`. Thus, accessing them will cause a `ReferenceError` preventing you to access them before initialization.
+In reality, JavaScript creates all variables in the current scope before it even tries to execute the code. Variables created using the `var` keyword will have the value of `undefined`, whereas variables created using the `let` and `const` keywords will be marked as `<value unavailable>`. Thus, accessing them will cause a `ReferenceError`, preventing you from accessing them before initialization.
 
-In ECMAScript specifications `let` and `const` declarations are [explained as below](https://tc39.es/ecma262/#sec-let-and-const-declarations):
+In the ECMAScript specification, `let` and `const` declarations are [explained as below](https://tc39.es/ecma262/#sec-let-and-const-declarations):
 
 > The variables are created when their containing Environment Record is instantiated but may not be accessed in any way until the variable's LexicalBinding is evaluated.
 
@@ -130,7 +130,7 @@ However, this statement is [a little different for the `var` keyword](https://tc
 
 ## Modern practices
 
-In practice, modern code bases avoid using `var` and use `let` and `const` exclusively. It is recommended to declare and initialize your variables and import statements at the top of the containing scope/module to eliminate the mental overhead of tracking when a variable can be used.
+In practice, modern codebases avoid using `var` and use `let` and `const` exclusively. It is recommended to declare and initialize your variables and import statements at the top of the containing scope/module to eliminate the mental overhead of tracking when a variable can be used.
 
 ESLint is a static code analyzer that can find violations of such cases with the following rules:
 

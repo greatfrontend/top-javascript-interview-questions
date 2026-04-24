@@ -79,7 +79,7 @@ In this example, `count`, `incrementCount`, and `decrementCount` are defined on 
 By now we hope that you're convinced that it's not a good idea to define variables on the global scope. To avoid polluting the global scope, it is recommended to follow best practices such as:
 
 - **Use local variables**: Declare variables within functions or blocks to limit their scope and prevent them from being accessed globally. Use `var`, `let`, or `const` to declare variables within a specific scope, ensuring they are not accidentally made global.
-- **Pass variables as function parameters:**: Instead of accessing variables directly from the outer scope, pass them as parameters to functions to maintain encapsulation and avoid global scope pollution.
+- **Pass variables as function parameters**: Instead of accessing variables directly from the outer scope, pass them as parameters to functions to maintain encapsulation and avoid global scope pollution.
 - **Use modules**: Utilize module systems to encapsulate your code and prevent global scope pollution. Each module has its own scope, making it easier to manage and maintain your code.
 - **Use immediately invoked function expressions (IIFE)**: If modules are not available, wrap your code in an IIFE to create a new scope, preventing variables from being added to the global scope unless you explicitly expose them.
 

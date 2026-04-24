@@ -4,7 +4,7 @@ title: Explain the difference between synchronous and asynchronous functions in 
 
 ## TL;DR
 
-Synchronous functions are blocking while asynchronous functions are not. In synchronous functions, statements complete before the next statement is run. As a result, programs containing only synchronous code are evaluated exactly in order of the statements. The execution of the program is paused if one of the statements take a very long time.
+Synchronous functions are blocking while asynchronous functions are not. In synchronous functions, statements complete before the next statement is run. As a result, programs containing only synchronous code are evaluated exactly in order of the statements. The execution of the program is paused if one of the statements takes a very long time.
 
 ```js live
 function sum(a, b) {
@@ -16,7 +16,7 @@ const result = sum(2, 3); // The program waits for sum() to complete before assi
 console.log('Result: ', result); // Output: 5
 ```
 
-Asynchronous functions usually accept a callback as a parameter and execution continue on to the next line immediately after the asynchronous function is invoked. The callback is only invoked when the asynchronous operation is complete and the call stack is empty. Heavy duty operations such as loading data from a web server or querying a database should be done asynchronously so that the main thread can continue executing other operations instead of blocking until that long operation to complete (in the case of browsers, the UI will freeze).
+Asynchronous functions usually accept a callback as a parameter and execution continues on to the next line immediately after the asynchronous function is invoked. The callback is only invoked when the asynchronous operation is complete and the call stack is empty. Heavy duty operations such as loading data from a web server or querying a database should be done asynchronously so that the main thread can continue executing other operations instead of blocking until that long operation completes (in the case of browsers, the UI will freeze).
 
 ```js live
 function fetchData(callback) {
@@ -51,7 +51,7 @@ Synchronous functions execute in a sequential order, one after the other. Each o
 
 ### Synchronous function examples
 
-1. **Reading files synchronously**: When reading a file from the file system using the synchronous readFileSync method from the fs module in Node.js, the program execution is blocked until the entire file is read. This can cause performance issues, especially for large files or when reading multiple files sequentially
+1. **Reading files synchronously**: When reading a file from the file system using the synchronous readFileSync method from the fs module in Node.js, the program execution is blocked until the entire file is read. This can cause performance issues, especially for large files or when reading multiple files sequentially.
 
    ```js
    const fs = require('fs');
@@ -79,7 +79,7 @@ Asynchronous functions do not block the execution of the program. They allow oth
 
 ### Asynchronous function examples
 
-1. **Network requests**: Making network requests, such as fetching data from an API or sending data to a server, is typically done asynchronously. This allows the application to remain responsive while waiting for the response, preventing the user interface from freezing
+1. **Network requests**: Making network requests, such as fetching data from an API or sending data to a server, is typically done asynchronously. This allows the application to remain responsive while waiting for the response, preventing the user interface from freezing.
 
    ```js live
    console.log('Start of the program'); // This will be printed first as program starts here
@@ -121,7 +121,7 @@ Asynchronous functions do not block the execution of the program. They allow oth
 
 By using asynchronous functions and operations, JavaScript can handle time-consuming tasks without freezing the user interface or blocking the main thread.
 
-It is important to note that **`async` functions do not run on a different thread**. They still run on the main thread. However, it is possible to achieve parallelism in JavaScript by using [Web workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers)
+It is important to note that **`async` functions do not run on a different thread**. They still run on the main thread. However, it is possible to achieve parallelism in JavaScript by using [Web workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers).
 
 ## Achieving parallelism in JavaScript via web workers
 

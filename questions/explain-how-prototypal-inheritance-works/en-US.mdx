@@ -58,7 +58,7 @@ Prototypical inheritance is a feature in JavaScript used to create objects that 
 
 ### Key Concepts
 
-1. **Prototypes** : Every object in Javascript has a prototype, which is another object. When you create an object using an object literal or a constructor function, the new object is linked to the prototype of its constructor function or the `Object.prototype` if no prototype is specified. This is commonly referenced using `__proto__` or `[[Prototype]]`. You can also get the prototype by using inbuilt method `Object.getPrototypeOf()` and you can set the prototype of an object via `Object.setPrototypeOf()`.
+1. **Prototypes**: Every object in JavaScript has a prototype, which is another object. When you create an object using an object literal or a constructor function, the new object is linked to the prototype of its constructor function, or to `Object.prototype` if no prototype is specified. This is commonly referenced using `__proto__` or `[[Prototype]]`. You can also get the prototype by using the built-in method `Object.getPrototypeOf()`, and you can set the prototype of an object via `Object.setPrototypeOf()`.
 
 ```js live
 // Define a constructor function
@@ -140,7 +140,7 @@ fido.sayName(); // "My name is Fido"
 console.log(fido.fly); // undefined
 ```
 
-4. **`Object.create()`**: This method creates a new object whose internal `[[Prototype]]` is directly linked to the specified prototype object. It's the most direct way to create an object that inherits from another specific object, without involving constructor functions. If you create a object via `Object.create(null)` it will not inherit any properties from `Object.prototype`. This means the object will not have any built-in properties or methods like `toString()`, `hasOwnProperty()`,
+4. **`Object.create()`**: This method creates a new object whose internal `[[Prototype]]` is directly linked to the specified prototype object. It's the most direct way to create an object that inherits from another specific object, without involving constructor functions. If you create an object via `Object.create(null)`, it will not inherit any properties from `Object.prototype`. This means the object will not have any built-in properties or methods like `toString()` or `hasOwnProperty()`.
 
 ```js live
 // Define a prototype object

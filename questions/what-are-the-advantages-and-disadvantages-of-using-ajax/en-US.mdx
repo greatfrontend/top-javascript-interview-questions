@@ -9,15 +9,15 @@ AJAX (Asynchronous JavaScript and XML) is a technique in JavaScript that allows 
 **Advantages**
 
 - **Smoother user experience**: Updates happen without full page reloads, like in mail and chat applications.
-- **Lighter server Load**: Only necessary data is fetched via AJAX, reducing server load and improving perceived performance of webpages.
+- **Lighter server load**: Only necessary data is fetched via AJAX, reducing server load and improving perceived performance of webpages.
 - **Maintains client state**: User interactions and any client states are persisted within the page.
 
 **Disadvantages**
 
-- **Reliance on JavaScript**: If disabled, Ajax functionality breaks.
+- **Reliance on JavaScript**: If disabled, AJAX functionality breaks.
 - **Bookmarking issues**: Dynamic content makes bookmarking specific page states difficult.
-- **SEO Challenges**: Search engines may struggle to index dynamic content.
-- **Performance Concerns**: Processing Ajax data on low-end devices can be slow.
+- **SEO challenges**: Search engines may struggle to index dynamic content.
+- **Performance concerns**: Processing AJAX data on low-end devices can be slow.
 
 ---
 
@@ -37,9 +37,9 @@ Here's a breakdown of AJAX's pros and cons:
 
 ### Disadvantages
 
-- **Increased complexity**: Developing AJAX-powered applications can be more complex compared to traditional web development. It requires handling asynchronous communication and potential race conditions between requests and responses. Since pages are not reloaded, parts of the page can be outdated overtime and can be confusing.
+- **Increased complexity**: Developing AJAX-powered applications can be more complex compared to traditional web development. It requires handling asynchronous communication and potential race conditions between requests and responses. Since pages are not reloaded, parts of the page can be outdated over time and can be confusing.
 - **Dependency on JavaScript**: AJAX relies on JavaScript to function. Users with JavaScript disabled or unsupported browsers won't experience the full functionality of the application. A fallback mechanism (graceful degradation) is necessary to ensure basic functionality for these users.
-- **Security concerns**: AJAX introduces new security considerations like Cross-Site Scripting (XSS) vulnerabilities (if servers return directly HTML markup) if not implemented carefully. Proper data validation and sanitization are crucial to prevent security risks.
+- **Security concerns**: AJAX introduces new security considerations like Cross-Site Scripting (XSS) vulnerabilities (if servers directly return HTML markup) if not implemented carefully. Proper data validation and sanitization are crucial to prevent security risks.
 - **Browser support**: Older browsers might not fully support AJAX features. Developers need to consider compatibility when building with AJAX to ensure a good user experience across different browsers.
 - **SEO challenges**: Search engines might have difficulty indexing content dynamically loaded through AJAX. Developers need to employ techniques like server-side rendering or proper content embedding to ensure search engine visibility.
 - **Navigation problems**: AJAX can interfere with the browser's back and forward navigation buttons, as well as bookmarking, since the URL may not change with asynchronous updates.

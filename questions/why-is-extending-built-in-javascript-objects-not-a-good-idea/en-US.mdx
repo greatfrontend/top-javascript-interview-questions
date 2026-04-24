@@ -4,7 +4,7 @@ title: Why is extending built-in JavaScript objects not a good idea?
 
 ## TL;DR
 
-Extending a built-in/native JavaScript object means adding properties/functions to its `prototype`. While this may seem like a good idea at first, it is dangerous in practice. Imagine your code uses a few libraries that both extend the `Array.prototype` by adding the same `contains` method, the implementations will overwrite each other and your code will have unpredictable behavior if these two methods do not work the same way.
+Extending a built-in/native JavaScript object means adding properties/functions to its `prototype`. While this may seem like a good idea at first, it is dangerous in practice. Imagine your code uses two libraries that both extend the `Array.prototype` by adding the same `contains` method; the implementations will overwrite each other and your code will have unpredictable behavior if these two methods do not work the same way.
 
 The only time you may want to extend a native object is when you want to create a polyfill, essentially providing your own implementation for a method that is part of the JavaScript specification but might not exist in the user's browser due to it being an older browser.
 
@@ -44,7 +44,7 @@ Extending built-in JavaScript objects is essentially modifying the global scope 
 
 We dive deeper into [why it is a bad idea to modify the global scope](/questions/quiz/why-is-it-in-general-a-good-idea-to-leave-the-global-scope-of-a-website-as-is-and-never-touch-it).
 
-It is not recommended to extend built-in objects due to these potential issues and instead suggest using composition or creating custom classes and utility functions to achieve the desired functionality.
+It is not recommended to extend built-in objects due to these potential issues. Instead, use composition or create custom classes and utility functions to achieve the desired functionality.
 
 ## Alternatives to extending built-in objects
 

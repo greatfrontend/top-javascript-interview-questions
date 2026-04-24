@@ -4,7 +4,7 @@ title: Explain `Function.prototype.bind` in JavaScript
 
 ## TL;DR
 
-`Function.prototype.bind` is a method in JavaScript that allows you to create a new function with a specific `this` value and optional initial arguments. It's primary purpose is to:
+`Function.prototype.bind` is a method in JavaScript that allows you to create a new function with a specific `this` value and optional initial arguments. Its primary purpose is to:
 
 - **Binding `this` value to preserve context**: The primary purpose of `bind` is to bind the `this` value of a function to a specific object. When you call `func.bind(thisArg)`, it creates a new function with the same body as `func`, but with `this` permanently bound to `thisArg`.
 - **Partial application of arguments**: `bind` also allows you to pre-specify arguments for the new function. Any arguments passed to `bind` after `thisArg` will be prepended to the arguments list when the new function is called.
@@ -72,7 +72,7 @@ setTimeout(john.greet, 1000); // Output: "Hello, my name is undefined"
 setTimeout(john.greet.bind(john), 2000); // Output: "Hello, my name is John"
 ```
 
-You can also use [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions) to define class methods for this purpose instead of using `bind`. Arrow functions have the `this` value bound to its lexical context.
+You can also use [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions) to define class methods for this purpose instead of using `bind`. Arrow functions have their `this` value bound to the lexical context.
 
 ```js live
 class Person {
@@ -104,7 +104,7 @@ console.log(multiplyBy5(3)); // Output: 15
 
 ### Method borrowing
 
-`bind` allows you to borrow methods from one object and apply them to another object, even if they were not originally designed to work with that object. This can be handy when you need to reuse functionality across different objects
+`bind` allows you to borrow methods from one object and apply them to another object, even if they were not originally designed to work with that object. This can be handy when you need to reuse functionality across different objects.
 
 ```js live
 const person = {

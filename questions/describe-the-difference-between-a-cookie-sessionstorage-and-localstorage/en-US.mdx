@@ -38,9 +38,9 @@ These client-side storage mechanisms have the following common properties:
 
 Since cookies have a relatively low maximum size, it is not advisable to store all your client-side data within cookies. The distinguishing properties about cookies are that cookies are sent to the server on every HTTP request so the low maximum size is a feature that prevents your HTTP requests from being too large due to cookies. Automatic expiry of cookies is a useful feature as well.
 
-With that in mind, the best kind of data to store within cookies is small pieces of data that needs to be transmitted to the server, such as auth tokens, session IDs, analytics tracking IDs, GDPR cookie consent, language preferences that are important for authentication, authorization, and rendering on the server. These values are sometimes sensitive and can benefit from the `HttpOnly`, `Secure`, and `Expires`/`Max-Age` capabilities that cookies provide.
+With that in mind, the best kind of data to store within cookies is small pieces of data that need to be transmitted to the server, such as auth tokens, session IDs, analytics tracking IDs, GDPR cookie consent, language preferences that are important for authentication, authorization, and rendering on the server. These values are sometimes sensitive and can benefit from the `HttpOnly`, `Secure`, and `Expires`/`Max-Age` capabilities that cookies provide.
 
-`localStorage` and `sessionStorage` both implement the [Web Storage API interface](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API). Web Storages have a generous total capacity of 5MB, so storage size is usually not a concern. The key difference is that values stored in Web Storage are not automatically sent along HTTP requests.
+`localStorage` and `sessionStorage` both implement the [Web Storage API interface](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API). Web Storage has a generous total capacity of 5MB, so storage size is usually not a concern. The key difference is that values stored in Web Storage are not automatically sent along with HTTP requests.
 
 While you can manually include values from Web Storage when making AJAX/`fetch()` requests, the browser does not include them in the initial request / first load of the page. Hence Web Storage should not be used to store data that is relied on by the server for the initial rendering of the page if server-side rendering is being used (typically authentication/authorization-related information). `localStorage` is most suitable for user preferences data that do not expire, like themes and layouts (if it is not important for the server to render the final layout). `sessionStorage` is most suitable for temporary data that only needs to be accessible within the current browsing session, such as form data (useful to preserve data during accidental reloads).
 
@@ -98,7 +98,7 @@ The CookieStore API is relatively new and may not be supported in all browsers (
 - **Storage capacity**: Typically around 5MB per origin (varies by browser).
 - **Lifespan**: Data in `localStorage` persists until explicitly deleted by the user or the application.
 - **Access**: Data is accessible within all tabs and windows of the same origin.
-- **Security**: All JavaScript on the page have access to values within `localStorage`.
+- **Security**: All JavaScript on the page has access to values within `localStorage`.
 
 ```js
 // Set a value in localStorage.
@@ -121,7 +121,7 @@ localStorage.clear();
 - **Storage Capacity**: Typically around 5MB per origin (varies by browser).
 - **Lifespan**: Data in `sessionStorage` is cleared when the page session ends (i.e., when the browser or tab is closed). Reloading the page does not destroy data within `sessionStorage`.
 - **Access**: Data is accessible only within the current tab (or browsing context). Different tabs share different `sessionStorage` objects even if they belong to the same browser window. In this context, window refers to a browser window that can contain multiple tabs.
-- **Security**: All JavaScript on the same page have access to values within `sessionStorage` for that page.
+- **Security**: All JavaScript on the same page has access to values within `sessionStorage` for that page.
 
 ```js
 // Set a value in sessionStorage.

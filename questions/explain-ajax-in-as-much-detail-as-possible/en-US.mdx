@@ -41,7 +41,7 @@ fetch('https://jsonplaceholder.typicode.com/todos/1')
 
 ## AJAX (Asynchronous JavaScript and XML)
 
-AJAX (asynchronous JavaScript and XML) is a set of web development techniques using many web technologies on the client side to create asynchronous web applications. Unlike traditional web applications where every user interaction triggers a full page reload, with AJAX, web applications can send data to and retrieve from a server asynchronously (in the background) without interfering with the display and behavior of the existing page. By decoupling the data interchange layer from the presentation layer, AJAX allows for web pages, and by extension web applications, to change content dynamically without the need to reload the entire page. In practice, modern implementations commonly use JSON instead of XML, due to the advantages of JSON being native to JavaScript.
+AJAX (asynchronous JavaScript and XML) is a set of web development techniques using many web technologies on the client side to create asynchronous web applications. Unlike traditional web applications where every user interaction triggers a full page reload, with AJAX, web applications can send data to and retrieve it from a server asynchronously (in the background) without interfering with the display and behavior of the existing page. By decoupling the data interchange layer from the presentation layer, AJAX allows for web pages, and by extension web applications, to change content dynamically without the need to reload the entire page. In practice, modern implementations commonly use JSON instead of XML, due to the advantages of JSON being native to JavaScript.
 
 Traditionally, AJAX was implemented using the `XMLHttpRequest` API, but the `fetch()` API is more suitable and easier to use for modern web applications.
 
@@ -84,7 +84,7 @@ fetch('https://jsonplaceholder.typicode.com/todos/1')
 
 ## How does AJAX work?
 
-In modern browsers, AJAX is done using the `fetch()` API instead of `XMLHTTPRequest`, so we will explain how the `fetch()` API works instead:
+In modern browsers, AJAX is done using the `fetch()` API instead of `XMLHttpRequest`, so we will explain how the `fetch()` API works instead:
 
 1. **Making a request**: The [`fetch()` function](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) initiates an asynchronous request to fetch a resource from a URL. It takes one mandatory argument – the URL of the resource to fetch, and optionally accepts a second argument - an `options` object that allows configuring the HTTP request with options like the HTTP method, headers, body, etc.
 
@@ -97,7 +97,7 @@ In modern browsers, AJAX is done using the `fetch()` API instead of `XMLHTTPRequ
    });
    ```
 
-2. **Return a promise**: The `fetch()` function returns a `Promise` that resolves to a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object representing the response from the server. This `Promise needs` to be handled using `.then()` or `async/await`.
+2. **Return a promise**: The `fetch()` function returns a `Promise` that resolves to a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object representing the response from the server. This `Promise` needs to be handled using `.then()` or `async/await`.
 3. **Handling the response**: The `Response` object provides methods to define how the body content should be handled, such as `.json()` for parsing JSON data, `.text()` for plain text, `.blob()` for binary data, etc.
 
    ```js live
@@ -107,9 +107,9 @@ In modern browsers, AJAX is done using the `fetch()` API instead of `XMLHTTPRequ
      .catch((error) => console.error('Error:', error));
    ```
 
-4. **Asynchronous nature** The `fetch` API is asynchronous, allowing the browser to continue executing other tasks while waiting for the server response. This prevents blocking the main thread and provides a better user experience. The `then()` and `catch()` callbacks are put onto the microtask queue when executed as part of the [event loop](/questions/quiz/what-is-event-loop-what-is-the-difference-between-call-stack-and-task-queue).
-5. **Request options** The optional second argument to `fetch()` allows configuring various aspects of the request, such as the HTTP method, headers, body, credentials, caching behavior, and more.
-6. **Error handling** Errors during the request, such as network failures or invalid responses, are caught and propagated through the Promise chain using the `.catch()` method or try/catch blocks with `async/await`.
+4. **Asynchronous nature**: The `fetch` API is asynchronous, allowing the browser to continue executing other tasks while waiting for the server response. This prevents blocking the main thread and provides a better user experience. The `then()` and `catch()` callbacks are put onto the microtask queue when executed as part of the [event loop](/questions/quiz/what-is-event-loop-what-is-the-difference-between-call-stack-and-task-queue).
+5. **Request options**: The optional second argument to `fetch()` allows configuring various aspects of the request, such as the HTTP method, headers, body, credentials, caching behavior, and more.
+6. **Error handling**: Errors during the request, such as network failures or invalid responses, are caught and propagated through the Promise chain using the `.catch()` method or try/catch blocks with `async/await`.
 
 The `fetch()` API provides a modern, Promise-based approach to making HTTP requests in JavaScript, replacing the older `XMLHttpRequest` API. It offers a simpler and more flexible way to interact with APIs and fetch resources from servers, while integrating advanced HTTP concepts like CORS and other extensions.
 

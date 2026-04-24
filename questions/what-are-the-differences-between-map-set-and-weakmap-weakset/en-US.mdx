@@ -8,9 +8,9 @@ The primary difference between `Map`/`Set` and `WeakMap`/`WeakSet` in JavaScript
 
 **`Map` vs. `WeakMap`**
 
-`Map`s allows any data type (strings, numbers, objects) as keys. The key-value pairs remain in memory as long as the `Map` object itself is referenced. Thus they are suitable for general-purpose key-value storage where you want to maintain references to both keys and values. Common use cases include storing user data, configuration settings, or relationships between objects.
+`Map`s allow any data type (strings, numbers, objects) as keys. The key-value pairs remain in memory as long as the `Map` object itself is referenced. Thus they are suitable for general-purpose key-value storage where you want to maintain references to both keys and values. Common use cases include storing user data, configuration settings, or relationships between objects.
 
-`WeakMap`s only allows objects as keys. However, these object keys are held weakly. This means the garbage collector can remove them from memory even if the `WeakMap` itself still exists, as long as there are no other references to those objects. `WeakMap`s are ideal for scenarios where you want to associate data with objects without preventing those objects from being garbage collected. This can be useful for things like:
+`WeakMap`s only allow objects as keys. However, these object keys are held weakly. This means the garbage collector can remove them from memory even if the `WeakMap` itself still exists, as long as there are no other references to those objects. `WeakMap`s are ideal for scenarios where you want to associate data with objects without preventing those objects from being garbage collected. This can be useful for things like:
 
 - Caching data based on objects without preventing garbage collection of the objects themselves.
 - Storing private data associated with DOM nodes without affecting their lifecycle.
@@ -89,7 +89,7 @@ console.log(isUserActive(user1)); // false
 
 ### Detecting circular references
 
-`WeakSet` is provides a way of guarding against circular data structures by tracking which objects have already been processed.
+`WeakSet` provides a way of guarding against circular data structures by tracking which objects have already been processed.
 
 ```js live
 // Create a WeakSet to track visited objects

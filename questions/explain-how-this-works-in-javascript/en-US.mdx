@@ -4,7 +4,7 @@ title: Explain how `this` works in JavaScript
 
 ## TL;DR
 
-There's no simple explanation for `this`; it is one of the most confusing concepts in JavaScript because it's behavior differs from many other programming languages. The one-liner explanation of the `this` keyword is that it is a dynamic reference to the context in which a function is executed.
+There's no simple explanation for `this`; it is one of the most confusing concepts in JavaScript because its behavior differs from many other programming languages. The one-liner explanation of the `this` keyword is that it is a dynamic reference to the context in which a function is executed.
 
 A longer explanation is that `this` follows these rules:
 
@@ -112,7 +112,7 @@ showThisStandalone(); // `undefined` because in JavaScript class bodies, all met
 
 You can use `bind()`, `call()`, or `apply()` to explicitly set the value of `this` for a function.
 
-Using the `call()` and `apply()` methods allow you to explicitly set the value of `this` when calling the function.
+The `call()` and `apply()` methods allow you to explicitly set the value of `this` when calling the function.
 
 ```js live
 function showThis() {
@@ -138,7 +138,7 @@ boundFunc(); // { name: 'John' }
 
 ### Within arrow functions
 
-Arrow functions do not have their own `this` context. Instead, the `this` is lexically scoped, which means it inherits the `this` value from its surrounding scope at the time they are defined.
+Arrow functions do not have their own `this` context. Instead, `this` is lexically scoped, which means it inherits the `this` value from its surrounding scope at the time the arrow function is defined.
 
 In this example, `this` refers to the global object (window or global), because the arrow function is not bound to the `person` object.
 
@@ -219,7 +219,7 @@ document.getElementById('my-button').addEventListener('click', function () {
 });
 ```
 
-As mentioned above, ES2015 introduces [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions) which uses the [enclosing lexical scope](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions#No_separate_this). This is usually convenient, but does prevent the caller from defining the `this` context via `.call`/`.apply`/`.bind`. One of the consequences is that DOM event handlers will not properly bind `this` in your event handler functions if you define the callback parameters to `.addEventListener()` using arrow functions.
+As mentioned above, ES2015 introduced [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions), which use the [enclosing lexical scope](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions#No_separate_this). This is usually convenient, but it does prevent the caller from defining the `this` context via `.call`/`.apply`/`.bind`. One of the consequences is that DOM event handlers will not properly bind `this` in your event handler functions if you define the callback parameters to `.addEventListener()` using arrow functions.
 
 ```js
 document.getElementById('my-button').addEventListener('click', () => {

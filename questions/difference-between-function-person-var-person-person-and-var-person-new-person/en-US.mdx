@@ -31,7 +31,7 @@ This code defines a function named `Person` that takes a parameter `name` and as
 
 ## Function call
 
-`const person = Person()` simply invoke the function's code. When you invoke `Person` as a regular function (i.e., without the `new` keyword), the function does not behave as a constructor. Instead, it executes its code and returns `undefined` if no return value is specified and that gets assigned to the variable intended as the instance. Invoking as such is a common mistake if the function is intended to be used as a constructor.
+`const person = Person()` simply invokes the function's code. When you invoke `Person` as a regular function (i.e., without the `new` keyword), the function does not behave as a constructor. Instead, it executes its code and returns `undefined` if no return value is specified, and that gets assigned to the variable intended as the instance. Invoking it this way is a common mistake if the function is intended to be used as a constructor.
 
 ```js live
 function Person(name) {
@@ -47,7 +47,7 @@ In this case, `Person('John')` does not create a new object. The `person` variab
 
 ## Constructor call
 
-`const person = new Person()` creates an instance of the `Person` object using the new operator, which inherits from `Person.prototype`. An alternative would be to use `Object.create`, such as: `Object.create(Person.prototype)` and `Person.call(person, 'John')` initializes the object.
+`const person = new Person()` creates an instance of the `Person` object using the `new` operator, which inherits from `Person.prototype`. An alternative would be to use `Object.create`, such as: `Object.create(Person.prototype)` to create the object and `Person.call(person, 'John')` to initialize it.
 
 ```js live
 function Person(name) {
@@ -65,7 +65,7 @@ console.log(person1); // Person { name: 'John' }
 console.log(person1.name); // 'John'
 ```
 
-In this case, `new Person('John')` creates a new object, and `this` within `Person` refers to this new object. The `name` property is correctly set on the new object. The `person` variable is assigned the new instance of `Person` with the name property set to `'John'`. And for the alternative object creation, `Object.create(Person.prototype)` creates a new object with `Person.prototype` as its prototype. `Person.call(person, 'John')` initializes the object, setting the `name` property.
+In this case, `new Person('John')` creates a new object, and `this` within `Person` refers to this new object. The `name` property is correctly set on the new object. The `person` variable is assigned the new instance of `Person` with the `name` property set to `'John'`. For the alternative object creation, `Object.create(Person.prototype)` creates a new object with `Person.prototype` as its prototype, and `Person.call(person, 'John')` initializes the object, setting the `name` property.
 
 ## Follow-Up Questions
 

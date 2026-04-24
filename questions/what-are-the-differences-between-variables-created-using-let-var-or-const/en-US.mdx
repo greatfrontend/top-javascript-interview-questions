@@ -4,7 +4,7 @@ title: What are the differences between JavaScript variables created using `let`
 
 ## TL;DR
 
-In JavaScript, `let`, `var`, and `const` are all keywords used to declare variables, but they differ significantly in terms of scope, initialization rules, whether they can be redeclared or reassigned and the behavior when they are accessed before declaration:
+In JavaScript, `let`, `var`, and `const` are all keywords used to declare variables, but they differ significantly in terms of scope, initialization rules, whether they can be redeclared or reassigned, and the behavior when they are accessed before declaration:
 
 | Behavior | `var` | `let` | `const` |
 | --- | --- | --- | --- |
@@ -42,7 +42,7 @@ console.log(baz); // ReferenceError: baz is not defined
 console.log(qux); // ReferenceError: qux is not defined
 ```
 
-In the following example, `bar` is accessible outside of the `if` block but `baz` and `quz` are not.
+In the following example, `bar` is accessible outside of the `if` block but `baz` and `qux` are not.
 
 ```js live
 if (true) {
@@ -83,7 +83,7 @@ let baz = 4; // Uncaught SyntaxError: Identifier 'baz' has already been declared
 
 ### Reassignment
 
-`let` and `const` differ in that `var` and `let` allow reassigning the variable's value while `const` does not.
+`var` and `let` allow reassigning the variable's value while `const` does not.
 
 ```js live
 var foo = 1;

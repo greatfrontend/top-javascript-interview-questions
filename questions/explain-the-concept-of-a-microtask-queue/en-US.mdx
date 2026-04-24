@@ -16,7 +16,7 @@ The microtask queue is a part of the JavaScript event loop mechanism. It is a qu
 
 ### How does the microtask queue work?
 
-1. **Execution order**: The microtask queue is processed after the currently executing script and before the macrotask queue. This means that microtasks are given higher priority over macrotasks.
+1. **Execution order**: The microtask queue is processed after the currently executing script and before the macrotask queue. This means that microtasks are given higher priority than macrotasks.
 2. **Event loop**: During each iteration of the event loop, the JavaScript engine first processes all the microtasks in the microtask queue before moving on to the macrotask queue.
 3. **Adding microtasks**: Microtasks can be added to the microtask queue using methods like `Promise.resolve().then()` and `queueMicrotask()`.
 
@@ -61,7 +61,7 @@ In this example:
 ### Use cases
 
 1. **Promise callbacks**: Microtasks are commonly used for promise callbacks to ensure they are executed as soon as possible after the current operation.
-2. **MutationObserver**: The `MutationObserver` API uses microtasks to notify changes in the DOM.
+2. **MutationObserver**: The `MutationObserver` API uses microtasks to notify observers of changes in the DOM.
 
 ## Further reading
 

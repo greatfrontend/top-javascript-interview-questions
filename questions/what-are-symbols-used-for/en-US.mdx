@@ -4,7 +4,7 @@ title: What are `Symbol`s used for in JavaScript?
 
 ## TL;DR
 
-`Symbol`s in JavaScript are a new primitive data type introduced in ES6 (ECMAScript 2015). They are unique and immutable identifiers that is primarily for object property keys to avoid name collisions. These values can be created using `Symbol(...)` function, and each `Symbol` value is guaranteed to be unique, even if they have the same key/description. `Symbol` properties are not enumerable in `for...in` loops or `Object.keys()`, making them suitable for creating private/internal object state.
+`Symbol`s in JavaScript are a new primitive data type introduced in ES6 (ECMAScript 2015). They are unique and immutable identifiers that are primarily used for object property keys to avoid name collisions. These values can be created using the `Symbol(...)` function, and each `Symbol` value is guaranteed to be unique, even if they have the same key/description. `Symbol` properties are not enumerable in `for...in` loops or `Object.keys()`, making them suitable for creating private/internal object state.
 
 ```js live
 let sym1 = Symbol();
@@ -62,9 +62,9 @@ console.log(obj[sym]); // "value"
 
 ## `Symbol`s are not enumerable
 
-- `Symbol` properties are not included in `for...in` loops or` Object.keys()`.
+- `Symbol` properties are not included in `for...in` loops or `Object.keys()`.
 - This makes them suitable for creating private/internal object state.
-- Use` Object.getOwnPropertySymbols(obj)` to get all symbol properties on an object.
+- Use `Object.getOwnPropertySymbols(obj)` to get all symbol properties on an object.
 
 ```js live
 const mySymbol = Symbol('privateProperty');
@@ -93,7 +93,7 @@ console.log(key); // "globalKey"
 
 ## Well-known `Symbol`
 
-JavaScript includes several built-in `Symbol`s, referred as well-known `Symbol`s.
+JavaScript includes several built-in `Symbol`s, referred to as well-known `Symbol`s.
 
 - **`Symbol.iterator`**: Defines the default `iterator` for an object.
 - **`Symbol.toStringTag`**: Used to create a string description for an object.

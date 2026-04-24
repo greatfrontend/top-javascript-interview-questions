@@ -4,7 +4,7 @@ title: What are server-sent events?
 
 ## TL;DR
 
-[Server-sent events (SSE)](https://html.spec.whatwg.org/multipage/comms.html#the-eventsource-interface) is a standard that allows a web page to receive automatic updates from a server via an HTTP connection. Server-sent events are used with `EventSource` instances that opens a connection with a server and allows client to receive events from the server. Connections created by server-sent events are persistent (similar to the `WebSocket`s), however there are a few differences:
+[Server-sent events (SSE)](https://html.spec.whatwg.org/multipage/comms.html#the-eventsource-interface) is a standard that allows a web page to receive automatic updates from a server via an HTTP connection. Server-sent events are used with `EventSource` instances that open a connection with a server and allow the client to receive events from the server. Connections created by server-sent events are persistent (similar to the `WebSocket`s), however there are a few differences:
 
 | Property | `WebSocket` | `EventSource` |
 | --- | --- | --- |
@@ -65,7 +65,7 @@ app.get('/sse-stream', (req, res) => {
 app.listen(3000, () => console.log('Server started on port 3000'));
 ```
 
-In this example, the server sends a "Hello from server" message initially, and then sends the current date every second. The connection is kept alive until the client closes it
+In this example, the server sends a "Hello from server" message initially, and then sends the current date every second. The connection is kept alive until the client closes it.
 
 ---
 

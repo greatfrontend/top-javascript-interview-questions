@@ -9,6 +9,7 @@
   ],
   "license": "ISC",
   "author": "yangshun",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "gen": "tsx scripts/gen.ts",

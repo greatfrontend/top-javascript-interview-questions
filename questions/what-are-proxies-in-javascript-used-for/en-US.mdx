@@ -36,12 +36,12 @@ Use cases include:
 
 - **Property access interception**: Intercept and customize property access on an object.
   - **Property assignment validation**: Validate property values before they are set on the target object.
-  - **Logging and debugging**: Create wrappers for logging and debugging interactions with an object
+  - **Logging and debugging**: Create wrappers for logging and debugging interactions with an object.
   - **Creating reactive systems**: Trigger updates in other parts of your application when object properties change (data binding).
   - **Data transformation**: Transforming data being set or retrieved from an object.
-  - **Mocking and stubbing in tests**: Create mock or stub objects for testing purposes, allowing you to isolate dependencies and focus on the unit under test
-- **Function invocation interception**: Used to cache and return the result of frequently accessed methods if they involve network calls or computationally intensive logic, improving performance
-- **Dynamic property creation**: Useful for defining properties on-the-fly with default values and avoid storing redundant data in objects.
+  - **Mocking and stubbing in tests**: Create mock or stub objects for testing purposes, allowing you to isolate dependencies and focus on the unit under test.
+- **Function invocation interception**: Used to cache and return the result of frequently accessed methods if they involve network calls or computationally intensive logic, improving performance.
+- **Dynamic property creation**: Useful for defining properties on the fly with default values and avoiding storing redundant data in objects.
 
 ---
 
@@ -188,7 +188,7 @@ This interception can be used to cache and return the result of frequently acces
 
 ### Dynamic property creation
 
-Proxies can be used to dynamically create properties or methods on an object. This is useful for defining properties on-the-fly with default values and avoid storing redundant data in objects.
+Proxies can be used to dynamically create properties or methods on an object. This is useful for defining properties on the fly with default values and avoiding storing redundant data in objects.
 
 ```js live
 const target = {};
@@ -208,7 +208,7 @@ console.log(proxy.newProp); // Output: Dynamic property newProp
 console.log(proxy.anotherProp); // Output: Dynamic property anotherProp
 ```
 
-### Implementing object relational mappers (ORMs)
+### Implementing object-relational mappers (ORMs)
 
 Proxies can be used to create objects for database records by intercepting property access to lazily load data from the database. This provides a more object-oriented interface to interact with a database.
 

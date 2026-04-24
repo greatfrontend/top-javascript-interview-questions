@@ -4,22 +4,20 @@ title: Explain the difference between shallow copy and deep copy
 
 ## TL;DR
 
-A shallow copy duplicates the top-level properties of an object, but nested objects are still referenced. A deep copy duplicates all levels of an object, creating entirely new instances of nested objects. For example, using `Object.assign()` creates a shallow copy, while using libraries like `Lodash` or `structuredClone()` in modern JavaScript can create deep copies.
+A shallow copy duplicates the top-level properties of an object, but nested objects are still referenced. A deep copy duplicates all levels of an object, creating entirely new instances of nested objects. `Object.assign()` and the spread operator (`...`) create shallow copies. `structuredClone()` is the modern built-in for deep copies. `JSON.parse(JSON.stringify())` and Lodash's `_.cloneDeep` are other common approaches, each with different tradeoffs around which values they can faithfully clone.
 
 ```js live
-// Shallow copy example
+// Shallow copy — nested object is shared
 let obj1 = { a: 1, b: { c: 2 } };
-let shallowCopy = Object.assign({}, obj1);
+let shallowCopy = { ...obj1 };
 shallowCopy.b.c = 3;
-console.log(shallowCopy.b.c); // Output: 3
-console.log(obj1.b.c); // Output: 3 (original nested object changed too!)
+console.log(obj1.b.c); // 3 — original mutated too
 
-// Deep copy example
+// Deep copy — fully independent
 let obj2 = { a: 1, b: { c: 2 } };
-let deepCopy = JSON.parse(JSON.stringify(obj2));
+let deepCopy = structuredClone(obj2);
 deepCopy.b.c = 4;
-console.log(deepCopy.b.c); // Output: 4
-console.log(obj2.b.c); // Output: 2 (original nested object remains unchanged)
+console.log(obj2.b.c); // 2 — original unchanged
 ```
 
 ---
@@ -30,50 +28,207 @@ console.log(obj2.b.c); // Output: 2 (original nested object remains unchanged)
 
 A shallow copy creates a new object and copies the values of the original object's top-level properties into the new object. However, if any of these properties are references to other objects, only the reference is copied, not the actual object. This means that changes to nested objects in the copied object will affect the original object.
 
-#### Example
-
 ```js live
 let obj1 = { a: 1, b: { c: 2 } };
 let shallowCopy = Object.assign({}, obj1);
 shallowCopy.b.c = 3;
-console.log(shallowCopy.b.c); // Output: 3
-console.log(obj1.b.c); // Output: 3 (original nested object changed too!)
+console.log(shallowCopy.b.c); // 3
+console.log(obj1.b.c); // 3 — original nested object changed too
 ```
 
-In this example, `shallowCopy` is a shallow copy of `obj1`. Changing `shallowCopy.b.c` also changes `obj1.b.c` because `b` is a reference to the same object in both `obj1` and `shallowCopy`.
+`shallowCopy` is a new object, but `shallowCopy.b` and `obj1.b` point to the same nested object, so mutating `shallowCopy.b.c` is visible through `obj1.b.c`.
 
 ### Deep copy
 
-A deep copy creates a new object and recursively copies all properties and nested objects from the original object. This means that the new object is completely independent of the original object, and changes to nested objects in the copied object do not affect the original object.
-
-#### Example
+A deep copy recursively duplicates the original object and every object it references, producing a fully independent tree. Mutations to the clone — including to its nested objects — have no effect on the original.
 
 ```js live
-let obj1 = { a: 1, b: { c: 2 } };
-let deepCopy = JSON.parse(JSON.stringify(obj1));
+let obj2 = { a: 1, b: { c: 2 } };
+let deepCopy = structuredClone(obj2);
 deepCopy.b.c = 4;
-console.log(deepCopy.b.c); // Output: 4
-console.log(obj1.b.c); // Output: 2 (original nested object remains unchanged)
+console.log(deepCopy.b.c); // 4
+console.log(obj2.b.c); // 2 — original nested object unchanged
 ```
 
-In this example, `deepCopy` is a deep copy of `obj1`. Changing `deepCopy.b.c` does not affect `obj1.b.c` because `b` is a completely new object in `deepCopy`.
+`structuredClone` recursively copies `obj2` and its nested `b` object, so `deepCopy.b` is a fresh object independent of `obj2.b`.
 
-### Methods to create shallow and deep copies
+## Comparison of common cloning methods
 
-#### Shallow copy methods
+The table below summarizes the behavior of the four most common approaches.
 
-- `Object.assign()`
-- Spread operator (`...`)
+| Value / scenario | `{ ...obj }` / `Object.assign` | `JSON.parse(JSON.stringify())` | `structuredClone()` | Lodash `_.cloneDeep` |
+| --- | --- | --- | --- | --- |
+| Nested objects / arrays | Shared (shallow) | Cloned | Cloned | Cloned |
+| `Date` | Shared reference | Becomes ISO string | Cloned as `Date` | Cloned as `Date` |
+| `undefined` values | Preserved | Dropped | Preserved | Preserved |
+| `NaN`, `Infinity`, `-Infinity` | Preserved | Becomes `null` | Preserved | Preserved |
+| Circular references | Not recursed; references shared | Throws | Supported | Supported |
+| `Map`, `Set` | Shared reference | Becomes `{}` | Cloned | Cloned |
+| `RegExp` | Shared reference | Becomes `{}` | Cloned | Cloned |
+| Functions / methods | Shared reference | Dropped | Throws | Shared reference |
+| `Symbol` keys | Preserved | Dropped | Not cloned | Cloned |
+| Class instances (prototype) | Becomes plain object | Becomes plain object | Becomes plain object | Prototype preserved |
+| `BigInt` | Preserved | Throws on stringify | Preserved | Preserved |
 
-#### Deep copy methods
+- **Shallow copy** does not recurse into nested objects. For a cyclic input, the shallow copy does not throw, but `copy.self` still points to the original object rather than to the clone, so the cycle is not preserved as a cycle in the new object.
+- **`JSON.parse(JSON.stringify())`** does not preserve `Date`, `undefined`, `NaN`, `Map`, `Set`, `RegExp`, or functions. It throws on circular references and `BigInt`.
+- **`structuredClone()`** clones string-keyed own enumerable data properties, including `Date`, `Map`, `Set`, `RegExp`, typed arrays, `ArrayBuffer`, and cycles. It throws on function and symbol values. Symbol-keyed properties and the prototype chain are not preserved in practice, so the result is a plain object.
+- **DOM nodes** are intentionally omitted from the table. Behavior depends on the specific node type, the host environment, and the tooling involved; a general-purpose cell in a summary table would be misleading.
 
-- `JSON.parse(JSON.stringify())`
-- `structuredClone()` (modern JavaScript)
-- Libraries like `Lodash` (`_.cloneDeep`)
+## Which method should I reach for?
+
+Work through the questions below in order and stop at the first one that applies.
+
+1. **Do only the top-level properties need to be independent?** Use a shallow copy — spread (`{ ...obj }`, `[...arr]`), `Object.assign`, `Array.from`, or `Array.prototype.slice`. This is cheaper than any deep-copy method and is sufficient when nested objects are either immutable or not being mutated.
+2. **Does the object contain functions, methods, or class instances whose prototype must be preserved?** Use Lodash's `_.cloneDeep`. It is a widely-used option that copies function-valued properties by reference and keeps the prototype chain of class instances intact; `structuredClone()` throws `DataCloneError` on function- or symbol-valued properties, and returns plain objects for class instances. Two caveats: `_.cloneDeep(fn)` returns `{}` when the top-level argument is itself a function (this branch only helps when the function lives inside the object being cloned), and neither method re-runs constructors, so any invariants enforced only at construction time are not reapplied to the clone.
+3. **Does the object contain `Date`, `Map`, `Set`, `RegExp`, typed arrays, `ArrayBuffer`, or circular references?** Use `structuredClone()`. It is built in, dependency-free, and handles all of these natively; `JSON.parse(JSON.stringify())` silently loses or throws on each of them.
+4. **Is every value strictly JSON-safe (strings, finite numbers, booleans, `null`, plain objects and arrays — no `undefined`, `NaN`/`Infinity`, functions, symbols, or `BigInt`)?** Either `structuredClone()` or `JSON.parse(JSON.stringify(obj))` works. Prefer `structuredClone()` as a default — it also handles `Date`, `Map`, `Set`, `RegExp`, typed arrays, and cycles if those later appear in the object, though it will still throw on functions and symbols.
+
+In short: `structuredClone()` is the default deep-copy in modern JavaScript. Reach for `_.cloneDeep` when functions or prototypes matter, and reserve `JSON.parse(JSON.stringify())` for short scripts where the input is known to be JSON-safe.
+
+## Edge cases worth knowing
+
+### Shallow copy only duplicates the top level
+
+```js live
+const user = { name: 'Ada', address: { city: 'London' } };
+const copy = { ...user };
+
+copy.name = 'Grace';
+copy.address.city = 'Paris';
+
+console.log(user.name); // 'Ada'
+console.log(user.address.city); // 'Paris'
+```
+
+`name` is a primitive, so assigning to `copy.name` does not affect `user.name`. `address` is an object, and the spread operator copies the reference — `copy.address` and `user.address` point to the same object, so mutating one is visible through the other.
+
+### `JSON.parse(JSON.stringify())` data loss
+
+```js live
+const data = {
+  createdAt: new Date('2026-01-01'),
+  score: NaN,
+  note: undefined,
+  tags: new Set(['a', 'b']),
+};
+
+const cloned = JSON.parse(JSON.stringify(data));
+console.log(cloned);
+// {
+//   createdAt: '2026-01-01T00:00:00.000Z', // Date serialized as ISO string
+//   score: null,                            // NaN serialized as null
+//   tags: {}                                // Set has no enumerable own properties
+// }
+// `note` is absent — undefined values are omitted by JSON.stringify.
+```
+
+`JSON.stringify` calls `toJSON()` (on `Date`) or returns `null` (on `NaN`, `Infinity`), and skips `undefined` values and function-valued properties entirely. `Map` and `Set` have no enumerable own properties, so they serialize to `{}`.
+
+### `structuredClone()` and circular references
+
+```js live
+const a = { name: 'a' };
+a.self = a;
+
+const cloned = structuredClone(a);
+console.log(cloned.self === cloned); // true
+console.log(cloned.self === a); // false
+```
+
+`structuredClone()` tracks visited references during cloning and reconstructs cycles in the output. `JSON.parse(JSON.stringify())` throws `TypeError: Converting circular structure to JSON` on the same input.
+
+### `structuredClone()` drops the prototype chain
+
+```js live
+class User {
+  constructor(name) {
+    this.name = name;
+  }
+  greet() {
+    return `Hi, ${this.name}`;
+  }
+}
+
+const u = new User('Ada');
+const cloned = structuredClone(u);
+
+console.log(cloned instanceof User); // false
+console.log(cloned.greet); // undefined
+```
+
+The structured clone algorithm copies own data properties only; the result has `Object.prototype` as its prototype. To clone class instances with methods and `instanceof` intact, use Lodash's `_.cloneDeep`, or define an explicit `clone()` method on the class.
+
+## Shallow copies and React state updates
+
+React compares next and previous state with [`Object.is`](https://react.dev/reference/react/useState#setstate-caveats) and bails out of re-rendering if the reference is unchanged. Mutating a nested value and calling the setter with the same top-level reference therefore has no effect on the rendered output.
+
+```jsx
+function UserProfile() {
+  const [user, setUser] = useState({
+    name: 'Ada',
+    preferences: { theme: 'dark' },
+  });
+
+  const toggleTheme = () => {
+    // Mutates the existing nested object and passes the same top-level reference.
+    user.preferences.theme =
+      user.preferences.theme === 'dark' ? 'light' : 'dark';
+    setUser(user); // Object.is(user, user) === true — React bails out.
+  };
+
+  return <button onClick={toggleTheme}>{user.preferences.theme}</button>;
+}
+```
+
+Spreading the top level while still mutating the nested object is also incorrect:
+
+```jsx
+const toggleTheme = () => {
+  user.preferences.theme = user.preferences.theme === 'dark' ? 'light' : 'dark';
+  // `user.preferences` was mutated in place on the line above. Any previous
+  // snapshot, memoized selector, or component still holding the old reference
+  // now observes the toggled value.
+  setUser({ ...user, preferences: { ...user.preferences } });
+};
+```
+
+The correct pattern computes the new value while constructing the new object tree, without mutation:
+
+```jsx
+setUser((prev) => ({
+  ...prev,
+  preferences: {
+    ...prev.preferences,
+    theme: prev.preferences.theme === 'dark' ? 'light' : 'dark',
+  },
+}));
+```
+
+Manual spread chains become error-prone past two levels of nesting. Libraries such as [Immer](https://immerjs.github.io/immer/) (used internally by Redux Toolkit) let the developer write mutation-style code against a draft, which the library converts into an immutable update.
+
+## Follow-up questions
+
+### Why can't `JSON.parse(JSON.stringify())` round-trip `Date` objects?
+
+`JSON.stringify` invokes `Date.prototype.toJSON`, which returns the ISO string form of the date. The resulting JSON contains no type information, so `JSON.parse` returns a plain string. Any subsequent call such as `.getTime()` or a date-formatting operation on the parsed value will throw `TypeError`, because the value is a string, not a `Date`. This is a common source of bugs in flows that serialize state to `localStorage` and rehydrate it on load.
+
+### How can an object containing a `Map` be deep-cloned?
+
+`structuredClone(obj)` handles `Map` natively and is the default in any modern environment. Lodash's `_.cloneDeep` is the fallback when the object also contains class instances or functions, or when running on a runtime that predates `structuredClone`. `JSON.parse(JSON.stringify())` is not viable — `Map` entries are not enumerable own properties, so a `Map` serializes to `{}`.
+
+### When should `_.cloneDeep` be used instead of `structuredClone`?
+
+The two main cases — class instances whose prototype must survive, and objects with function-valued properties — are covered in the [decision guide above](#which-method-should-i-reach-for). The third case specific to Lodash is **custom per-type cloning**: `_.cloneDeepWith(obj, customizer)` takes a callback that intercepts specific types, useful for framework-specific objects or domain models with non-enumerable state.
+
+### Is the spread operator always a shallow copy?
+
+Yes. The spread operator copies own enumerable properties one level deep. When spreading a class instance, inherited methods on the prototype are not included in the result, and the output is a plain object rather than an instance of the original class.
 
 ## Further reading
 
+- [MDN Web Docs: structuredClone()](https://developer.mozilla.org/en-US/docs/Web/API/structuredClone)
 - [MDN Web Docs: Object.assign()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
 - [MDN Web Docs: JSON.parse()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)
-- [MDN Web Docs: structuredClone()](https://developer.mozilla.org/en-US/docs/Web/API/structuredClone)
 - [Lodash Documentation: \_.cloneDeep](https://lodash.com/docs/4.17.15#cloneDeep)
+- [React docs: Updating objects in state](https://react.dev/learn/updating-objects-in-state)

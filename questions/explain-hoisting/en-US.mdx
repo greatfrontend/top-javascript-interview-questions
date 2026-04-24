@@ -29,9 +29,9 @@ The following behavior summarizes the result of accessing the variables before t
 
 ## Hoisting
 
-Hoisting is a term used to explain the behavior of variable declarations in JavaScript code.
+Hoisting is a term used to explain the behavior of declarations in JavaScript code.
 
-Variables declared or initialized with the `var` keyword will have their declaration "moved" up to the top of their containing scope during compilation, which we refer to as hoisting.
+Variables declared with the `var` keyword have their declaration "moved" up to the top of their containing scope during compilation, which we refer to as hoisting.
 
 Only the declaration is hoisted; the initialization/assignment (if there is one) will stay where it is. Note that the declaration is not actually moved – the JavaScript engine parses the declarations during compilation and becomes aware of variables and their scopes, but it is easier to understand this behavior by visualizing the declarations as being "hoisted" to the top of their scope.
 
@@ -39,7 +39,7 @@ Let's explain with a few code samples. Note that the code for these examples sho
 
 ### Hoisting of variables declared using `var`
 
-Hoisting is seen in action here as even though `foo` is declared and initialized after the first `console.log()`, the first `console.log()` prints the value of `foo` as `undefined`.
+Hoisting is visible here: even though `foo` is declared and initialized after the first `console.log()`, the first `console.log()` prints `undefined`.
 
 ```js live
 console.log(foo); // undefined
@@ -80,7 +80,7 @@ class Foo {
 
 ### Hoisting of function expressions
 
-Function expressions are functions written in the form of variable declarations. Since they are also declared using `var`, only the variable declaration is hoisted.
+A function expression is a function assigned to a variable binding. When the binding uses `var`, only the variable declaration is hoisted — the function body is not.
 
 ```js live
 console.log(bar); // undefined
@@ -89,6 +89,14 @@ bar(); // Uncaught TypeError: bar is not a function
 var bar = function () {
   console.log('BARRRR');
 };
+```
+
+Arrow functions are function expressions too, so the same rule applies — only the binding is hoisted, and its TDZ behavior follows the declaration keyword (`var` initializes to `undefined`, `let` and `const` remain in the TDZ until their declaration runs).
+
+```js live
+console.log(baz); // undefined
+var baz = () => 'arrow';
+console.log(baz()); // 'arrow'
 ```
 
 ### Hoisting of function declarations
@@ -104,7 +112,7 @@ function foo() {
 }
 ```
 
-The same applies to generators (`function*`), async functions (`async function`), and async function generators (`async function*`).
+The same applies to generator functions (`function*`), async functions (`async function`), and async generator functions (`async function*`).
 
 ### Hoisting of `import` statements
 
@@ -128,16 +136,157 @@ However, this statement is [a little different for the `var` keyword](https://tc
 
 > Var variables are created when their containing Environment Record is instantiated and are initialized to `undefined` when created.
 
+MDN groups hoisting into four observable behaviors, which map to the declaration kinds covered above:
+
+1. **Value hoisting** — the value is usable before the declaration. Applies to function declarations.
+2. **Declaration hoisting** — the binding is usable before the declaration but reads `undefined`. Applies to `var`.
+3. **Scope tainting** — the binding exists from the top of the scope but any access throws (the TDZ). Applies to `let`, `const`, and `class`.
+4. **Side effects** — the declaration's side effects run before the rest of the module evaluates. Applies to `import`.
+
 ## Modern practices
 
 In practice, modern codebases avoid using `var` and use `let` and `const` exclusively. It is recommended to declare and initialize your variables and import statements at the top of the containing scope/module to eliminate the mental overhead of tracking when a variable can be used.
 
 ESLint is a static code analyzer that can find violations of such cases with the following rules:
 
-- [`no-use-before-define`](https://eslint.org/docs/latest/rules/no-use-before-define): This rule will warn when it encounters a reference to an identifier that has not yet been declared.
-- [`no-undef`](https://eslint.org/docs/latest/rules/no-undef): This rule will warn when it encounters a reference to an identifier that has not yet been declared.
+- [`no-use-before-define`](https://eslint.org/docs/latest/rules/no-use-before-define): Warns when an identifier is referenced before its declaration appears in source.
+- [`no-undef`](https://eslint.org/docs/latest/rules/no-undef): Warns when an identifier is referenced without being declared anywhere in scope.
+
+## Additional examples
+
+The examples below cover hoisting behaviors that are less obvious from the summary table and that commonly cause confusion.
+
+### Function declaration compared with function expression
+
+```js live
+console.log(declared());
+console.log(expressed());
+
+function declared() {
+  return 'function declaration';
+}
+
+var expressed = function () {
+  return 'function expression';
+};
+```
+
+- `declared()` returns `'function declaration'`. Function declarations are fully hoisted — both the identifier binding and the function body are available from the top of the scope.
+- `expressed()` throws `TypeError: expressed is not a function`. The `var expressed` binding is hoisted and initialized to `undefined`, but the assignment of the function expression happens at its source location. Calling `undefined()` produces the `TypeError`.
+
+### `var` in a `for` loop with `setTimeout`
+
+```js live
+for (var i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 0);
+}
+// Output: 3, 3, 3
+```
+
+`var i` is function-scoped rather than block-scoped, so all three callbacks close over the same binding. The loop increments `i` to `3` before any `setTimeout` callback runs, because macrotasks run after the current synchronous code completes. Each callback then reads the current value of the shared `i`, which is `3`.
+
+Two fixes:
+
+- Replace `var` with `let`. `let` is block-scoped, so each iteration creates a fresh binding that the callback closes over.
+- Wrap the body in an IIFE that captures the current value as a parameter: `(i => setTimeout(() => console.log(i), 0))(i)`. This was the pre-ES6 workaround.
+
+### `var` escapes block scope
+
+```js live
+if (true) {
+  var a = 1;
+  let b = 2;
+}
+console.log(a); // 1
+console.log(b); // ReferenceError: b is not defined
+```
+
+`var` is scoped to the nearest function or script, not to the enclosing block. The declaration is hoisted past `if`, `for`, `while`, and plain block statements to the containing function or module scope, which is why `a` is still visible after the `if`. `let` and `const` are block-scoped, so `b` only exists inside the block.
+
+### Redeclaration
+
+```js
+var x = 1;
+var x = 2; // OK — x is now 2
+
+let y = 1;
+let y = 2; // SyntaxError: Identifier 'y' has already been declared
+```
+
+`var` allows the same name to be redeclared in the same scope; the second declaration is a no-op and only the assignment runs. `let`, `const`, and `class` throw `SyntaxError` if the same name is declared twice in the same scope. Like hoisting, this is resolved statically before execution — duplicate lexical declarations are an _early error_ detected during parsing, so no code runs at all.
+
+### Class declarations
+
+```js live
+console.log(typeof Foo);
+
+class Foo {}
+```
+
+This throws `ReferenceError: Cannot access 'Foo' before initialization`.
+
+Class declarations are hoisted — the binding is created at the top of the enclosing block — but they remain in the Temporal Dead Zone until the `class` declaration is evaluated. Any access before that point throws, including `typeof`.
+
+This behavior can be confused with "classes are not hoisted". The two statements are observably different:
+
+- If `Foo` were not hoisted, `typeof Foo` would return `'undefined'` (the behavior for truly undeclared identifiers).
+- Because `Foo` is hoisted but uninitialized, `typeof Foo` throws.
+
+The distinction also matters for `extends` clauses, which are evaluated at class declaration time. `class A extends B {}` throws if `B` is hoisted but still in the TDZ at that point.
+
+### `typeof` and the Temporal Dead Zone
+
+```js live
+console.log(typeof undeclaredVariable); // 'undefined'
+console.log(typeof someLet); // ReferenceError
+let someLet = 1;
+```
+
+`typeof` does not throw when applied to an identifier that has no declaration anywhere in scope — it returns the string `'undefined'`. However, `typeof` does throw when applied to an identifier that is declared but still in the Temporal Dead Zone. The binding exists, and reading it (which `typeof` must do) triggers the TDZ error.
+
+This distinguishes "undeclared" (no binding in any enclosing scope) from "declared but uninitialized" (binding exists, initialization has not yet occurred).
+
+### Shared names across `var` and function declarations
+
+```js live
+function outer() {
+  console.log(inner);
+  inner();
+
+  function inner() {
+    console.log('inner called');
+  }
+
+  var inner = 'overwritten';
+}
+
+outer();
+// Output:
+// [Function: inner]
+// inner called
+```
+
+Two behaviors combine here:
+
+1. Both `var inner` and the `function inner` declaration are hoisted to the top of `outer`.
+2. When a `var` declaration and a function declaration share a name in the same scope, the function declaration takes precedence during initialization. `inner` is initialized with the function object rather than `undefined`.
+
+The `var inner = 'overwritten'` assignment takes effect only after the two `console.log` calls, so those calls observe the function. A `console.log(inner)` after the assignment would print `'overwritten'`.
+
+A `let` or `const` declaration in the same scope as a `var` of the same name produces a `SyntaxError` at parse time, before any code runs.
+
+## Common misconceptions
+
+The following statements appear frequently in explanations of hoisting, including in material generated by large language models, but are incorrect or imprecise:
+
+1. **Classes are not hoisted.** Class declarations are hoisted. They remain in the Temporal Dead Zone until the declaration is evaluated, which is observably different from not being hoisted at all — most notably, `typeof` throws on a class in the TDZ but returns `'undefined'` for a truly undeclared identifier.
+2. **`var` is hoisted; `let` and `const` are not.** All three are hoisted. They differ in initialization: `var` is initialized to `undefined` at hoist time, while `let` and `const` remain uninitialized in the TDZ until their declaration is evaluated.
+3. **`typeof` never throws on undeclared variables.** `typeof` is safe for identifiers that have no declaration anywhere in scope, but it throws in the TDZ. The `typeof x === 'undefined'` guard is only safe if `x` is not declared anywhere in the enclosing scope.
+4. **Function declarations are hoisted; function expressions are not.** Both are hoisted, but only the binding. In `var fn = function () {}`, the `var fn` declaration is hoisted and initialized to `undefined`. In `let fn = function () {}`, the binding is hoisted but remains in the TDZ. The function body is never hoisted for expressions.
 
 ## Further reading
 
 - [Hoisting | MDN](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting)
+- [ECMA-262 §14.2.6 Block Runtime Semantics: Evaluation](https://tc39.es/ecma262/#sec-block-runtime-semantics-evaluation)
+- [Temporal Dead Zone | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let#temporal_dead_zone_tdz)
 - [What is Hoisting in JavaScript?](https://www.freecodecamp.org/news/what-is-hoisting-in-javascript)

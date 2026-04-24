@@ -4,118 +4,189 @@ title: Explain what a single page app is and how to make one SEO-friendly
 
 ## TL;DR
 
-A single page application (SPA) is a web application that loads a single HTML page and dynamically updates content as the user interacts with the app. This approach provides a more fluid user experience but can be challenging for SEO because search engines may not execute JavaScript to render content. To make an SPA SEO-friendly, you can use server-side rendering (SSR) or static site generation (SSG) to ensure that search engines can index your content. Tools like Next.js for React or Nuxt.js for Vue.js can help achieve this.
+A single page application (SPA) is a web application that loads a single HTML document and updates its content in the browser via JavaScript, rather than requesting a new page from the server on each navigation. This model provides application-like UX but presents challenges for search engine indexing because the initial HTML does not contain the rendered content.
+
+In current practice, SPAs are made SEO-friendly by producing HTML on the server rather than relying solely on client-side rendering. The available strategies are server-side rendering (SSR), static site generation (SSG), incremental static regeneration (ISR), and streaming with React Server Components. Each strategy offers a different tradeoff between freshness, server cost, and time to first paint, and modern frameworks such as Next.js, Nuxt, Remix, SvelteKit, and Astro support selecting the strategy per route.
 
 ---
 
 ## What is a single page app?
 
-### Definition
+A SPA is a web application that loads a single HTML document and performs navigation and content updates on the client via JavaScript. The initial page load retrieves the HTML shell and application bundle; subsequent user actions update the DOM in place rather than triggering full-page navigations.
 
-A single page application (SPA) is a web application that interacts with the user by dynamically rewriting the current page rather than loading entire new pages from the server. This results in a more fluid user experience, similar to a desktop application.
+Key characteristics:
 
-### Key characteristics
+- A single HTML document is served on initial load; subsequent views are rendered client-side.
+- The `fetch` API (or `XMLHttpRequest`) is used to communicate with the server without full-page reloads.
+- A client-side router (for example, `react-router` or `vue-router`) maps URL changes to view transitions.
+- Application state is typically held in memory rather than stored per request.
 
-- The application loads a single HTML page and dynamically updates it as the user interacts with the app
-- Uses AJAX or Fetch API to communicate with the server and update the page without a full reload
-- Often relies on client-side routing to manage different views or states within the app
+Benefits:
 
-### Benefits
+- Smoother navigation after the initial load.
+- Reduced server load, because subsequent navigations do not require rendering a new page.
+- Application-like interaction patterns, such as preserved state across route transitions.
 
-- Faster interactions after the initial load
-- Reduced server load due to fewer full-page requests
-- Improved user experience with smoother transitions
+## How search engines render JavaScript
 
-## How to make an SPA SEO-friendly
+The statement "Google cannot index JavaScript" is out of date. The practical situation is more nuanced:
 
-### Challenges
+- **Googlebot executes JavaScript** using an evergreen Chromium-based renderer. The bot fetches HTML first, and pages requiring JavaScript rendering are added to a separate render queue. The render queue has improved substantially since 2019, but indexing of JS-rendered content is typically slower than indexing of server-rendered HTML.
+- **Rendering is separate from crawling.** This two-phase model means JS-rendered content can appear in the index later than its server-rendered counterpart, which is a disadvantage for time-sensitive content or highly competitive queries.
+- **Other search engines render JavaScript less reliably.** Bing's JavaScript rendering is less consistent than Google's, and other engines such as Yandex and Baidu have more limited support. SSR or prerendering is therefore still relevant when non-Google traffic is important.
+- **Social and preview scrapers do not execute JavaScript.** Clients that fetch OpenGraph and Twitter Card metadata — including Slack, LinkedIn, Discord, and Facebook — read the initial HTML only. Meta tags that are injected by client-side code are not visible to these clients.
 
-SPAs can be challenging for SEO because search engines may not execute JavaScript to render content. This can result in search engines indexing an empty or incomplete page.
+For details, see Google's [JavaScript SEO documentation](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics) and the [Google Search Central documentation on rendering](https://developers.google.com/search/docs/crawling-indexing/javascript/dynamic-rendering).
 
-### Solutions
+## Rendering strategies
 
-#### Server-side rendering (SSR)
+Modern frameworks allow different strategies to be used on different routes within the same application.
 
-Server-side rendering involves rendering the initial HTML of the page on the server before sending it to the client. This ensures that search engines can index the fully rendered content.
+### Server-side rendering (SSR)
 
-- **React**: Use Next.js, which provides built-in support for SSR
-- **Vue.js**: Use Nuxt.js, which also supports SSR out of the box
+The server renders the HTML for each request using the current application state. This produces indexable HTML on first response and reflects up-to-date data, at the cost of per-request server rendering.
 
-Example with Next.js:
+Example with the Next.js App Router:
 
-```javascript
-import React from 'react';
-import { GetServerSideProps } from 'next';
+```jsx
+// app/products/[id]/page.tsx — a React Server Component, async by default
+export default async function ProductPage({ params }) {
+  const res = await fetch(`https://api.example.com/products/${params.id}`, {
+    cache: 'no-store',
+  });
+  const product = await res.json();
 
-const Page = ({ data }) => {
   return (
     <div>
-      <h1>{data.title}</h1>
-      <p>{data.content}</p>
+      <h1>{product.title}</h1>
+      <p>{product.description}</p>
     </div>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await fetch('https://api.example.com/data');
-  const data = await res.json();
-
-  return {
-    props: {
-      data,
-    },
-  };
-};
-
-export default Page;
+}
 ```
 
-#### Static site generation (SSG)
+The App Router, introduced in Next.js 13, replaces the `getServerSideProps` data-fetching function of the Pages Router with async Server Components. `cache: 'no-store'` opts out of the framework's data cache to produce a fresh render on each request.
 
-Static site generation involves generating the HTML for each page at build time. This approach is suitable for content that doesn't change frequently.
+### Static site generation (SSG)
 
-- **React**: Use Next.js with its static generation capabilities
-- **Vue.js**: Use Nuxt.js with its static site generation feature
+HTML is produced at build time and served as static files. This is the cheapest option to host, produces the fastest first-byte response, and is suitable for content that does not change per request.
 
-Example with Next.js:
+```jsx
+// app/blog/[slug]/page.tsx
+export async function generateStaticParams() {
+  const posts = await fetch('https://api.example.com/posts').then((r) =>
+    r.json(),
+  );
+  return posts.map((p) => ({ slug: p.slug }));
+}
 
-```javascript
-import React from 'react';
-import { GetStaticProps } from 'next';
+export default async function Post({ params }) {
+  const post = await fetch(`https://api.example.com/posts/${params.slug}`).then(
+    (r) => r.json(),
+  );
+  return <article>{post.body}</article>;
+}
+```
 
-const Page = ({ data }) => {
+### Incremental static regeneration (ISR)
+
+Pages are generated statically and cached, with a configurable revalidation interval. The cached HTML is served immediately; when the revalidation interval expires, the framework regenerates the page in the background on the next request. This combines SSG's serving cost with tunable freshness.
+
+```jsx
+// app/categories/[slug]/page.tsx
+export default async function Category({ params }) {
+  const res = await fetch(`https://api.example.com/categories/${params.slug}`, {
+    next: { revalidate: 3600 },
+  });
+  const category = await res.json();
+  return <CategoryView data={category} />;
+}
+```
+
+### React Server Components with streaming
+
+React Server Components execute on the server and ship as a serialized tree rather than HTML. Combined with `Suspense` boundaries, the framework can stream the HTML shell early and defer slower sections until their data resolves. This is useful for pages with a fast critical section and slower below-the-fold content.
+
+```jsx
+import { Suspense } from 'react';
+
+export default function Feed() {
   return (
-    <div>
-      <h1>{data.title}</h1>
-      <p>{data.content}</p>
-    </div>
+    <>
+      <Header />
+      <Suspense fallback={<FeedSkeleton />}>
+        <SlowFeed />
+      </Suspense>
+    </>
   );
-};
-
-export const getStaticProps: GetStaticProps = async () => {
-  const res = await fetch('https://api.example.com/data');
-  const data = await res.json();
-
-  return {
-    props: {
-      data,
-    },
-  };
-};
-
-export default Page;
+}
 ```
 
-#### Pre-rendering with tools
+### Client-side rendering (CSR)
 
-Some tools can pre-render your SPA and serve the pre-rendered HTML to search engines.
+The HTML shell is served, and the full view is rendered by JavaScript in the browser. This remains appropriate for views that are not intended to be indexed, such as authenticated dashboards and internal tools, where SSR adds server cost without SEO benefit.
 
-- **Prerender.io**: A service that pre-renders your JavaScript application and serves the static HTML to search engines
-- **Rendertron**: A headless Chrome rendering solution that can be used to pre-render your SPA
+## Choosing a strategy per route
+
+The appropriate strategy depends on the route's data characteristics and indexing requirements. A typical allocation is:
+
+| Use case | Recommended strategy | Rationale |
+| --- | --- | --- |
+| E-commerce product page | ISR, short revalidation window | Prices and inventory change, but not per visit; cached HTML improves Largest Contentful Paint |
+| Marketing site, documentation, blog | SSG | No per-request variability; suitable for CDN distribution |
+| Dashboard behind authentication | CSR | Not indexed; SSR provides no SEO benefit and increases server cost |
+| Personalized feed or homepage | RSC with streaming | Fast shell response; personalized content is streamed as it resolves |
+| Search results page | SSR | Query-dependent output that should be indexable for long-tail queries |
+| Real-time dashboard | CSR | Data changes more frequently than server HTML can be regenerated usefully |
+| Breaking news article | SSR or short-window ISR | Freshness is important; SSR under traffic spikes, ISR otherwise |
+
+## Core Web Vitals comparison
+
+The rendering strategy affects the metrics used by search ranking and perceived performance. The following table gives illustrative ranges for a content page with approximately 100 KB of data, measured on a slow mobile connection. Actual values depend on payload size, server region, and CDN configuration, and should be measured against the specific deployment.
+
+| Strategy | TTFB | LCP | Notes |
+| --- | --- | --- | --- |
+| CSR | Low | High | Fast first byte (shell only); LCP blocked by JS download and API round trip |
+| SSR | Moderate | Low | Slower first byte due to server rendering; content visible sooner |
+| SSG | Low | Low | CDN-cached HTML; typically the fastest overall |
+| ISR | Low | Low | Served from CDN cache; regenerated in background on revalidation |
+| RSC streaming | Low | Low | Shell streams first; Suspense boundaries hydrate as data resolves |
+
+Tools such as [PageSpeed Insights](https://pagespeed.web.dev/) and WebPageTest provide lab measurements against a specific URL.
+
+## Framework coverage
+
+Several frameworks support the strategies above:
+
+- **[Next.js](https://nextjs.org/)** (React) — App Router is the current default. Supports SSR, SSG, ISR, and React Server Components with streaming.
+- **[Remix](https://remix.run/)** (React) — Emphasizes web standards and nested routing with loader and action functions. Merged with React Router in 2024.
+- **[Nuxt](https://nuxt.com/)** (Vue) — Supports SSR, SSG, ISR (via the Nitro server), and hybrid rendering.
+- **[SvelteKit](https://kit.svelte.dev/)** (Svelte) — Adapter-based; deploys as SSR, SSG, or edge functions depending on configuration.
+- **[Astro](https://astro.build/)** — Island architecture. Ships zero JavaScript by default and hydrates only the components marked as interactive. Well suited to content-heavy sites with limited interactivity.
+- **[SolidStart](https://start.solidjs.com/)** (Solid) — Architecturally similar to SvelteKit with Solid's fine-grained reactivity.
+
+General guidance for new projects:
+
+- Content-heavy sites with limited interactivity: Astro.
+- React applications with a mix of interactive and indexable routes: Next.js or Remix.
+- Vue applications: Nuxt.
+
+A framework with SSR or SSG support is preferable to pure client-side rendering when SEO is a requirement, even for applications that would otherwise be implemented as a traditional SPA.
+
+## Common misconceptions
+
+1. **"SSR means no JavaScript on the client."** SSR produces server-rendered HTML, but the client still downloads and hydrates the JavaScript bundle to attach event handlers. The bundle size is generally comparable to the CSR equivalent.
+2. **"CSR is not SEO-friendly."** Googlebot indexes content rendered by JavaScript. The practical concerns are latency, indexing reliability, and compatibility with non-Google engines and social scrapers. For high-competition queries these concerns are significant; for long-tail content they may be acceptable.
+3. **"SSR should be used for everything."** SSR has a per-request CPU cost. For content that does not vary per request, SSG is substantially cheaper to serve. Defaulting to SSR when SSG would suffice increases hosting cost without benefit.
+4. **"Hydration is free."** Hydration re-executes the component tree on the client to attach event handlers. Large hydration trees can affect Interaction to Next Paint (INP) and other interactivity metrics. React Server Components reduce hydration cost by allowing portions of the tree to remain server-only.
 
 ## Further reading
 
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Nuxt.js Documentation](https://nuxtjs.org/docs)
-- [Prerender.io](https://prerender.io/)
-- [Rendertron](https://github.com/GoogleChrome/rendertron)
+- [Next.js App Router documentation](https://nextjs.org/docs/app)
+- [React Server Components overview](https://react.dev/reference/rsc/server-components)
+- [Google Search Central: JavaScript SEO basics](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics)
+- [web.dev: Rendering on the Web](https://web.dev/articles/rendering-on-the-web)
+- [Remix Documentation](https://remix.run/docs)
+- [Astro Documentation](https://docs.astro.build/)
+- [Nuxt Documentation](https://nuxt.com/docs)
+- [SvelteKit Documentation](https://kit.svelte.dev/docs/introduction)

@@ -354,13 +354,15 @@ In JavaScript, `let`, `var`, and `const` are all keywords used to declare variab
 
 <!-- Update here: /questions/what-is-the-difference-between-double-equal-and-triple-equal/en-US.mdx -->
 
-`==` is the abstract equality operator while `===` is the strict equality operator. The `==` operator will compare for equality after doing any necessary type conversions. The `===` operator will not do type conversion, so if two values are not the same type `===` will simply return `false`.
+`==` is the abstract equality operator while `===` is the strict equality operator. `==` performs type coercion before comparing, following the Abstract Equality Comparison algorithm defined in the ECMAScript specification. `===` does not perform coercion and returns `false` whenever the operand types differ. `===` is generally preferred in application code because it eliminates a class of bugs caused by unexpected coercion. The most common exception is `x == null`, which checks for both `null` and `undefined` in a single comparison.
 
 | Operator | `==` | `===` |
 | --- | --- | --- |
-| Name | (Loose) Equality operator | Strict equality operator |
-| Type coercion | Yes | No |
-| Compares value and type | No | Yes |
+| Name | Loose (abstract) equality operator | Strict equality operator |
+| Type coercion | Yes — per the Abstract Equality Comparison algorithm | No |
+| Comparison behavior | Types may be coerced before the value comparison | Types are compared first |
+
+> **Don't confuse `=` with `==` and `===`.** `=` is the [assignment operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Assignment) — it sets a variable's value (`x = 5`) and does not compare anything.
 
 <!-- Update here: /questions/what-is-the-difference-between-double-equal-and-triple-equal/en-US.mdx -->
 
@@ -382,19 +384,11 @@ The event loop is a concept within the JavaScript runtime environment regarding 
 2. When an asynchronous operation is encountered (e.g., `setTimeout()`, HTTP request), it is offloaded to the respective Web API or Node.js API to handle the operation in the background.
 3. Once the asynchronous operation completes, its callback function is placed in the respective queues – task queues (also known as macrotask queues / callback queues) or microtask queues. We will refer to "task queue" as "macrotask queue" from here on to better differentiate from the microtask queue.
 4. The event loop continuously monitors the call stack and executes items on the call stack. If/when the call stack is empty:
-   1. Microtask queue is processed. Microtasks include promise callbacks (`then`, `catch`, `finally`), `MutationObserver` callbacks, and calls to `queueMicrotask()`. The event loop takes the first callback from the microtask queue and pushes it to the call stack for execution. This repeats until the microtask queue is empty.
+   1. Microtask queue is processed. Microtasks include promise callbacks (`then`, `catch`, `finally`), `await` continuations, `MutationObserver` callbacks, and calls to `queueMicrotask()`. The event loop takes the first callback from the microtask queue and pushes it to the call stack for execution. This repeats until the microtask queue is empty.
    2. Macrotask queue is processed. Macrotasks include web APIs like `setTimeout()`, HTTP requests, user interface event handlers like clicks, scrolls, etc. The event loop dequeues the first callback from the macrotask queue and pushes it onto the call stack for execution. However, after a macrotask queue callback is processed, the event loop does not proceed with the next macrotask yet! The event loop first checks the microtask queue. Checking the microtask queue is necessary as microtasks have higher priority than macrotask queue callbacks. The macrotask queue callback that was just executed could have added more microtasks!
       1. If the microtask queue is non-empty, process them as per the previous step.
       2. If the microtask queue is empty, the next macrotask queue callback is processed. This repeats until the macrotask queue is empty.
 5. This process continues indefinitely, allowing the JavaScript engine to handle both synchronous and asynchronous operations efficiently without blocking the call stack.
-
-The unfortunate truth is that it is extremely hard to explain the event loop well using only text. We recommend checking out one of the following excellent videos explaining the event loop:
-
-- [JavaScript Visualized - Event Loop, Web APIs, (Micro)task Queue](https://www.youtube.com/watch?v=eiC58R16hb8) (2024): Lydia Hallie is a popular educator on JavaScript and this is the best recent video explaining the event loop. There's also an [accompanying blog post](https://www.lydiahallie.com/blog/event-loop) for those who prefer detailed text-based explanations.
-- [In the Loop](https://www.youtube.com/watch?v=cCOL7MC4Pl0) (2018): Jake Archibald previously from the Chrome team provides a visual demonstration of the event loop during JSConf 2018, accounting for different types of tasks.
-- [What the heck is the event loop anyway?](https://www.youtube.com/watch?v=8aGhZQkoFbQ) (2014): Philip Roberts gave this epic talk at JSConf 2014 and it is one of the most viewed JavaScript videos on YouTube.
-
-We recommend watching [Lydia's video](https://www.youtube.com/watch?v=eiC58R16hb8) as it is the most modern and concise explanation standing at only 13 minutes long whereas the other videos are at least 30 minutes long. Her video is sufficient for the purpose of interviews.
 
 <!-- Update here: /questions/what-is-event-loop-what-is-the-difference-between-call-stack-and-task-queue/en-US.mdx -->
 
@@ -2611,13 +2605,15 @@ myFunction(); // Output: 'Hello, world!'
 
 <!-- Update here: /questions/what-is-the-difference-between-double-equal-and-triple-equal/en-US.mdx -->
 
-`==` is the abstract equality operator while `===` is the strict equality operator. The `==` operator will compare for equality after doing any necessary type conversions. The `===` operator will not do type conversion, so if two values are not the same type `===` will simply return `false`.
+`==` is the abstract equality operator while `===` is the strict equality operator. `==` performs type coercion before comparing, following the Abstract Equality Comparison algorithm defined in the ECMAScript specification. `===` does not perform coercion and returns `false` whenever the operand types differ. `===` is generally preferred in application code because it eliminates a class of bugs caused by unexpected coercion. The most common exception is `x == null`, which checks for both `null` and `undefined` in a single comparison.
 
 | Operator | `==` | `===` |
 | --- | --- | --- |
-| Name | (Loose) Equality operator | Strict equality operator |
-| Type coercion | Yes | No |
-| Compares value and type | No | Yes |
+| Name | Loose (abstract) equality operator | Strict equality operator |
+| Type coercion | Yes — per the Abstract Equality Comparison algorithm | No |
+| Comparison behavior | Types may be coerced before the value comparison | Types are compared first |
+
+> **Don't confuse `=` with `==` and `===`.** `=` is the [assignment operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Assignment) — it sets a variable's value (`x = 5`) and does not compare anything.
 
 <!-- Update here: /questions/what-is-the-difference-between-double-equal-and-triple-equal/en-US.mdx -->
 
@@ -3428,22 +3424,20 @@ console.log(deepCopyObject); // { a: 1, b: 2 };
 
 <!-- Update here: /questions/explain-the-difference-between-shallow-copy-and-deep-copy/en-US.mdx -->
 
-A shallow copy duplicates the top-level properties of an object, but nested objects are still referenced. A deep copy duplicates all levels of an object, creating entirely new instances of nested objects. For example, using `Object.assign()` creates a shallow copy, while using libraries like `Lodash` or `structuredClone()` in modern JavaScript can create deep copies.
+A shallow copy duplicates the top-level properties of an object, but nested objects are still referenced. A deep copy duplicates all levels of an object, creating entirely new instances of nested objects. `Object.assign()` and the spread operator (`...`) create shallow copies. `structuredClone()` is the modern built-in for deep copies. `JSON.parse(JSON.stringify())` and Lodash's `_.cloneDeep` are other common approaches, each with different tradeoffs around which values they can faithfully clone.
 
 ```js live
-// Shallow copy example
+// Shallow copy — nested object is shared
 let obj1 = { a: 1, b: { c: 2 } };
-let shallowCopy = Object.assign({}, obj1);
+let shallowCopy = { ...obj1 };
 shallowCopy.b.c = 3;
-console.log(shallowCopy.b.c); // Output: 3
-console.log(obj1.b.c); // Output: 3 (original nested object changed too!)
+console.log(obj1.b.c); // 3 — original mutated too
 
-// Deep copy example
+// Deep copy — fully independent
 let obj2 = { a: 1, b: { c: 2 } };
-let deepCopy = JSON.parse(JSON.stringify(obj2));
+let deepCopy = structuredClone(obj2);
 deepCopy.b.c = 4;
-console.log(deepCopy.b.c); // Output: 4
-console.log(obj2.b.c); // Output: 2 (original nested object remains unchanged)
+console.log(obj2.b.c); // 2 — original unchanged
 ```
 
 <!-- Update here: /questions/explain-the-difference-between-shallow-copy-and-deep-copy/en-US.mdx -->
@@ -3756,19 +3750,11 @@ The event loop is a concept within the JavaScript runtime environment regarding 
 2. When an asynchronous operation is encountered (e.g., `setTimeout()`, HTTP request), it is offloaded to the respective Web API or Node.js API to handle the operation in the background.
 3. Once the asynchronous operation completes, its callback function is placed in the respective queues – task queues (also known as macrotask queues / callback queues) or microtask queues. We will refer to "task queue" as "macrotask queue" from here on to better differentiate from the microtask queue.
 4. The event loop continuously monitors the call stack and executes items on the call stack. If/when the call stack is empty:
-   1. Microtask queue is processed. Microtasks include promise callbacks (`then`, `catch`, `finally`), `MutationObserver` callbacks, and calls to `queueMicrotask()`. The event loop takes the first callback from the microtask queue and pushes it to the call stack for execution. This repeats until the microtask queue is empty.
+   1. Microtask queue is processed. Microtasks include promise callbacks (`then`, `catch`, `finally`), `await` continuations, `MutationObserver` callbacks, and calls to `queueMicrotask()`. The event loop takes the first callback from the microtask queue and pushes it to the call stack for execution. This repeats until the microtask queue is empty.
    2. Macrotask queue is processed. Macrotasks include web APIs like `setTimeout()`, HTTP requests, user interface event handlers like clicks, scrolls, etc. The event loop dequeues the first callback from the macrotask queue and pushes it onto the call stack for execution. However, after a macrotask queue callback is processed, the event loop does not proceed with the next macrotask yet! The event loop first checks the microtask queue. Checking the microtask queue is necessary as microtasks have higher priority than macrotask queue callbacks. The macrotask queue callback that was just executed could have added more microtasks!
       1. If the microtask queue is non-empty, process them as per the previous step.
       2. If the microtask queue is empty, the next macrotask queue callback is processed. This repeats until the macrotask queue is empty.
 5. This process continues indefinitely, allowing the JavaScript engine to handle both synchronous and asynchronous operations efficiently without blocking the call stack.
-
-The unfortunate truth is that it is extremely hard to explain the event loop well using only text. We recommend checking out one of the following excellent videos explaining the event loop:
-
-- [JavaScript Visualized - Event Loop, Web APIs, (Micro)task Queue](https://www.youtube.com/watch?v=eiC58R16hb8) (2024): Lydia Hallie is a popular educator on JavaScript and this is the best recent video explaining the event loop. There's also an [accompanying blog post](https://www.lydiahallie.com/blog/event-loop) for those who prefer detailed text-based explanations.
-- [In the Loop](https://www.youtube.com/watch?v=cCOL7MC4Pl0) (2018): Jake Archibald previously from the Chrome team provides a visual demonstration of the event loop during JSConf 2018, accounting for different types of tasks.
-- [What the heck is the event loop anyway?](https://www.youtube.com/watch?v=8aGhZQkoFbQ) (2014): Philip Roberts gave this epic talk at JSConf 2014 and it is one of the most viewed JavaScript videos on YouTube.
-
-We recommend watching [Lydia's video](https://www.youtube.com/watch?v=eiC58R16hb8) as it is the most modern and concise explanation standing at only 13 minutes long whereas the other videos are at least 30 minutes long. Her video is sufficient for the purpose of interviews.
 
 <!-- Update here: /questions/what-is-event-loop-what-is-the-difference-between-call-stack-and-task-queue/en-US.mdx -->
 
@@ -7090,7 +7076,9 @@ Different JavaScript engines (which differ across browsers) implement different 
 
 <!-- Update here: /questions/explain-what-a-single-page-app-is-and-how-to-make-one-seo-friendly/en-US.mdx -->
 
-A single page application (SPA) is a web application that loads a single HTML page and dynamically updates content as the user interacts with the app. This approach provides a more fluid user experience but can be challenging for SEO because search engines may not execute JavaScript to render content. To make an SPA SEO-friendly, you can use server-side rendering (SSR) or static site generation (SSG) to ensure that search engines can index your content. Tools like Next.js for React or Nuxt.js for Vue.js can help achieve this.
+A single page application (SPA) is a web application that loads a single HTML document and updates its content in the browser via JavaScript, rather than requesting a new page from the server on each navigation. This model provides application-like UX but presents challenges for search engine indexing because the initial HTML does not contain the rendered content.
+
+In current practice, SPAs are made SEO-friendly by producing HTML on the server rather than relying solely on client-side rendering. The available strategies are server-side rendering (SSR), static site generation (SSG), incremental static regeneration (ISR), and streaming with React Server Components. Each strategy offers a different tradeoff between freshness, server cost, and time to first paint, and modern frameworks such as Next.js, Nuxt, Remix, SvelteKit, and Astro support selecting the strategy per route.
 
 <!-- Update here: /questions/explain-what-a-single-page-app-is-and-how-to-make-one-seo-friendly/en-US.mdx -->
 

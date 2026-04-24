@@ -32,7 +32,7 @@
     "vite-plus": "catalog:"
   },
   "engines": {
-    "node": ">= 22.15.0"
+    "node": ">= 24.15.0"
   },
   "packageManager": "pnpm@10.9.0"
 }

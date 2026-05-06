@@ -52,6 +52,82 @@ const elementById = document.getElementById('my-id');
 - **Return value**: `document.querySelector()` returns the first matching element, whereas `document.getElementById()` returns the element with the specified ID.
 - **Performance**: `document.getElementById()` is generally faster because it directly accesses the element by ID, while `document.querySelector()` has to parse the CSS selector.
 
+## The full DOM-query method comparison
+
+`querySelector` and `getElementById` are two of the seven main DOM-query methods. The most important practical distinction across all of them is whether the result is a live or a static collection.
+
+| Method | Selector input | Returns | Live? | When to use |
+| --- | --- | --- | --- | --- |
+| `getElementById(id)` | id string | `Element` or `null` | No (single element) | Single element by id; hot-path code |
+| `querySelector(sel)` | Any CSS selector | First match or `null` | No (snapshot) | First element matching any selector |
+| `querySelectorAll(sel)` | Any CSS selector | Static `NodeList` | No (snapshot) | All matches as a frozen list |
+| `getElementsByClassName(name)` | Class name | `HTMLCollection` | Yes (auto-updates) | When you need a live collection |
+| `getElementsByTagName(tag)` | Tag name | `HTMLCollection` | Yes | Same |
+| `getElementsByName(name)` | `name` attribute | `NodeList` | Yes | Form elements by `name` |
+| `closest(sel)` | Any CSS selector | Nearest matching ancestor (or self) or `null` | N/A | Walking up from a target inside event handlers |
+
+The live vs snapshot distinction is a common source of subtle bugs.
+
+## Live vs static collections (predict the output)
+
+```js live
+document.body.innerHTML = '<div class="x"></div><div class="x"></div>';
+
+const live = document.getElementsByClassName('x'); // HTMLCollection (live)
+const snapshot = document.querySelectorAll('.x'); // NodeList (static)
+
+console.log('before:', live.length, snapshot.length); // 2, 2
+
+document.body.insertAdjacentHTML('beforeend', '<div class="x"></div>');
+
+console.log('after: ', live.length, snapshot.length); // 3, 2
+```
+
+The live `HTMLCollection` updates automatically when DOM nodes are added or removed. The static `NodeList` from `querySelectorAll` does not.
+
+This matters in practice in two specific ways:
+
+- **Iterating a live collection while mutating it** is a classic infinite-loop bug. Reading `live[i]` after appending more matching nodes hits the new ones too, and the `for` loop never finishes.
+- **Caching a `querySelectorAll` result** is safe; caching `getElementsByClassName` is not. The cached reference silently changes as the DOM changes.
+
+Prefer `querySelectorAll` for most modern use cases (it has `forEach`, and array spread `[...]` works on it). Reach for the live collections only when you specifically want auto-updating behavior.
+
+## Performance: how much does it actually matter?
+
+The "`getElementById` is faster" claim is technically true but practically irrelevant in nearly all code:
+
+- A single call to any of these methods on a typical page takes well under a microsecond on modern browsers. Engines maintain an internal id-to-element map for `getElementById`, and they typically optimize `querySelector('#myId')` to use the same fast path for the simple `#id` selector form.
+- The performance gap only matters inside hot loops doing tens of thousands of calls per frame, such as interactive canvases, grid renderers, and animation systems. In ordinary application code (event handlers, init code, framework hooks), choose by clarity, not micro-benchmarks.
+- For complex selectors (such as `'div.menu > a:nth-child(odd)'`), `querySelector` parses the selector on every call (engines may cache internally, but it is not guaranteed by the spec). The cost is small per call and well under the 16ms budget for a 60Hz frame, but it does add up in tight loops — cache the result if you query the same selector repeatedly.
+
+If you genuinely need maximum speed for repeated lookups, cache the reference:
+
+```js
+const button = document.getElementById('action'); // cache once
+button.addEventListener('click', handle); // reuse forever
+```
+
+The common waste is re-querying inside event handlers, not the choice between methods.
+
+## What about `closest()`, `matches()`, and `contains()`?
+
+Three more methods round out the modern DOM-query toolkit:
+
+- `element.closest(selector)` walks up from the element (including the element itself) and returns the nearest ancestor matching the selector, or `null`. It is constantly useful in event-delegation handlers:
+
+  ```js
+  table.addEventListener('click', (event) => {
+    const row = event.target.closest('tr[data-id]');
+    if (row) editRow(row.dataset.id);
+  });
+  ```
+
+- `element.matches(selector)` returns `true` or `false` for whether the element matches the CSS selector. Useful inside delegated handlers when you want to confirm the target type without a `tagName` check.
+
+- `parent.contains(child)` returns `true` if `child` is `parent` or anywhere inside it. Useful for outside-click detection: `if (!modal.contains(event.target)) close()`.
+
+These three plus `querySelector` and `querySelectorAll` form the modern toolkit. The older `getElementsBy*` methods are legacy and rarely the right default in new code.
+
 ## Further reading
 
 - [MDN Web Docs: document.querySelector()](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector)

@@ -49,17 +49,15 @@ let intervalId = setInterval(() => {
 
 ---
 
-## Debouncing and throttling
+## What is debouncing in JavaScript?
 
-### Debouncing
+Debouncing is a technique that ensures a function only executes after a specified period of inactivity. Every time the function is called, the timer resets. Only when the calls stop for the specified delay does the function actually run.
 
-Debouncing is a technique used to ensure that a function is only executed after a certain amount of time has passed since it was last invoked. This is particularly useful in scenarios where you want to limit the number of times a function is called, such as when handling user input events like keypresses or mouse movements.
-
-#### Example use case
+### Example use case
 
 Imagine you have a search input field and you want to make an API call to fetch search results. Without debouncing, an API call would be made every time the user types a character, which could lead to a large number of unnecessary calls. Debouncing ensures that the API call is only made after the user has stopped typing for a specified amount of time.
 
-#### Code example
+### Code example
 
 ```js
 function debounce(func, delay) {
@@ -81,15 +79,15 @@ document.getElementById('searchInput').addEventListener('input', (event) => {
 });
 ```
 
-### Throttling
+## What is throttling in JavaScript?
 
-Throttling is a technique used to ensure that a function is called at most once in a specified time interval. This is useful in scenarios where you want to limit the number of times a function is called, such as when handling events like window resizing or scrolling.
+Throttling is a technique that ensures a function runs at most once per specified time interval, no matter how often it is invoked. Calls in between are dropped (or coalesced into the next interval).
 
-#### Example use case
+### Example use case
 
 Imagine you have a function that updates the position of elements on the screen based on the window size. Without throttling, this function could be called many times per second as the user resizes the window, leading to performance issues. Throttling ensures that the function is only called at most once in a specified time interval.
 
-#### Code example
+### Code example
 
 ```js live
 function throttle(func, limit) {
@@ -106,11 +104,167 @@ function throttle(func, limit) {
 // Usage
 const handleResize = throttle(() => {
   // Update element positions
-  console.log('Window resized');
-}, 100);
+  console.log('Window resized at', new Date().toLocaleTimeString());
+}, 1000);
 
-window.addEventListener('resize', handleResize);
+// In a real app you'd just do: window.addEventListener('resize', handleResize)
+// The setInterval below only exists to drive the demo in the playground.
+let count = 0;
+const intervalId = setInterval(() => {
+  handleResize();
+  if (++count >= 30) clearInterval(intervalId);
+}, 100);
+// 'Window resized' is logged at most once per second despite 10 calls/second
 ```
+
+## Debounce vs throttle: what's the difference?
+
+|  | Debounce | Throttle |
+| --- | --- | --- |
+| When does the function fire? | After a quiet period (no calls for `delay` ms) | At most once per `interval` ms while calls keep coming |
+| What happens to intermediate calls? | All but the most recent are dropped | All but the first per interval are dropped (or coalesced if trailing edge is enabled) |
+| Worst-case latency | Unbounded: if calls never stop, the function never fires | Bounded: fires at least once per `interval` |
+| Output cadence with rapid-fire input | One call after silence | Steady stream, one per `interval` |
+| Best for | "Wait until the user is done": search-as-you-type, autosave-after-edits, validation-after-input | "Sample at a rate I control": scroll, mousemove, resize, drag |
+
+In one line: debounce coalesces a burst of calls into one call at the end; throttle limits the burst to a steady cadence.
+
+## Leading and trailing edges
+
+Production implementations of debounce and throttle (such as Lodash's) accept `leading` and `trailing` flags. The basic implementations above are trailing-only debounce and leading-only throttle, which is why they often surprise candidates in interviews.
+
+| Function | `leading` default | `trailing` default | Behavior |
+| --- | --- | --- | --- |
+| `_.debounce(fn, wait)` | `false` | `true` | Fires only at the end of the quiet period |
+| `_.throttle(fn, wait)` | `true` | `true` | Fires at the start AND at the end of each interval |
+
+Here is a debounce that supports both edges plus a `maxWait` cap (so it cannot defer forever):
+
+```js
+function debounce(
+  fn,
+  wait,
+  { leading = false, trailing = true, maxWait } = {},
+) {
+  let timer = null;
+  let lastCall = 0;
+  let lastInvoke = 0;
+  let lastArgs;
+  let lastThis;
+
+  function invoke(time) {
+    lastInvoke = time;
+    const args = lastArgs;
+    const ctx = lastThis;
+    lastArgs = lastThis = null;
+    fn.apply(ctx, args);
+  }
+
+  return function debounced(...args) {
+    const now = Date.now();
+    const isFirstCall = lastCall === 0;
+    lastCall = now;
+    lastArgs = args;
+    lastThis = this;
+
+    if (timer) clearTimeout(timer);
+
+    if (leading && isFirstCall) invoke(now);
+
+    const remainingWait = maxWait
+      ? Math.min(wait, maxWait - (now - lastInvoke))
+      : wait;
+
+    timer = setTimeout(() => {
+      timer = null;
+      if (trailing && lastArgs) invoke(Date.now());
+      lastCall = 0;
+    }, remainingWait);
+  };
+}
+```
+
+## Predict the output
+
+### Debounce closure: which call wins?
+
+What does this print?
+
+```js live
+function debounce(fn, delay) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), delay);
+  };
+}
+
+const log = debounce((x) => console.log(x), 100);
+for (var i = 0; i < 3; i++) log(i);
+// What gets logged?
+```
+
+Only `2` is logged, once. The first two calls are cancelled by `clearTimeout`, and only the last `args` (when `i === 2`) survives. This is the defining behavior of trailing-edge debounce: the call fires with the most recent arguments after the quiet period. The `var` is incidental; the debounce is what drops the earlier calls.
+
+### Throttle drops the trailing call
+
+This is one of the most common debounce/throttle interview bugs. The basic throttle from earlier looks correct, but has a subtle problem:
+
+```js live
+function throttle(fn, limit) {
+  let inThrottle = false;
+  return function (...args) {
+    if (!inThrottle) {
+      fn.apply(this, args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
+}
+
+const log = throttle((x) => console.log('fired:', x), 100);
+log(1); // fires: 1
+log(2); // dropped (inside cooldown)
+log(3); // dropped (inside cooldown)
+// 100ms later: nothing fires, even though log(3) was the latest
+```
+
+The fix is to queue the latest arguments and invoke them when the cooldown ends, so the user does not lose the final state of a drag, scroll, or resize. Lodash does this by default via its `trailing: true` option.
+
+### `requestAnimationFrame` throttle
+
+For scroll and pointer handlers, time-based throttle is the wrong tool. The browser paints at the display refresh rate (typically 60Hz, or 16.7ms per frame), and `setTimeout` does not align with that. The handler can fire mid-paint and cause jank. Use `requestAnimationFrame` instead:
+
+```js live
+function rafThrottle(fn) {
+  let queued = false;
+  let lastArgs;
+  return function (...args) {
+    lastArgs = args;
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => {
+      fn.apply(this, lastArgs);
+      queued = false;
+    });
+  };
+}
+
+const onScroll = rafThrottle((y) => console.log('scrollY:', y));
+onScroll(10);
+onScroll(20);
+onScroll(30); // only the latest fires once per frame
+```
+
+`rafThrottle` automatically scales with the user's monitor (smooth on 120Hz, fewer paints on 30Hz) and never causes wasted work between paints.
+
+## Common mistakes
+
+- **Treating debounce and throttle as interchangeable.** Saying "I'd use debounce for scroll" is wrong: scroll wants throttle (or `requestAnimationFrame`). Debounce on scroll only fires when the user stops scrolling.
+- **Forgetting `this` and `args` in the inner function.** `setTimeout(fn, delay)` loses both, so the wrapper must call `fn.apply(this, args)` to preserve them.
+- **No cleanup in React.** Returning a debounced function from a render without `useMemo` or `useCallback` creates a new debouncer on every render, which means the timer is never actually cleared. On unmount, the trailing call also still fires on a dead component (use `cancel()` or `useEffect` cleanup).
+- **Picking throttle when the requirement is "wait until they stop."** Autosave-on-edit is a debounce problem; throttling it means saving mid-typing.
+- **Picking debounce when latency matters.** A debounced save with no `maxWait` can defer indefinitely if the user keeps typing. The user navigates away, and the save never fires.
 
 ## Further reading
 

@@ -110,13 +110,175 @@ userForm.addEventListener('input', (event) => {
 
 In this example, a single input event listener is attached to the form element. It can respond to input changes for all child input elements, simplifying the code by eliminating the need for individual listeners on each `<input>` element.
 
+## More real-world delegation patterns
+
+Beyond the simple list-item example, three patterns show up constantly in production code.
+
+### Form-wide delegated change handler
+
+A single `change` or `input` listener on the form catches every input update, which is useful for autosave, dirty-tracking, and validation:
+
+```js
+// HTML: <form id="profile-form"> with many inputs/selects/textareas inside
+
+const form = document.getElementById('profile-form');
+
+form.addEventListener('input', (event) => {
+  // Works for any <input>, <select>, or <textarea> the form contains,
+  // even ones added later by the user.
+  const field = event.target;
+  console.log(`${field.name} changed to ${field.value}`);
+  scheduleAutosave(field.name, field.value);
+});
+```
+
+No matter how many fields the form has, or whether new fields are appended dynamically, only one listener is needed.
+
+### Data-table row actions
+
+Modern data-table UIs commonly use a single click handler on the table that reads `data-action` from the clicked element to know what to do. This is delegation plus the **data-attribute pattern**:
+
+```js
+// HTML rows look like:
+// <tr>
+//   <td>...</td>
+//   <td>
+//     <button data-action="edit" data-id="42">Edit</button>
+//     <button data-action="delete" data-id="42">Delete</button>
+//   </td>
+// </tr>
+
+document.querySelector('table').addEventListener('click', (event) => {
+  const button = event.target.closest('[data-action]');
+  if (!button) {
+    return;
+  }
+  const { action, id } = button.dataset;
+  if (action === 'edit') {
+    openEditor(id);
+  }
+  if (action === 'delete') {
+    confirmDelete(id);
+  }
+});
+```
+
+`event.target.closest()` is the workhorse here. It walks up from the click target to the nearest matching ancestor, which makes the handler robust against inner spans, icons, and styling wrappers.
+
+### Click-to-edit cells
+
+A spreadsheet-style cell editor uses delegation to promote whichever cell was clicked into an editable input, without attaching one listener per cell:
+
+```js
+document.querySelector('table').addEventListener('click', (event) => {
+  const cell = event.target.closest('td.editable');
+  if (!cell || cell.querySelector('input')) {
+    return; // already editing
+  }
+
+  const original = cell.textContent;
+  const input = document.createElement('input');
+  input.value = original;
+  cell.textContent = '';
+  cell.appendChild(input);
+  input.focus();
+
+  input.addEventListener('blur', () => {
+    cell.textContent = input.value;
+    if (input.value !== original) saveCell(cell.dataset.id, input.value);
+  });
+});
+```
+
+## Delegating non-bubbling events
+
+The TL;DR notes that `focus`, `blur`, `scroll`, `mouseenter`, `mouseleave`, and `resize` do not bubble, so the obvious delegation pattern (one listener on the parent) does not work for them. Two solid workarounds:
+
+### Use the capture phase
+
+Pass a third argument of `true` (or `{ capture: true }`) to listen during the capture phase. The event is visible to ancestors on the way down to the target, even if it does not bubble back up:
+
+```js live
+document.body.innerHTML = `
+  <div id="form">
+    <input id="a" placeholder="A">
+    <input id="b" placeholder="B">
+  </div>
+`;
+
+document.getElementById('form').addEventListener(
+  'focus',
+  (event) => {
+    console.log('focused:', event.target.id);
+  },
+  true, // capture: catch focus before it stops at the input
+);
+
+// In a real page, focus events fire automatically when the user clicks or
+// tabs into an input. Here we dispatch them by hand so the demo prints the
+// same sequence in this playground.
+['a', 'b'].forEach((id) => {
+  document.getElementById(id).dispatchEvent(new FocusEvent('focus'));
+});
+// Logs: focused: a, then focused: b
+```
+
+### Use the bubbling siblings: `focusin` and `focusout`
+
+`focus` does not bubble, but `focusin` does. The same is true for `blur` and `focusout`. The pointer events have similar pairs: `mouseover` and `mouseout` bubble, while `mouseenter` and `mouseleave` do not (note that `mouseover` and `mouseout` also fire when the pointer crosses descendant boundaries, so the semantics are slightly different). The bubbling variants exist specifically to support delegation:
+
+```js live
+document.body.innerHTML = `
+  <form id="form">
+    <input id="a" placeholder="A">
+    <input id="b" placeholder="B">
+  </form>
+`;
+
+const form = document.getElementById('form');
+form.addEventListener('focusin', (event) =>
+  console.log('focusin:', event.target.id),
+);
+form.addEventListener('focusout', (event) =>
+  console.log('focusout:', event.target.id),
+);
+
+// In a real page, focusin and focusout fire automatically when the user
+// moves between inputs. Here we dispatch them by hand to simulate the user
+// moving focus from input A to input B inside this playground.
+const a = document.getElementById('a');
+const b = document.getElementById('b');
+
+[
+  [a, 'focusin'], // focusin: a
+  [a, 'focusout'], // focusout: a
+  [b, 'focusin'], // focusin: b
+].forEach(([el, type]) => {
+  el.dispatchEvent(new FocusEvent(type, { bubbles: true }));
+});
+```
+
+For `scroll`, the bubbling-sibling approach does not exist. Capture-phase delegation technically works (capture-phase listeners on ancestors do receive scroll events from descendants), but it is rarely a good idea: scroll events fire many times per second, you would receive them for every nested scroller in the subtree, and there is no `event.target` filtering that beats just attaching a listener directly to the scrollable element. Use one direct listener instead. (`window` scroll has nothing higher to delegate to anyway.)
+
+## Performance: when delegation actually helps
+
+The common claim is "delegation is faster because there are fewer listeners." That is partly true but often overstated.
+
+- **Listener count is rarely the bottleneck.** On modern browsers, attaching 100 vs 10,000 click listeners is still sub-millisecond. Adding listeners is almost free, and dispatching a click is fast either way.
+- **Memory is the meaningful win.** Each direct listener creates a closure that holds references to its enclosing scope. With 10,000 rows, that is 10,000 closures kept alive, which can become noticeable. One delegated listener is one closure.
+- **Dynamic content is the structural win.** With direct listeners, you have to attach (and detach) listeners on every DOM mutation, which is easy to leak. Delegation just works for elements added later, and that is the main reason most code uses it.
+- **Delegation is not always faster at runtime.** A delegated handler runs `event.target.closest(...)` on every event, which is cheap but not free. For a small fixed number of elements with stable handlers, attaching directly is fine and arguably cleaner.
+
+Use delegation for memory, dynamic content, and code simplicity, not because direct listeners are inherently slow.
+
 ## Pitfalls
 
-Do note that event delegation comes with certain pitfalls:
+Event delegation comes with several pitfalls:
 
-- **Incorrect target handling:** Ensure correct identification of the event target to avoid unintended actions.
-- **Not all events can be delegated/bubbled**: Not all events can be delegated because they are not bubbled. Non-bubbling events include: `focus`, `blur`, `scroll`, `mouseenter`, `mouseleave`, `resize`, etc.
-- **Event overhead:** While event delegation is generally more efficient, complex logic may need to be written within the root event listener to identify the triggering element and respond appropriately. This can introduce overhead and can be potentially more complex if not managed properly.
+- **Incorrect target handling.** Use `event.target.closest(selector)` rather than checking `event.target.tagName` directly. Clicks on inner elements (icons, spans) will otherwise miss the match.
+- **Not all events bubble.** `focus`, `blur`, `scroll`, `mouseenter`, `mouseleave`, and `resize` do not bubble. Use the capture phase or the bubbling alternatives (`focusin`, `focusout`, `mouseover`, `mouseout`) shown above.
+- **`stopPropagation()` inside the tree breaks delegation.** If a child handler calls `event.stopPropagation()`, the delegated handler at the ancestor never fires. This is a common source of "my handler doesn't run" bugs.
+- **Event overhead.** Complex routing logic inside the root listener can become hard to maintain. Use small dispatch tables (`{ edit: ..., delete: ... }`) rather than long `if/else` chains.
 
 ## Event delegation in JavaScript frameworks
 

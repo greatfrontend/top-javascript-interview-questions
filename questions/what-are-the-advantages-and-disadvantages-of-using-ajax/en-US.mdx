@@ -47,6 +47,74 @@ Here's a breakdown of AJAX's pros and cons:
 
 While AJAX offers significant advantages in terms of user experience, performance, and functionality, it also introduces complexities and potential drawbacks related to development, SEO, browser compatibility, security, and navigation.
 
+## Is AJAX still relevant today?
+
+Mostly as a historical term. The technique it described, fetching data without a page reload, is now the universal default. The original technology stack (`XMLHttpRequest`, XML payloads, callback-based code) has been replaced almost everywhere.
+
+Here is what changed:
+
+|  | Original AJAX (~2005) | Modern equivalent |
+| --- | --- | --- |
+| Transport API | `XMLHttpRequest` | `fetch()` |
+| Async style | Callbacks | `async`/`await` over Promises |
+| Payload format | XML (`responseXML`) | JSON (almost always) |
+| Cross-origin | Forbidden by same-origin policy; required JSONP hacks | Solved by CORS |
+| SEO of dynamic content | A real problem (Google couldn't index) | Addressed by SSR, SSG, RSC; Googlebot also runs JavaScript |
+| Browser inconsistency | Required wrapper libraries (jQuery `$.ajax`) | All evergreen browsers ship the same `fetch` API |
+
+The pattern AJAX introduced is alive: async data loading without a full page reload is now the default expectation. The underlying technology has moved on.
+
+Using "AJAX" today to mean "we make a `fetch` call from JavaScript" is loose but generally fine. Reaching for `XMLHttpRequest` for new code, on the other hand, is a red flag, since `fetch` is the modern API.
+
+## The modern equivalent: `fetch()` with async/await
+
+Side-by-side, classic AJAX vs current best practice:
+
+```js
+// Classic XHR (~2005-style)
+const xhr = new XMLHttpRequest();
+xhr.open('GET', '/api/users');
+xhr.onreadystatechange = function () {
+  if (xhr.readyState === 4 && xhr.status === 200) {
+    const users = JSON.parse(xhr.responseText);
+    render(users);
+  } else if (xhr.readyState === 4) {
+    showError();
+  }
+};
+xhr.onerror = function () {
+  showError();
+};
+xhr.send();
+```
+
+```js
+// Modern fetch + async/await
+async function loadUsers() {
+  try {
+    const res = await fetch('/api/users');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const users = await res.json();
+    render(users);
+  } catch (err) {
+    showError(err);
+  }
+}
+```
+
+The modern version is shorter, easier to read, and composes naturally with `Promise.all`, `AbortController` for cancellation, and libraries like React Query and SWR for caching and deduplication. The remaining reason some teams still use `XMLHttpRequest` is to track upload progress with the `xhr.upload.onprogress` event, since `fetch` upload-progress reporting is more limited. Streaming a `ReadableStream` request body in `fetch` (which would let you build progress on top) is supported in Chromium (since Chrome 105) and Safari (since 18.2), but not yet in Firefox; it also requires the `duplex: 'half'` option on the request.
+
+## Re-examining the disadvantages
+
+Several disadvantages historically listed for AJAX are no longer real concerns in modern apps:
+
+- **SEO challenges**: Googlebot has rendered JavaScript since around 2015, and modern frameworks ship SSR (Next.js, Nuxt, Remix), SSG (Astro, 11ty), or React Server Components for content that needs to be indexable. The AJAX-era SEO problem is largely solved if you choose your rendering strategy intentionally.
+- **Bookmarking and back-button issues**: the History API (`pushState`, `popState`) and modern routers (Next.js, React Router, Vue Router) handle URL state automatically. AJAX-era apps that broke the back button were generally not using these.
+- **Browser support**: `fetch` is in every evergreen browser (Chrome, Firefox, Safari, Edge). Internet Explorer is end-of-life, and the browser-compatibility argument no longer applies.
+- **Reliance on JavaScript**: a tiny minority of users have JavaScript disabled, and modern apps generally assume JavaScript anyway. If you need a no-JS fallback, you build a server-rendered version (which RSC and progressive enhancement support directly).
+
+The disadvantages that genuinely remain are about complexity and security: race conditions and stale state, error handling in async code, XSS via `innerHTML` from API responses, and the ongoing complexity of state management. These are real, but they are problems of any client-side data fetching, not specifically of AJAX.
+
 ## Further reading
 
 - [Ajax | MDN](https://developer.mozilla.org/en-US/docs/Glossary/AJAX)

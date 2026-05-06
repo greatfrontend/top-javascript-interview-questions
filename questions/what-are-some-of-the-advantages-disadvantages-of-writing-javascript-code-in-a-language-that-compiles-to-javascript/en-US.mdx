@@ -1,10 +1,10 @@
 ---
-title: What are some of the advantages/disadvantages of writing JavaScript code in a language that compiles to JavaScript?
+title: What are some of the advantages and disadvantages of using TypeScript and compile-to-JavaScript languages
 ---
 
 ## TL;DR
 
-Using languages that compile to JavaScript, like TypeScript or CoffeeScript, can offer several advantages such as improved syntax, type safety, and better tooling. However, they also come with disadvantages like added build steps, potential performance overhead, and the need to learn new syntax.
+Using languages that compile to JavaScript (most commonly TypeScript today, but historically also CoffeeScript, ReScript, Elm, and ClojureScript) can offer several advantages such as improved syntax, type safety, and better tooling. However, they also come with disadvantages like added build steps, potential performance overhead, and the need to learn new syntax.
 
 Advantages:
 
@@ -19,6 +19,22 @@ Disadvantages:
 - Learning curve for new syntax
 
 ---
+
+## The compile-to-JavaScript landscape today
+
+The category has consolidated significantly. A few options dominate; most others are now niche or abandoned.
+
+| Language | Current status | What it offers | When to consider |
+| --- | --- | --- | --- |
+| TypeScript | Dominant. The default for most new front-end projects. | Static types, structural typing, mature tooling | Almost any non-trivial project |
+| JSDoc-typed JavaScript | Active alternative to TypeScript (notably adopted by the Svelte compiler) | TypeScript-powered type checking with no build step; types live in comments | Libraries that want zero-build distribution; small projects |
+| ReScript (formerly BuckleScript) | Niche but stable | ML-style type system, fast compiler, sound types | Teams coming from OCaml; data-heavy apps |
+| Elm | Niche, web-only | Pure functional, "no runtime exceptions" guarantee | Small teams that fully commit to its model |
+| ClojureScript | Niche, used by Lisp/Clojure shops | Lisp on the front-end, immutable data, REPL-driven development | Existing Clojure ecosystems |
+| CoffeeScript | Legacy and effectively abandoned | Ruby-flavored syntax | Maintenance only; not for new projects |
+| PureScript | Niche academic | Haskell-like, sound types | Functional-purist teams |
+
+In practice, the decision is almost always between TypeScript (when you want types and a compile step) and JSDoc-typed JavaScript (when you want types without a compile step). Anything else is a deliberate, ecosystem-specific choice.
 
 ## Advantages of writing JavaScript code in a language that compiles to JavaScript
 

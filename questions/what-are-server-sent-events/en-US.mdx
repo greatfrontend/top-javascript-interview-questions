@@ -69,9 +69,9 @@ In this example, the server sends a "Hello from server" message initially, and t
 
 ---
 
-## Server-sent events (SSE)
+## What are Server-Sent Events?
 
-Server-sent events (SSE) is a standard that allows a server to push updates to a web client over a single, long-lived HTTP connection. It enables real-time updates without the client having to constantly poll the server for new data.
+Server-Sent Events (SSE) is a standard that allows a server to push updates to a web client over a single, long-lived HTTP connection. It enables real-time updates without the client having to constantly poll the server for new data.
 
 ## How SSE works
 
@@ -187,9 +187,60 @@ http
   });
 ```
 
+## SSE vs WebSockets vs Long Polling
+
+Most interview discussions of SSE start with the WebSockets comparison. To pick the right tool, you also need to know how SSE compares to the older long-polling pattern it largely replaced.
+
+| Property | Long Polling | Server-Sent Events | WebSockets |
+| --- | --- | --- | --- |
+| Direction | Server to client (response per request) | Server to client (one connection, many messages) | Bidirectional |
+| Transport | Plain HTTP | Plain HTTP (`text/event-stream`) | Upgraded TCP (`ws://` or `wss://`) |
+| Reconnect handling | Manual (reissue request) | Built-in (`EventSource` retries automatically) | Manual (write your own backoff) |
+| Message format | Anything (JSON, etc.) | Text only (UTF-8) | Text or binary (frames) |
+| Browser support | Universal | All evergreen browsers | All evergreen browsers |
+| Server cost per connection | Low; connection closes between messages | Moderate; one TCP connection held open per client | Moderate; one TCP connection held open per client |
+| Works through corporate proxies and firewalls | Yes (regular HTTP) | Usually yes (regular HTTP) | Sometimes blocked (`Upgrade: websocket` is rejected by some proxies) |
+| Resume after disconnect | Manual | Built-in via `Last-Event-ID` | Manual |
+
+A useful decision rule:
+
+- For bidirectional, low-latency, frequent client-to-server messages (chat, multiplayer, collaborative editing), use WebSockets.
+- For one-way notifications, dashboards, LLM streaming, or server progress updates, use SSE.
+- To support very old clients or restrictive networks where neither works, fall back to long polling.
+
+## Modern uses of SSE: LLM streaming and beyond
+
+SSE has become a common transport for LLM streaming. The fit is straightforward: completions stream tokens one at a time from server to client, the connection is one-way, and the protocol works over plain HTTPS through most corporate proxies.
+
+- The OpenAI Chat Completions API returns `text/event-stream` when called with `stream: true`. Each `data:` chunk contains a JSON delta with the next token.
+- The Anthropic Messages API uses the same pattern: `text/event-stream` with `data:` chunks per delta.
+- Self-hosted servers like vLLM (which exposes an OpenAI-compatible API) also stream via SSE. Some others (such as Ollama) stream over newline-delimited JSON instead, so check the API docs before assuming SSE.
+
+Beyond AI, SSE fits most "server has new data, push it to the user" use cases:
+
+- Live notifications such as new messages, mentions, and alerts.
+- Long-running job progress (deploys, exports, batch processing), where the server emits progress events as work proceeds.
+- Live status pages and dashboards for build status or server health.
+- Stock tickers and sports scores, where the client does not push data back.
+
+When the use case is "client subscribes, server sends updates", SSE is usually simpler than WebSockets: you get auto-reconnect, message IDs, and HTTP/2 multiplexing for free.
+
+## Production gotchas with SSE
+
+A few practical issues to be aware of:
+
+- **HTTP/1.1 connection limits.** Browsers cap concurrent connections per origin to roughly 6 over HTTP/1.1. A tab that opens an SSE stream and also makes regular API calls can hit the limit quickly, especially when the user opens multiple tabs (each tab opens its own SSE). Running over HTTP/2 or HTTP/3 multiplexes streams over a single connection (typically up to 100 concurrent streams by default), avoiding the per-origin limit.
+- **Buffering proxies break streaming.** Nginx, AWS ALB, and many reverse proxies buffer responses by default, so `data:` chunks accumulate on the proxy and arrive in one large piece. Disable buffering on SSE routes:
+  - Nginx: send `X-Accel-Buffering: no` from the server, or set `proxy_buffering off` in the location block.
+  - AWS ALB: response buffering is generally on; send data more frequently or use API Gateway with HTTP integration.
+  - Cloudflare: usually streams correctly, but check that the route is not behind "Auto Minify" or response transformations.
+- **`Last-Event-ID` on reconnect.** When `EventSource` reconnects after a drop, it sends the last `id:` it received in a `Last-Event-ID` request header. The server should use this to resume from the right point. Otherwise, reconnects either replay everything (causing duplicates) or skip events the client missed.
+- **Authentication.** `EventSource` does not let you set custom request headers, so there is no `Authorization` header. Common workarounds: pass the token as a query string parameter (be careful, since this is visible in server logs), or use cookie-based auth (which `EventSource` does send). The newer `fetch` + `ReadableStream` approach lets you set headers if you need them.
+- **Server timeouts.** Many platforms (Heroku, App Engine, AWS Lambda via API Gateway) cap request duration. SSE connections can last for hours, which exceeds those limits. Either run on a platform that supports long-lived connections (Fly.io, Render, a self-hosted VPS) or have the client reconnect periodically.
+
 ## Summary
 
-Server-sent events provide an efficient and straightforward way to push updates from a server to a client in real-time. They are particularly well-suited for applications that require continuous data streams but do not need full bidirectional communication. With built-in support in modern browsers, SSE is a reliable choice for many real-time web applications.
+Server-sent events provide an efficient and straightforward way to push updates from a server to a client in real-time. They are well-suited for applications that require continuous data streams but do not need full bidirectional communication, including the common pattern of streaming LLM responses. With built-in support in modern browsers, SSE is a reliable choice for many real-time web applications.
 
 ## Further reading
 

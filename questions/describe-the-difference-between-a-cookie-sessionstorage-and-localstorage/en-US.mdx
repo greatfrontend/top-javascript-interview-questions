@@ -137,6 +137,75 @@ sessionStorage.removeItem('key');
 sessionStorage.clear();
 ```
 
+## Security
+
+A side-by-side feature comparison hides the most important practical difference between these three: how each one behaves under XSS.
+
+|  | Cookie | `localStorage` / `sessionStorage` |
+| --- | --- | --- |
+| Reachable from arbitrary JS on the origin | Only if not `HttpOnly` | Always |
+| `HttpOnly` flag (cannot be read from JS) | Yes | No equivalent |
+| `Secure` flag (HTTPS-only transport) | Yes | N/A (values never leave the client unless your code sends them) |
+| `SameSite` flag (CSRF defense: `Strict`, `Lax`, `None`) | Yes | N/A |
+| Partitioned cookies (CHIPS, isolated per top-level site) | Yes (modern browsers) | N/A |
+| Survives an XSS exploit | An `HttpOnly` cookie does | All values are exfiltrable |
+
+The practical takeaways:
+
+- **Auth and session tokens belong in `HttpOnly; Secure; SameSite=Lax` cookies, not in `localStorage`.** Any XSS bug in any script on the origin can read everything in `localStorage`. An `HttpOnly` cookie cannot be read by JavaScript at all, so the attacker would have to make requests through the user's browser, which CSRF defenses (`SameSite`, double-submit tokens) are designed to block.
+- **CSRF vs XSS is the trade-off.** Cookies need CSRF protection; `localStorage` tokens (with the Authorization-header pattern) do not. The cookie plus `SameSite=Lax` combination is generally considered safer because it survives XSS, and `SameSite=Lax` blocks the most common CSRF cases by default.
+- **`localStorage` is fine for non-sensitive client state**: theme preferences, layout settings, draft text, recently viewed items.
+
+## Real-world set, get, and remove
+
+The three APIs look superficially similar but have meaningfully different ergonomics. Here is the same operation in each:
+
+```js
+// localStorage: synchronous, string-only
+localStorage.setItem('user', JSON.stringify({ id: 1, name: 'Ada' }));
+const user = JSON.parse(localStorage.getItem('user') ?? 'null');
+localStorage.removeItem('user');
+
+// sessionStorage: same shape, scoped to the tab
+sessionStorage.setItem('draft', 'hello');
+const draft = sessionStorage.getItem('draft');
+sessionStorage.removeItem('draft');
+
+// Cookie: modern async API (where supported)
+await cookieStore.set({
+  name: 'session',
+  value: 'abc123',
+  sameSite: 'Lax',
+  secure: true,
+  expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+});
+const session = await cookieStore.get('session');
+await cookieStore.delete('session');
+
+// Cookie: legacy `document.cookie` API (universally supported)
+document.cookie =
+  'session=abc123; Path=/; Max-Age=604800; SameSite=Lax; Secure';
+// Reading a specific cookie still requires parsing the string yourself:
+const value = document.cookie
+  .split('; ')
+  .find((row) => row.startsWith('session='))
+  ?.split('=')[1];
+```
+
+A few common mistakes:
+
+- `localStorage` and `sessionStorage` only store strings. `localStorage.setItem('count', 0)` stores `"0"` and `localStorage.getItem('count')` returns `"0"` (a string). Always serialize and deserialize explicitly.
+- Assigning `document.cookie = '...'` does not clear other cookies. Each assignment sets or updates a single cookie. To delete one, set it again with `Max-Age=0` or an `expires` date in the past.
+- `cookieStore.set` is async; `localStorage.setItem` is synchronous. Mixing them in the same logic without awaiting the cookie call leads to ordering bugs.
+
+## Beyond these three: IndexedDB and Cache Storage
+
+Modern apps frequently need more than what these three APIs offer. Two more are worth knowing:
+
+- **IndexedDB**: an in-browser, asynchronous, transactional database. Use it for large structured data (offline app state, large user-generated content, search indexes), MBs to GBs of storage, and queryable data. Wrappers like [Dexie.js](https://dexie.org/) and [idb](https://github.com/jakearchibald/idb) make the API more pleasant.
+- **Cache Storage** (`caches`): paired with [Service Workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API), this stores HTTP request/response pairs for offline-capable apps and PWAs. It is not a general-purpose key-value store; it is specifically for caching network responses.
+- **`localStorage` is for simple key-value config only.** If you find yourself JSON-stringifying complex nested data into `localStorage`, IndexedDB is usually a better fit.
+
 ## Notes
 
 There are also other client-side storage mechanisms like [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) which is more powerful than the above-mentioned technologies but more complicated to use.

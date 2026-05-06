@@ -96,6 +96,80 @@ Promise.allSettled([promise1, promise2, promise3]).then((results) => {
 
 In this example, `Promise.allSettled()` resolves with an array of result objects, including the rejected promise with its reason.
 
+## When to use `Promise.all()` vs `Promise.allSettled()`
+
+The choice comes down to a single question: if one of these operations fails, is the rest of the work still useful?
+
+### Use `Promise.all()` when partial success is invalid
+
+- **Prefetching everything a page needs before render**: if any required call fails (auth, feature flags, current user), you want to render an error state, not a half-broken UI.
+- **Transactional sequences**: booking a flight, hotel, and rental car in parallel. If the flight fails, the other reservations should not silently succeed.
+- **Gating UI on multiple checks**: show the dashboard only if `getUser()` AND `getPermissions()` both succeed. Fail-fast is the desired behavior.
+
+### Use `Promise.allSettled()` when partial success is acceptable
+
+- **Dashboard with multiple independent widgets**: six analytics endpoints fan out in parallel. One slow or failing endpoint should not blank the rest of the dashboard.
+- **Bulk operations with per-item feedback**: deleting 50 selected rows; the UI needs to show which succeeded and which failed, not abort on the first failure.
+- **Analytics or telemetry batches**: sending several events where partial loss is acceptable; you want to know which fired even if one rejected.
+
+If you would `try/catch` each call individually anyway, `Promise.allSettled()` is what you actually want.
+
+## Failure-mode reference
+
+| Input scenario | `Promise.all()` | `Promise.allSettled()` |
+| --- | --- | --- |
+| Empty iterable `[]` | Resolves with `[]` synchronously | Resolves with `[]` synchronously |
+| Mix of promises and non-promise values | Wraps non-promises with `Promise.resolve` | Wraps non-promises with `Promise.resolve` |
+| One rejection, others pending | Rejects immediately with first reason; others keep running but their results are ignored | Waits for all; returns one `{status:'rejected'}` entry |
+| Synchronous `throw` inside the iterable iterator | Returned promise rejects | Returned promise rejects |
+| Non-iterable input (e.g., `undefined`) | Returned promise rejects with `TypeError` | Returned promise rejects with `TypeError` |
+| Result order vs resolution order | Results array preserves **input** order, not the order they resolved | Results array preserves **input** order |
+
+> [!NOTE] Two behaviors are commonly misremembered: `Promise.all([])` does not reject or hang. It resolves with an empty array (synchronously, when the iterable is empty; asynchronously otherwise). And the result array always preserves input order, even when `promise[2]` resolves before `promise[0]`.
+
+## Predict the output
+
+### Concurrent vs sequential awaits
+
+These two snippets look almost identical but run very differently:
+
+```js live
+const slow = (label, ms) =>
+  new Promise((resolve) => setTimeout(() => resolve(label), ms));
+
+(async () => {
+  console.time('parallel');
+  const a = await Promise.all([slow('A', 300), slow('B', 300)]);
+  console.timeEnd('parallel'); // ~300ms: both ran concurrently
+
+  console.time('sequential');
+  const b = [await slow('A', 300), await slow('B', 300)];
+  console.timeEnd('sequential'); // ~600ms: second await waits for the first
+})();
+```
+
+`Promise.all()` accepts already-running promises and waits for the slowest. `[await ..., await ...]` evaluates left-to-right and only kicks off the next call after the previous one resolves. The latter is one of the most common production performance bugs.
+
+### `Promise.allSettled()` does not reject on per-promise failures
+
+```js live
+(async () => {
+  const results = await Promise.allSettled([
+    Promise.resolve(1),
+    Promise.reject(new Error('boom')),
+    Promise.resolve(3),
+  ]);
+
+  console.log(results.map((r) => r.status));
+  // ['fulfilled', 'rejected', 'fulfilled']
+
+  // The outer await never throws for inner rejections, so this line still runs:
+  console.log('still here');
+})();
+```
+
+You will almost never put `Promise.allSettled()` inside a `try/catch` for the inner promises, since it does not throw on their rejections. To check for failures, filter on `status === 'rejected'` after the fact. (The returned promise can still reject if the input itself is invalid — for example, a non-iterable will produce a `TypeError`.)
+
 ## Further reading
 
 - [MDN Web Docs: Promise.all()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)

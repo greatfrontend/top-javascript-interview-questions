@@ -1,5 +1,5 @@
 ---
-title: What is `'use strict';` in JavaScript for?
+title: What is `'use strict';` (strict mode) in JavaScript for?
 subtitle: What are the advantages and disadvantages to using it?
 ---
 
@@ -119,14 +119,98 @@ When you use `"use strict"`, it helps you write cleaner code, such as preventing
    delete Object.prototype; // TypeError: Cannot delete property 'prototype' of function Object() { [native code] }
    ```
 
-## Is it "strictly" necessary?
+## Predict the output: common strict mode gotchas
 
-Adding `'use strict'` in JavaScript is still beneficial and recommended, but it is no longer strictly necessary in all cases:
+These are the four most common interview "gotchas" around strict mode. Try predicting the output before running each.
 
-1. **Modules**: The entire contents of JavaScript modules are automatically in strict mode, without needing the `'use strict'` statement. This applies to ES6 modules as well as Node.js CommonJS modules.
-2. **Classes**: Code within class definitions is also automatically in strict mode, even without `'use strict'`.
+### 1. Accidental globals
 
-While `'use strict'` is no longer mandatory in all contexts due to the automatic strict mode enforcement in modules and classes, it is still widely recommended as a best practice, especially for core JavaScript files, libraries, and when working with older browser environments or legacy code.
+```js live
+function f() {
+  x = 5; // no var/let/const, assignment to undeclared variable
+}
+f();
+console.log(x); // 5: sloppy mode silently created a global
+```
+
+In strict mode, that same code throws a `ReferenceError` because creating implicit globals is forbidden. This is the single most-cited reason to use strict mode.
+
+```js live
+'use strict';
+function f() {
+  x = 5; // ReferenceError: x is not defined
+}
+try {
+  f();
+} catch (e) {
+  console.log(e.message);
+}
+```
+
+### 2. `this` in a plain function call
+
+```js live
+function whatIsThis() {
+  return this;
+}
+console.log(whatIsThis() === globalThis); // true in sloppy mode
+```
+
+In strict mode, `this` inside a function called as a plain function is `undefined`:
+
+```js live
+'use strict';
+function whatIsThis() {
+  return this;
+}
+console.log(whatIsThis()); // undefined
+```
+
+This is a common source of bugs in class methods that get extracted as callbacks. `const fn = obj.method; fn();` calls `method` with `this === undefined`, which usually crashes immediately. In sloppy mode, the same call would silently bind `this` to the global object and continue with broken behavior.
+
+### 3. Duplicate parameter names
+
+```js live
+'use strict';
+try {
+  // Using eval to force a parse error to be thrown at runtime in strict mode
+  eval('function dup(a, a) {}');
+} catch (e) {
+  console.log(e.message); // "Duplicate parameter name not allowed in this context"
+}
+```
+
+In sloppy mode, `function f(a, a) {}` is silently allowed and the second `a` shadows the first.
+
+### 4. Octal literals
+
+```js live
+console.log(010); // 8 in sloppy mode (leading 0 means octal)
+```
+
+In strict mode (and in ES modules), the legacy `0`-prefix octal literal is rejected at parse time. Use the explicit `0o` prefix instead:
+
+```js
+'use strict';
+console.log(0o10); // 8
+```
+
+## Is `'use strict'` still necessary?
+
+In most modern code, no. Strict mode is now the default in several places:
+
+- **ES modules** are automatically strict. Anything imported with `import`/`export`, served as `<script type="module">`, or compiled by Vite, webpack, or Rollup runs in strict mode without the directive.
+- **Class bodies** (and methods inside them) are strict, even when the surrounding code is not.
+- **Most build tools** (Babel, TypeScript with `target: ES2015+`) emit code that is either modules or class-wrapped, so it is strict by default.
+
+The directive still matters in a few places:
+
+- Legacy plain `<script>` tags without `type="module"`. The directive is the only way to opt in.
+- IIFEs and old library bundles that ship as scripts, including some CDN copies of libraries.
+- Node.js CommonJS files (`.cjs`), which are not automatically strict.
+- Quick `<script>` snippets in HTML pages and CodePens.
+
+If you are writing an ES module or a React/Vue component, you are already in strict mode and the directive at the top of the file is harmless but redundant. If you are writing a plain `<script>` tag without `type="module"`, you should still add it.
 
 ### Notes
 

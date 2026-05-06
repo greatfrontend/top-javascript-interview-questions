@@ -10,13 +10,13 @@ All of these ways (`<script>`, `<script async>`, and `<script defer>`) are used 
 - `<script async>` downloads the script asynchronously, in parallel with parsing the HTML. Executes the script as soon as it is available, potentially interrupting the HTML parsing. Multiple `<script async>` tags do not wait for each other and execute in no particular order.
 - `<script defer>` downloads the script asynchronously, in parallel with parsing the HTML. However, the execution of the script is deferred until HTML parsing is complete, in the order they appear in the HTML.
 
-Here's a table summarizing the 3 ways of loading `<script>`s in an HTML document.
+Here's a table summarizing the 4 ways of loading `<script>`s in an HTML document. Modern apps almost always use modules, which deserve their own row.
 
-| Feature | `<script>` | `<script async>` | `<script defer>` |
-| --- | --- | --- | --- |
-| Parsing behavior | Blocks HTML parsing | Runs parallel to parsing | Runs parallel to parsing |
-| Execution order | In order of appearance | Not guaranteed | In order of appearance |
-| DOM dependency | No | No | Yes (waits for DOM) |
+| Feature | `<script>` | `<script async>` | `<script defer>` | `<script type="module">` |
+| --- | --- | --- | --- | --- |
+| Parsing behavior | Blocks HTML parsing | Downloads in parallel; execution still blocks parsing | Downloads in parallel; execution deferred until after parsing | Downloads in parallel; execution deferred until after parsing |
+| Execution order | In order of appearance | Not guaranteed | In order of appearance | In order of appearance, with each script's `import` dependencies resolved first |
+| DOM dependency | No | No | Yes (waits for DOM) | Yes (waits for DOM) |
 
 ---
 
@@ -106,10 +106,59 @@ If a script relies on a fully-parsed DOM, the `defer` attribute will be useful i
 </html>
 ```
 
+## `<script type="module">`
+
+Module scripts are the standard entry point for projects built with Vite (and many other modern bundlers). Next.js doesn't always emit `type="module"` for its own runtime, but most application code authored as ES modules ends up running through one of these tags. They behave like `defer` scripts with two important additions: dependencies declared with `import` are loaded and executed in the right order, and module code is strict by default.
+
+```html
+<script type="module" src="/src/main.js"></script>
+```
+
+Behavior:
+
+- **Parsing**: deferred. HTML parsing continues; the script does not block.
+- **Execution**: runs after the document has finished parsing. Across multiple `<script type="module">` tags in the same document, execution follows document order, but each script's `import` dependencies are resolved and executed first.
+- **DOM ready**: the DOM is parsed before the module runs.
+- **Strict mode**: enforced automatically; no `'use strict'` directive needed.
+- **CORS**: module scripts are always fetched with CORS, so the server must send `Access-Control-Allow-Origin` for cross-origin loads. The `crossorigin` attribute itself is not required for the module to load — it only controls whether credentials (cookies, HTTP auth) are sent on cross-origin requests (`crossorigin` or `crossorigin="anonymous"` omits them; `crossorigin="use-credentials"` sends them). Adding it is still recommended for explicit credentials handling and for full error details in `error` event handlers.
+
+Use `<script type="module">` for new front-end code. If you have an independent module-script entry point and document order does not matter, combine with `async`:
+
+```html
+<script async type="module" src="/analytics-module.js"></script>
+```
+
+## Which to use: a decision matrix
+
+| Script type | Use for |
+| --- | --- |
+| `<script>` (no attrs) | Critical inline scripts that must run synchronously before the next HTML element parses. |
+| `<script async>` | Independent third-party scripts where order does not matter (analytics, ads, monitoring beacons). |
+| `<script defer>` | Classic (non-module) app scripts where order matters and the DOM should be ready. |
+| `<script type="module">` | ES module entry points. The default for Vite, Next.js client code, and any new project. |
+| `<script async type="module">` | Module scripts where order does not matter. Most apps want default module behavior instead. |
+
+## How modern frameworks load scripts
+
+It also helps to know what the tools you use actually generate.
+
+- **Vite**: emits `<script type="module" crossorigin src="...">` for the entry chunk in production. Dynamic `import()` calls become `<link rel="modulepreload">` hints plus lazy module fetches.
+- **Next.js**: provides a built-in `<Script>` component with `strategy` props such as `beforeInteractive` (loaded and executed before page hydration), `afterInteractive` (default, like `defer`), `lazyOnload` (after the page is idle), and `worker` (offloaded to Partytown).
+- **CDN-injected scripts** (Google Analytics, Plausible, Sentry, etc.) are almost always recommended as `async`, because they are independent. Loading them with `defer` or no attribute slows down the page for no reason.
+- **CRA and older webpack apps** typically emit `<script defer src="..."></script>` for the runtime and chunk entries. CRA itself is deprecated, and new projects should use Vite or Next.js.
+
+## Common bugs from the wrong attribute choice
+
+- **Analytics with `defer` instead of `async`.** `defer` waits for HTML parsing, so a third-party tag at the top of the page artificially extends `DOMContentLoaded`. Use `async` for any independent third-party tag.
+- **App entry as `async` script.** If `app.js` and `vendor.js` are loaded with `async`, they can execute in any order. `app.js` may run before `vendor.js` finishes, which throws `ReferenceError` for the missing globals. Use `defer` (or modules) for app scripts.
+- **`document.write` inside a `defer` or `async` script.** Browsers ignore `document.write()` calls from async or deferred scripts with a console warning: "A call to document.write() from an asynchronously-loaded external script was ignored." The script would need to be a regular blocking `<script>` for the call to take effect, though `document.write` should be avoided in any new code.
+- **Module script in a `<script>` tag without `type="module"`.** Top-level `import` statements throw `SyntaxError`. Either set `type="module"` or use a bundler.
+- **Cross-origin module served without CORS headers.** Module scripts are always fetched with CORS, so a cross-origin URL like `<script type="module" src="https://cdn.example.com/lib.js">` will fail to load if the server doesn't send `Access-Control-Allow-Origin`. The fix is on the server side — adding `crossorigin` to the tag does not bypass this requirement (though it is still recommended for better error reporting and explicit credentials handling).
+
 ## Notes
 
 - The `async` attribute should be used for scripts that are not critical to the initial rendering of the page and do not depend on each other, while the `defer` attribute should be used for scripts that depend on or are depended on by another script.
-- The `async` and `defer` attributes are ignored for scripts that have no `src` attribute.
+- The `async` and `defer` attributes are ignored for inline scripts (scripts with no `src` attribute).
 - `<script>`s with `defer` or `async` that contain `document.write()` will be ignored with a message like "A call to `document.write()` from an asynchronously-loaded external script was ignored".
 - Even though `async` and `defer` help to make script downloading asynchronous, the scripts are still eventually executed on the main thread. If these scripts are computationally intensive, it can result in laggy/frozen UI. [Partytown](https://partytown.qwik.dev/) is a library that helps relocate script executions into a [web worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) and off the [main thread](https://developer.mozilla.org/en-US/docs/Glossary/Main_thread), which is great for third-party scripts where you do not have control over the code.
 

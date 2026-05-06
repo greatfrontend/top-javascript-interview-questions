@@ -53,7 +53,7 @@ This list contains the top essential questions that are frequently-asked during 
 | 21 | [Describe event bubbling in JavaScript and browsers](#describe-event-bubbling-in-javascript-and-browsers) | Basic |
 | 22 | [Describe event capturing in JavaScript and browsers](#describe-event-capturing-in-javascript-and-browsers) | Basic |
 | 23 | [What is the difference between `mouseenter` and `mouseover` event in JavaScript and browsers?](#what-is-the-difference-between-mouseenter-and-mouseover-event-in-javascript-and-browsers) | Basic |
-| 24 | [What is `'use strict';` in JavaScript for?](#what-is-use-strict-in-javascript-for) | Advanced |
+| 24 | [What is `'use strict';` (strict mode) in JavaScript for?](#what-is-use-strict-strict-mode-in-javascript-for) | Advanced |
 | 25 | [Explain the difference between synchronous and asynchronous functions in JavaScript](#explain-the-difference-between-synchronous-and-asynchronous-functions-in-javascript) | Basic |
 | 26 | [What are the pros and cons of using Promises instead of callbacks in JavaScript?](#what-are-the-pros-and-cons-of-using-promises-instead-of-callbacks-in-javascript) | Intermediate |
 | 27 | [Explain AJAX in as much detail as possible](#explain-ajax-in-as-much-detail-as-possible) | Basic |
@@ -276,13 +276,13 @@ This list contains a longer list of important JavaScript questions. Not all of t
 | 183 | [What are some tools and techniques for identifying security vulnerabilities in JavaScript code?](#what-are-some-tools-and-techniques-for-identifying-security-vulnerabilities-in-javascript-code) | Intermediate |
 | 184 | [How can you implement secure authentication and authorization in JavaScript applications?](#how-can-you-implement-secure-authentication-and-authorization-in-javascript-applications) | Advanced |
 | 185 | [Explain the same-origin policy with regards to JavaScript](#explain-the-same-origin-policy-with-regards-to-javascript) | Intermediate |
-| 186 | [What is `'use strict';` in JavaScript for?](#what-is-use-strict-in-javascript-for) | Advanced |
+| 186 | [What is `'use strict';` (strict mode) in JavaScript for?](#what-is-use-strict-strict-mode-in-javascript-for) | Advanced |
 | 187 | [What tools and techniques do you use for debugging JavaScript code?](#what-tools-and-techniques-do-you-use-for-debugging-javascript-code) | Intermediate |
 | 188 | [How does JavaScript garbage collection work?](#how-does-javascript-garbage-collection-work) | Advanced |
 | 189 | [Explain what a single page app is and how to make one SEO-friendly](#explain-what-a-single-page-app-is-and-how-to-make-one-seo-friendly) | Intermediate |
 | 190 | [How can you share code between JavaScript files?](#how-can-you-share-code-between-javascript-files) | Basic |
 | 191 | [How do you organize your code?](#how-do-you-organize-your-code) | Intermediate |
-| 192 | [What are some of the advantages/disadvantages of writing JavaScript code in a language that compiles to JavaScript?](#what-are-some-of-the-advantagesdisadvantages-of-writing-javascript-code-in-a-language-that-compiles-to-javascript) | Advanced |
+| 192 | [What are some of the advantages and disadvantages of using TypeScript and compile-to-JavaScript languages](#what-are-some-of-the-advantages-and-disadvantages-of-using-typescript-and-compile-to-javascript-languages) | Advanced |
 | 193 | [When would you use `document.write()`?](#when-would-you-use-documentwrite) | Advanced |
 
 <!-- TABLE_OF_CONTENTS:ALL:END -->
@@ -497,13 +497,13 @@ All of these ways (`<script>`, `<script async>`, and `<script defer>`) are used 
 - `<script async>` downloads the script asynchronously, in parallel with parsing the HTML. Executes the script as soon as it is available, potentially interrupting the HTML parsing. Multiple `<script async>` tags do not wait for each other and execute in no particular order.
 - `<script defer>` downloads the script asynchronously, in parallel with parsing the HTML. However, the execution of the script is deferred until HTML parsing is complete, in the order they appear in the HTML.
 
-Here's a table summarizing the 3 ways of loading `<script>`s in an HTML document.
+Here's a table summarizing the 4 ways of loading `<script>`s in an HTML document. Modern apps almost always use modules, which deserve their own row.
 
-| Feature | `<script>` | `<script async>` | `<script defer>` |
-| --- | --- | --- | --- |
-| Parsing behavior | Blocks HTML parsing | Runs parallel to parsing | Runs parallel to parsing |
-| Execution order | In order of appearance | Not guaranteed | In order of appearance |
-| DOM dependency | No | No | Yes (waits for DOM) |
+| Feature | `<script>` | `<script async>` | `<script defer>` | `<script type="module">` |
+| --- | --- | --- | --- | --- |
+| Parsing behavior | Blocks HTML parsing | Downloads in parallel; execution still blocks parsing | Downloads in parallel; execution deferred until after parsing | Downloads in parallel; execution deferred until after parsing |
+| Execution order | In order of appearance | Not guaranteed | In order of appearance | In order of appearance, with each script's `import` dependencies resolved first |
+| DOM dependency | No | No | Yes (waits for DOM) | Yes (waits for DOM) |
 
 <!-- Update here: /questions/describe-the-difference-between-script-async-and-script-defer/en-US.mdx -->
 
@@ -1077,7 +1077,7 @@ The main difference lies in the bubbling behavior of `mouseenter` and `mouseover
 
 <br>
 
-### What is `'use strict';` in JavaScript for?
+### What is `'use strict';` (strict mode) in JavaScript for?
 
 <!-- Update here: /questions/what-is-use-strict-what-are-the-advantages-and-disadvantages-to-using-it/en-US.mdx -->
 
@@ -4982,13 +4982,13 @@ All of these ways (`<script>`, `<script async>`, and `<script defer>`) are used 
 - `<script async>` downloads the script asynchronously, in parallel with parsing the HTML. Executes the script as soon as it is available, potentially interrupting the HTML parsing. Multiple `<script async>` tags do not wait for each other and execute in no particular order.
 - `<script defer>` downloads the script asynchronously, in parallel with parsing the HTML. However, the execution of the script is deferred until HTML parsing is complete, in the order they appear in the HTML.
 
-Here's a table summarizing the 3 ways of loading `<script>`s in an HTML document.
+Here's a table summarizing the 4 ways of loading `<script>`s in an HTML document. Modern apps almost always use modules, which deserve their own row.
 
-| Feature | `<script>` | `<script async>` | `<script defer>` |
-| --- | --- | --- | --- |
-| Parsing behavior | Blocks HTML parsing | Runs parallel to parsing | Runs parallel to parsing |
-| Execution order | In order of appearance | Not guaranteed | In order of appearance |
-| DOM dependency | No | No | Yes (waits for DOM) |
+| Feature | `<script>` | `<script async>` | `<script defer>` | `<script type="module">` |
+| --- | --- | --- | --- | --- |
+| Parsing behavior | Blocks HTML parsing | Downloads in parallel; execution still blocks parsing | Downloads in parallel; execution deferred until after parsing | Downloads in parallel; execution deferred until after parsing |
+| Execution order | In order of appearance | Not guaranteed | In order of appearance | In order of appearance, with each script's `import` dependencies resolved first |
+| DOM dependency | No | No | Yes (waits for DOM) | Yes (waits for DOM) |
 
 <!-- Update here: /questions/describe-the-difference-between-script-async-and-script-defer/en-US.mdx -->
 
@@ -6979,7 +6979,7 @@ The same-origin policy is a security measure implemented in web browsers to prev
 
 <br>
 
-### What is `'use strict';` in JavaScript for?
+### What is `'use strict';` (strict mode) in JavaScript for?
 
 <!-- Update here: /questions/what-is-use-strict-what-are-the-advantages-and-disadvantages-to-using-it/en-US.mdx -->
 
@@ -7140,11 +7140,11 @@ I organize my code by following a modular approach, using a clear folder structu
 
 <br>
 
-### What are some of the advantages/disadvantages of writing JavaScript code in a language that compiles to JavaScript?
+### What are some of the advantages and disadvantages of using TypeScript and compile-to-JavaScript languages
 
 <!-- Update here: /questions/what-are-some-of-the-advantages-disadvantages-of-writing-javascript-code-in-a-language-that-compiles-to-javascript/en-US.mdx -->
 
-Using languages that compile to JavaScript, like TypeScript or CoffeeScript, can offer several advantages such as improved syntax, type safety, and better tooling. However, they also come with disadvantages like added build steps, potential performance overhead, and the need to learn new syntax.
+Using languages that compile to JavaScript (most commonly TypeScript today, but historically also CoffeeScript, ReScript, Elm, and ClojureScript) can offer several advantages such as improved syntax, type safety, and better tooling. However, they also come with disadvantages like added build steps, potential performance overhead, and the need to learn new syntax.
 
 Advantages:
 
@@ -7377,7 +7377,7 @@ JavaScript interview questions categorized by difficulty.
 
 <!-- QUESTIONS:ADVANCED:START -->
 
-1. [What is `'use strict';` in JavaScript for?](#what-is-use-strict-in-javascript-for)
+1. [What is `'use strict';` (strict mode) in JavaScript for?](#what-is-use-strict-strict-mode-in-javascript-for)
 2. [What are JavaScript polyfills for?](#what-are-javascript-polyfills-for)
 3. [What are iterators and generators in JavaScript and what are they used for?](#what-are-iterators-and-generators-in-javascript-and-what-are-they-used-for)
 4. [What are server-sent events?](#what-are-server-sent-events)
@@ -7393,7 +7393,7 @@ JavaScript interview questions categorized by difficulty.
 14. [How do you validate form elements using the Constraint Validation API?](#how-do-you-validate-form-elements-using-the-constraint-validation-api)
 15. [How does hoisting affect function declarations and expressions?](#how-does-hoisting-affect-function-declarations-and-expressions)
 16. [What are mocks and stubs and how are they used in testing?](#what-are-mocks-and-stubs-and-how-are-they-used-in-testing)
-17. [What are some of the advantages/disadvantages of writing JavaScript code in a language that compiles to JavaScript?](#what-are-some-of-the-advantagesdisadvantages-of-writing-javascript-code-in-a-language-that-compiles-to-javascript)
+17. [What are some of the advantages and disadvantages of using TypeScript and compile-to-JavaScript languages](#what-are-some-of-the-advantages-and-disadvantages-of-using-typescript-and-compile-to-javascript-languages)
 18. [What are some techniques for reducing reflows and repaints?](#what-are-some-techniques-for-reducing-reflows-and-repaints)
 19. [What are some tools that can be used to measure and analyze JavaScript performance?](#what-are-some-tools-that-can-be-used-to-measure-and-analyze-javascript-performance)
 20. [What are Web Workers and how can they be used to improve performance?](#what-are-web-workers-and-how-can-they-be-used-to-improve-performance)

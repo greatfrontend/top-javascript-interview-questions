@@ -1,6 +1,6 @@
-# Top JavaScript Interview Questions (Updated for 2025)
+# Top JavaScript Interview Questions (Updated for 2026)
 
-**Updated for 2025!** This repository contains a few hundred curated JavaScript interview questions with high quality answers for acing your Front End Engineer interviews, brought to you by [GreatFrontEnd](https://www.greatfrontend.com/?utm_source=github&utm_medium=referral&utm_campaign=top-reactjs-qns&gnrs=yangshun).
+**Updated for 2026!** This repository contains a few hundred curated JavaScript interview questions with high quality answers for acing your Front End Engineer interviews, brought to you by [GreatFrontEnd](https://www.greatfrontend.com/?utm_source=github&utm_medium=referral&utm_campaign=top-reactjs-qns&gnrs=yangshun).
 
 Looking for more? Read our blog post [50+ must-know JavaScript interview questions and answers](https://www.greatfrontend.com/blog/50-must-know-javascript-interview-questions-by-ex-interviewers?utm_source=github&utm_medium=referral&utm_campaign=top-javascript-qns) compiled from ex-FAANG interviewers.
 

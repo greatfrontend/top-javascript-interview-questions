@@ -2,7 +2,9 @@
 
 **Updated for 2025!** This repository contains a few hundred curated JavaScript interview questions with high quality answers for acing your Front End Engineer interviews, brought to you by [GreatFrontEnd](https://www.greatfrontend.com/?utm_source=github&utm_medium=referral&utm_campaign=top-reactjs-qns&gnrs=yangshun).
 
-The questions are divided into two sections:
+Looking for more? Read our blog post [50+ must-know JavaScript interview questions and answers](https://www.greatfrontend.com/blog/50-must-know-javascript-interview-questions-by-ex-interviewers?utm_source=github&utm_medium=referral&utm_campaign=top-javascript-qns) compiled from ex-FAANG interviewers.
+
+The questions are divided into three sections:
 
 1. [**Top questions**](#table-of-contents-top-questions): List of the most important JavaScript interview questions that are commonly-asked during Front End Developer interviews. This README displays the concise version of the answers and links are provided to the full version of answers for further learning. If you are are short on time, start with this section.
 2. [**All questions**](#table-of-contents-all-questions): Comprehensive and elaborate list of JavaScript interview questions that ranges from basic to advanced topics. The answers in this section are more concise. This section is useful if you rusty with JavaScript concepts and need a refresher.

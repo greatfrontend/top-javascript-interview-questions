@@ -52,7 +52,7 @@ Arrow functions were introduced in ES2015 and provide a concise way to write fun
 
 ### Syntax
 
-Arrow functions use the `=>` syntax instead of the function keyword. The basic syntax is:
+Arrow functions use the `=>` syntax instead of the `function` keyword. The basic syntax is:
 
 ```js
 const myFunction = (arg1, arg2, ...argN) => {
@@ -60,7 +60,7 @@ const myFunction = (arg1, arg2, ...argN) => {
 };
 ```
 
-If the function body has only one expression, you can omit the curly braces and the return keyword:
+If the function body has only one expression, you can omit the curly braces and the `return` keyword:
 
 ```js
 const myFunction = (arg1, arg2, ...argN) => expression;
@@ -93,7 +93,7 @@ const Foo = () => {};
 const foo = new Foo(); // TypeError: Foo is not a constructor
 ```
 
-They also do not have the `arguments` keyword; the arguments have to be obtained by using the rest operator (`...`) in the parameters.
+They also do not have their own `arguments` object; the arguments have to be obtained by using the rest parameter syntax (`...`) in the parameters.
 
 ```js live
 const arrowFunction = (...args) => {

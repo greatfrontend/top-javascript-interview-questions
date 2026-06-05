@@ -4,7 +4,7 @@ title: How can you optimize DOM manipulation for better performance?
 
 ## TL;DR
 
-To optimize DOM manipulation for better performance, minimize direct DOM access and updates. Use techniques like batching DOM changes, using `documentFragment` for multiple elements, and leveraging virtual DOM libraries like React. Also, consider using `requestAnimationFrame` for animations and avoid layout thrashing by reading and writing DOM properties separately.
+To optimize DOM manipulation for better performance, minimize direct DOM access and updates. Use techniques like batching DOM changes, using `DocumentFragment` for multiple elements, and using virtual DOM libraries like React. Also, consider using `requestAnimationFrame` for animations and avoid layout thrashing by reading and writing DOM properties separately.
 
 ---
 
@@ -44,9 +44,9 @@ element.style.cssText = 'color: red; background-color: blue;';
 console.log(document.body); // Notice the edits
 ```
 
-### Use `documentFragment`
+### Use `DocumentFragment`
 
-When adding multiple elements to the DOM, use a `documentFragment` to minimize reflows and repaints.
+When adding multiple elements to the DOM, use a `DocumentFragment` to minimize reflows and repaints.
 
 ```js live
 const fragment = document.createDocumentFragment();
@@ -60,13 +60,13 @@ document.body.appendChild(fragment);
 console.log(document.body); // Notice that the divs have been added
 ```
 
-### Leverage virtual DOM libraries
+### Use virtual DOM libraries
 
 Libraries like React use a virtual DOM to batch updates and minimize direct DOM manipulation, which can significantly improve performance.
 
-```js
+```jsx
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 const App = () => (
   <div>
@@ -74,7 +74,8 @@ const App = () => (
   </div>
 );
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);
 ```
 
 ### Use `requestAnimationFrame` for animations

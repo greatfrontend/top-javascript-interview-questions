@@ -26,7 +26,7 @@ var foo = function () {
 };
 ```
 
-Another key difference is in the scope of the function name. Function expressions can be named by defining a name after the `function` keyword and before the parentheses. However, when using named function expressions, the function name is only accessible within the function itself. Trying to access it outside will result in an error or `undefined`.
+Another key difference is in the scope of the function name. Function expressions can be named by defining a name after the `function` keyword and before the parentheses. However, when using named function expressions, the function name is only accessible within the function itself. Trying to access it outside will result in a `ReferenceError`.
 
 ```js live
 const myFunc = function namedFunc() {
@@ -91,7 +91,7 @@ var foo = function () {
 
 ### Name scope
 
-Function expressions can be named by defining a name after the `function` keyword and before the parentheses. However, when using named function expressions, the function name is only accessible within the function itself. Trying to access it outside will result in `undefined` and calling it will result in an error.
+Function expressions can be named by defining a name after the `function` keyword and before the parentheses. However, when using named function expressions, the function name is only accessible within the function itself. Trying to access it outside will result in a `ReferenceError`.
 
 ```js live
 const myFunc = function namedFunc() {

@@ -54,7 +54,7 @@ Use `<script>` for critical scripts that the page relies on to render properly.
 
 ## `<script async>`
 
-In `<script async>`, the browser downloads the script file asynchronously (in parallel with HTML parsing) and executes it as soon as it is available (potentially before HTML parsing completes). The execution will not necessarily be executed in the order in which it appears in the HTML document. This can improve perceived performance because the browser doesn't wait for the script to download before continuing to render the page.
+In `<script async>`, the browser downloads the script file asynchronously (in parallel with HTML parsing) and executes it as soon as it is available (potentially before HTML parsing completes). The script will not necessarily be executed in the order in which it appears in the HTML document. This can improve perceived performance because the browser doesn't wait for the script to download before continuing to render the page.
 
 Use `<script async>` when the script is independent of any other scripts on the page, for example, analytics and ads scripts.
 

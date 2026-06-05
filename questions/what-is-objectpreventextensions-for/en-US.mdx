@@ -62,6 +62,12 @@ Object.preventExtensions(obj);
 console.log(Object.isExtensible(obj)); // false
 ```
 
+### Comparison with `Object.seal()` and `Object.freeze()`
+
+- `Object.preventExtensions()`: Prevents adding new properties. Existing properties can still be modified, configured, or deleted.
+- `Object.seal()`: Prevents adding new properties and marks existing properties as non-configurable, so they cannot be deleted. Their values can still be changed.
+- `Object.freeze()`: Prevents adding new properties, prevents deleting existing properties, and makes existing properties read-only (a shallow freeze).
+
 ### Use cases
 
 - **Immutable object structure**: When you want to ensure that the structure of an object remains unchanged, you can use `Object.preventExtensions()`.

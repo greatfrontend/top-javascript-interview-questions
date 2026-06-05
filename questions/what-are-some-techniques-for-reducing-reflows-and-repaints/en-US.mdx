@@ -14,7 +14,7 @@ To reduce reflows and repaints, you can minimize DOM manipulations, batch DOM ch
 
 Frequent changes to the DOM can cause multiple reflows and repaints. To minimize this:
 
-- Use `documentFragment` to batch DOM updates
+- Use `DocumentFragment` to batch DOM updates
 - Clone nodes, make changes, and then replace the original node
 
 ### Batch DOM changes
@@ -81,5 +81,5 @@ console.log(element);
 ## Further reading
 
 - [MDN Web Docs: Reflow](https://developer.mozilla.org/en-US/docs/Glossary/Reflow)
-- [Google Developers: Avoid large, complex layouts and layout thrashing](https://developers.google.com/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing)
+- [web.dev: Avoid large, complex layouts and layout thrashing](https://web.dev/articles/avoid-large-complex-layouts-and-layout-thrashing)
 - [CSS-Tricks: Debouncing and Throttling Explained Through Examples](https://css-tricks.com/debouncing-throttling-explained-examples/)

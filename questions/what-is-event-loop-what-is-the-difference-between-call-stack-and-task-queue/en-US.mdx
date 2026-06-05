@@ -366,7 +366,7 @@ Several statements about the event loop appear frequently in explanations and in
 3. **"Microtasks run on a separate thread."** JavaScript execution is single-threaded. Microtasks run on the main thread, interleaved with macrotasks under the event loop's scheduling rules.
 4. **"`Promise.resolve()` is synchronous when the promise is already resolved."** The resolution is synchronous, but `.then` callbacks are always scheduled asynchronously as microtasks. This is a Promises/A+ requirement intended to guarantee consistent execution ordering.
 5. **"`process.nextTick` is a microtask."** In Node.js, `nextTick` has its own queue that drains before the promise microtask queue.
-6. **"`setTimeout(fn, 0)` fires after 0 milliseconds."** Both the HTML specification and Node.js clamp the minimum to a small non-zero value (4ms for nested timers in browsers; 1ms in Node). A delay of `0` is a lower bound, not a guarantee.
+6. **"`setTimeout(fn, 0)` fires after 0 milliseconds."** Both the HTML specification and Node.js clamp the minimum to a small non-zero value (4 ms for nested timers in browsers; 1 ms in Node). A delay of `0` is a lower bound, not a guarantee.
 
 ## Further reading and resources
 

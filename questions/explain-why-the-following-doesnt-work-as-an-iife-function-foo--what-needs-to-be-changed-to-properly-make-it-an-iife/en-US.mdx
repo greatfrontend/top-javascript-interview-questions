@@ -16,7 +16,7 @@ In JavaScript, a function declaration and a function expression are treated diff
 
 ### Syntax error
 
-When you try to immediately invoke a function declaration by adding `();` at the end, it results in a syntax error because the parser expects a function expression to be invoked immediately, not a declaration.
+When you add `()` after the function declaration, the parser does not treat it as a call on the function. Instead, the trailing `()` is parsed as a separate grouping operator, and because it contains no expression, it throws a `SyntaxError`.
 
 ## How to properly make it an IIFE
 
@@ -30,13 +30,13 @@ To convert the function declaration into a function expression, you need to wrap
 
 ### Alternative syntax
 
-You can also use an alternative syntax by placing the parentheses around the original line:
+You can also wrap the entire invocation (function and call) in a single pair of parentheses:
 
 ```javascript
 (function foo() {})();
 ```
 
-Both of these syntaxes are valid and will correctly create an IIFE.
+Both of these syntaxes are valid and will correctly create an IIFE. Other ways to force the function into an expression context include prefixing it with a unary operator, such as `!function foo() {}();` or `void function foo() {}();`.
 
 ## Further reading
 

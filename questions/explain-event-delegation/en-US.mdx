@@ -27,13 +27,13 @@ Event delegation is a design pattern in JavaScript used to efficiently manage an
 
 1. **Attach a listener to a common ancestor**: Instead of attaching individual event listeners to each child element, you attach a single event listener to a common ancestor element higher in the DOM hierarchy.
 1. **Event bubbling**: When an event occurs on a child element, it bubbles up through the DOM tree to the common ancestor element. During this propagation, the event listener on the common ancestor can intercept and handle the event.
-1. **Determine the target**: Within the event listener, you can inspect the event object to identify the actual target of the event (the child element that triggered the event). You can use properties like `event.target` or `event.currentTarget` to determine which specific child element was interacted with.
+1. **Determine the target**: Within the event listener, you can inspect the event object to identify the actual target of the event (the child element that triggered the event). Use `event.target` to find which specific child element was interacted with. (`event.currentTarget` refers to the ancestor the listener is attached to, not the child that triggered the event.)
 1. **Perform action based on target**: Based on the target element, you can perform the desired action or execute code specific to that element. This allows you to handle events for multiple child elements with a single event listener.
 
 ## Benefits of event delegation
 
 1. **Efficiency**: Event delegation reduces the number of event listeners, improving memory usage and performance, especially when dealing with a large number of elements.
-1. **Dynamic elements**: It works seamlessly with dynamically added or removed child elements, as the common ancestor continues to listen for events on them.
+1. **Dynamic elements**: It works with dynamically added or removed child elements, as the common ancestor continues to listen for events on them.
 
 ## Example
 
@@ -282,11 +282,11 @@ Event delegation comes with several pitfalls:
 
 ## Event delegation in JavaScript frameworks
 
-In [React](https://react.dev/), event handlers are attached to the React root's DOM container into which the React tree is rendered. Even though `onClick` is added to child elements, the actual event listeners are attached to the root DOM node, leveraging event delegation to optimize event handling and improve performance.
+In [React](https://react.dev/), event handlers are attached to the React root's DOM container into which the React tree is rendered. Even though `onClick` is added to child elements, the actual event listeners are attached to the root DOM node, using event delegation to optimize event handling and improve performance.
 
 When an event occurs, React's event listener captures it and determines which React component rendered the target element based on its internal bookkeeping. React then dispatches the event to the appropriate component's event handler by calling the handler function with a synthetic event object. This synthetic event object wraps the native browser event, providing a consistent interface across different browsers and capturing information about the event.
 
-By using event delegation, React avoids attaching individual event handlers to each component instance, which would create significant overhead, especially for large component trees. Instead, React leverages the browser's native event bubbling mechanism to capture events at the root and distribute them to the appropriate components.
+By using event delegation, React avoids attaching individual event handlers to each component instance, which would create significant overhead, especially for large component trees. Instead, React uses the browser's native event bubbling mechanism to capture events at the root and distribute them to the appropriate components.
 
 ## Further reading
 

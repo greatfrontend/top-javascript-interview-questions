@@ -475,7 +475,7 @@ Here's a table summarizing the 3 client storage mechanisms.
 | Lifespan | As specified | Until deleted | Until tab is closed |
 | Persistent across browser sessions | If a future expiry date is set | Yes | No |
 | Sent to server with every HTTP request | Yes, sent via `Cookie` header | No | No |
-| Total capacity (per domain) | 4kb | 5MB | 5MB |
+| Total capacity (per domain) | 4KB | 5MB | 5MB |
 | Access | Across windows/tabs | Across windows/tabs | Same tab |
 | Security | JavaScript cannot access `HttpOnly` cookies | None | None |
 
@@ -647,7 +647,7 @@ The main takeaway here is that `this` can be changed for a normal function, but 
 
 <!-- Update here: /questions/explain-how-prototypal-inheritance-works/en-US.mdx -->
 
-Prototypical inheritance in JavaScript is a way for objects to inherit properties and methods from other objects. Every JavaScript object has a special hidden property called `[[Prototype]]` (commonly accessed via `__proto__` or using `Object.getPrototypeOf()`) that is a reference to another object, which is called the object's "prototype".
+Prototypal inheritance in JavaScript is a way for objects to inherit properties and methods from other objects. Every JavaScript object has a special hidden property called `[[Prototype]]` (commonly accessed via `__proto__` or using `Object.getPrototypeOf()`) that is a reference to another object, which is called the object's "prototype".
 
 When a property is accessed on an object and if the property is not found on that object, the JavaScript engine looks at the object's `__proto__`, and the `__proto__`'s `__proto__` and so on, until it finds the property defined on one of the `__proto__`s or until it reaches the end of the prototype chain.
 
@@ -691,7 +691,7 @@ bolt.bark(); // "Woof!"
 Things to note are:
 
 - `.makeSound` is not defined on `Dog`, so the JavaScript engine goes up the prototype chain and finds `.makeSound` on the inherited `Animal`.
-- Using `Object.create()` to build the inheritance chain is no longer recommended. Use `Object.setPrototypeOf()` instead.
+- In modern code, `class` and `extends` are the preferred way to set up inheritance; they are syntactic sugar over this prototype mechanism.
 
 <!-- Update here: /questions/explain-how-prototypal-inheritance-works/en-US.mdx -->
 
@@ -709,7 +709,7 @@ Things to note are:
 
 - `function Person(){}`: A function declaration in JavaScript. It can be used as a regular function or as a constructor.
 - `const person = Person()`: Calls `Person` as a regular function, not a constructor. If `Person` is intended to be a constructor, this will lead to unexpected behavior.
-- `const person = new Person()`: Creates a new instance of `Person`, correctly utilizing the constructor function to initialize the new object.
+- `const person = new Person()`: Creates a new instance of `Person`, correctly using the constructor function to initialize the new object.
 
 | Aspect | `function Person(){}` | `const person = Person()` | `const person = new Person()` |
 | --- | --- | --- | --- |
@@ -754,7 +754,7 @@ var foo = function () {
 };
 ```
 
-Another key difference is in the scope of the function name. Function expressions can be named by defining a name after the `function` keyword and before the parentheses. However, when using named function expressions, the function name is only accessible within the function itself. Trying to access it outside will result in an error or `undefined`.
+Another key difference is in the scope of the function name. Function expressions can be named by defining a name after the `function` keyword and before the parentheses. However, when using named function expressions, the function name is only accessible within the function itself. Trying to access it outside will result in a `ReferenceError`.
 
 ```js live
 const myFunc = function namedFunc() {
@@ -1005,7 +1005,7 @@ It's much more verbose to use inheritance in ES5, and the ES2015 version is easi
 | Constructor | Function with properties assigned using `this` | `constructor` method inside the class |
 | Method Definition | Defined on the prototype | Defined inside the class body |
 | Static Methods | Added directly to the constructor function | Defined using the `static` keyword |
-| Inheritance | Uses `Object.create()` and manually sets prototype chain | Uses `extends` keyword and `super` function |
+| Inheritance | Uses `Object.create()` and manually sets prototype chain | Uses `extends` keyword and `super` |
 | Readability | Less intuitive and more verbose | More concise and intuitive |
 
 <!-- Update here: /questions/what-are-the-differences-between-es6-class-and-es5-function-constructors/en-US.mdx -->
@@ -1101,7 +1101,7 @@ The main difference lies in the bubbling behavior of `mouseenter` and `mouseover
 - No more access to `function.caller` and `function.arguments`.
 - Concatenation of scripts written in different strict modes might cause issues.
 
-Overall, the benefits outweigh the disadvantages and there is not really a need to rely on the features that strict mode prohibits. We should all be using strict mode by default.
+The benefits outweigh the disadvantages and there is not really a need to rely on the features that strict mode prohibits. We should all be using strict mode by default.
 
 <!-- Update here: /questions/what-is-use-strict-what-are-the-advantages-and-disadvantages-to-using-it/en-US.mdx -->
 
@@ -1162,7 +1162,7 @@ console.log('Call made to fetch data'); // This will print before the data is fe
 
 <!-- Update here: /questions/what-are-the-pros-and-cons-of-using-promises-instead-of-callbacks/en-US.mdx -->
 
-Promises offer a cleaner alternative to callbacks, helping to avoid callback hell and making asynchronous code more readable. They facilitate writing sequential and parallel asynchronous operations with ease. However, using promises may introduce slightly more complex code.
+Promises offer a cleaner alternative to callbacks, helping to avoid callback hell and making asynchronous code more readable. They make it easier to write sequential and parallel asynchronous operations and to handle errors with `.catch()`. However, using Promises may introduce slightly more complex code.
 
 <!-- Update here: /questions/what-are-the-pros-and-cons-of-using-promises-instead-of-callbacks/en-US.mdx -->
 
@@ -1262,7 +1262,7 @@ AJAX (Asynchronous JavaScript and XML) is a technique in JavaScript that allows 
 - Handling caching with `XMLHttpRequest` is difficult, but caching is supported by `fetch()` by default via the `cache` value of the second parameter to `fetch()` or `Request()`.
 - `fetch()` requires an `AbortController` for cancelation, while `XMLHttpRequest` provides an `abort()` method.
 - `XMLHttpRequest` has good support for progress tracking, which `fetch()` lacks.
-- `XMLHttpRequest` is only available in the browser and not natively supported in Node.js environments. On the other hand `fetch()` is part of the JavaScript language and is supported on all modern JavaScript runtimes.
+- `XMLHttpRequest` is only available in the browser and not natively supported in Node.js environments. On the other hand, `fetch()` is part of the web platform (the WHATWG Fetch standard) and is supported on all modern JavaScript runtimes, including Node.js.
 
 These days `fetch()` is preferred for its cleaner syntax and modern features.
 
@@ -1363,7 +1363,7 @@ Libraries and services for polyfills:
 
 Extending a built-in/native JavaScript object means adding properties/functions to its `prototype`. While this may seem like a good idea at first, it is dangerous in practice. Imagine your code uses two libraries that both extend the `Array.prototype` by adding the same `contains` method; the implementations will overwrite each other and your code will have unpredictable behavior if these two methods do not work the same way.
 
-The only time you may want to extend a native object is when you want to create a polyfill, essentially providing your own implementation for a method that is part of the JavaScript specification but might not exist in the user's browser due to it being an older browser.
+The only time you may want to extend a native object is when you want to create a polyfill, providing your own implementation for a method that is part of the JavaScript specification but might not exist in the user's browser due to it being an older browser.
 
 <!-- Update here: /questions/why-is-extending-built-in-javascript-objects-not-a-good-idea/en-US.mdx -->
 
@@ -1522,7 +1522,7 @@ for (const key in obj) {
 
 **`Object.keys()`**
 
-`Object.keys()` returns an array of the object's own enumerable property names. You can then use a for...of loop or forEach to iterate over this array.
+`Object.keys()` returns an array of the object's own enumerable property names. You can then use a `for...of` loop or `forEach` to iterate over this array.
 
 ```js live
 const obj = {
@@ -1622,7 +1622,7 @@ console.log(sum(1, 2, 3)); // Output: 6
 
 <!-- Update here: /questions/what-are-iterators-and-generators-and-what-are-they-used-for/en-US.mdx -->
 
-In JavaScript, iterators and generators are powerful tools for managing sequences of data and controlling the flow of execution in a more flexible way.
+In JavaScript, iterators and generators are tools for managing sequences of data and controlling the flow of execution in a more flexible way.
 
 **Iterators** are objects that define a sequence and potentially a return value upon its termination. They adhere to a specific interface:
 
@@ -1673,7 +1673,7 @@ console.log(gen.next()); // { value: 5, done: false }
 console.log(gen.next()); // { value: undefined, done: true }
 ```
 
-Generators are powerful for creating iterators on-demand, especially for infinite sequences or complex iteration logic. They can be used for:
+Generators are useful for creating iterators on demand, especially for infinite sequences or complex iteration logic. They can be used for:
 
 - Lazy evaluation – processing elements only when needed, improving memory efficiency for large datasets.
 - Implementing iterators for custom data structures.
@@ -1778,7 +1778,7 @@ The primary difference between `Map`/`Set` and `WeakMap`/`WeakSet` in JavaScript
 
 **`Set` vs. `WeakSet`**
 
-Similar to `Map`, `Set`s allow any data type as keys. The elements within a `Set` must be unique. `Set`s are useful for storing unique values and checking for membership efficiently. Common use cases include removing duplicates from arrays or keeping track of completed tasks.
+Similar to `Map`, `Set`s allow any data type as elements. The elements within a `Set` must be unique. `Set`s are useful for storing unique values and checking for membership efficiently. Common use cases include removing duplicates from arrays or keeping track of completed tasks.
 
 On the other hand, `WeakSet` only allows objects as elements, and these object elements are held weakly, similar to `WeakMap` keys. `WeakSet`s are less commonly used, but applicable when you want a collection of unique objects without affecting their garbage collection. This might be necessary for:
 
@@ -1845,7 +1845,7 @@ Static members are useful under the following scenarios:
 
 <!-- Update here: /questions/what-are-symbols-used-for/en-US.mdx -->
 
-`Symbol`s in JavaScript are a new primitive data type introduced in ES6 (ECMAScript 2015). They are unique and immutable identifiers that are primarily used for object property keys to avoid name collisions. These values can be created using the `Symbol(...)` function, and each `Symbol` value is guaranteed to be unique, even if they have the same key/description. `Symbol` properties are not enumerable in `for...in` loops or `Object.keys()`, making them suitable for creating private/internal object state.
+`Symbol`s in JavaScript are a primitive data type introduced in ES6 (ECMAScript 2015). They are unique and immutable identifiers that are primarily used for object property keys to avoid name collisions. These values can be created using the `Symbol(...)` function, and each `Symbol` value is guaranteed to be unique, even if they have the same key/description. `Symbol` properties are not enumerable in `for...in` loops or `Object.keys()`, making them suitable for creating private/internal object state.
 
 ```js live
 let sym1 = Symbol();
@@ -1960,9 +1960,9 @@ In JavaScript, property flags and descriptors manage the behavior and attributes
 
 Property flags are used to specify the behavior of a property on an object. Here are the available flags:
 
-- `writable`: Specifies whether the property can be written to. Defaults to `true`.
-- `enumerable`: Specifies whether the property is enumerable. Defaults to `true`.
-- `configurable`: Specifies whether the property can be deleted or its attributes changed. Default is `true`.
+- `writable`: Specifies whether the property can be written to.
+- `enumerable`: Specifies whether the property is enumerable.
+- `configurable`: Specifies whether the property can be deleted or its attributes changed.
 
 **Property descriptors**
 
@@ -2098,7 +2098,7 @@ Some of the most commonly used tools and techniques for debugging JavaScript:
   - `debugger` statement
 - Breakpoints (browser or IDE)
 - JavaScript frameworks
-  - [React Devtools](https://github.com/facebook/react-devtools)
+  - [React Devtools](https://github.com/facebook/react/tree/main/packages/react-devtools)
   - [Redux Devtools](https://github.com/gaearon/redux-devtools)
   - [Vue Devtools](https://github.com/vuejs/vue-devtools)
 - Browser developer tools
@@ -2174,7 +2174,7 @@ This algorithm effectively identifies and removes objects that have become unrea
 
 **Generational garbage collection**
 
-Leveraged by modern JavaScript engines, objects are divided into different generations based on their age and usage patterns. Frequently accessed objects are moved to younger generations, while less frequently used objects are promoted to older generations. This optimization reduces the overhead of garbage collection by focusing on the younger generations, where most objects are short-lived.
+Used by modern JavaScript engines, objects are divided into different generations based on their age. Objects start in the young generation, and those that survive several collections are promoted to the old generation. This optimization reduces the overhead of garbage collection by focusing on the younger generation, where most objects are short-lived.
 
 Different JavaScript engines (which differ across browsers) implement different garbage collection algorithms and there's no standard way of doing garbage collection.
 
@@ -2402,7 +2402,7 @@ console.log(combinedObj); // { a: 1, b: 2, c: 3, d: 4 }
 
 <!-- Update here: /questions/what-are-symbols-used-for/en-US.mdx -->
 
-`Symbol`s in JavaScript are a new primitive data type introduced in ES6 (ECMAScript 2015). They are unique and immutable identifiers that are primarily used for object property keys to avoid name collisions. These values can be created using the `Symbol(...)` function, and each `Symbol` value is guaranteed to be unique, even if they have the same key/description. `Symbol` properties are not enumerable in `for...in` loops or `Object.keys()`, making them suitable for creating private/internal object state.
+`Symbol`s in JavaScript are a primitive data type introduced in ES6 (ECMAScript 2015). They are unique and immutable identifiers that are primarily used for object property keys to avoid name collisions. These values can be created using the `Symbol(...)` function, and each `Symbol` value is guaranteed to be unique, even if they have the same key/description. `Symbol` properties are not enumerable in `for...in` loops or `Object.keys()`, making them suitable for creating private/internal object state.
 
 ```js live
 let sym1 = Symbol();
@@ -2652,7 +2652,7 @@ for (const key in obj) {
 
 **`Object.keys()`**
 
-`Object.keys()` returns an array of the object's own enumerable property names. You can then use a for...of loop or forEach to iterate over this array.
+`Object.keys()` returns an array of the object's own enumerable property names. You can then use a `for...of` loop or `forEach` to iterate over this array.
 
 ```js live
 const obj = {
@@ -2826,7 +2826,7 @@ console.log(sum(1, 2, 3, 4)); // Output: 10
 
 <!-- Update here: /questions/explain-the-concept-of-the-spread-operator-and-its-uses/en-US.mdx -->
 
-The spread operator (`...`) in JavaScript allows you to expand elements of an iterable (like an array or object) into individual elements. It is commonly used for copying arrays or objects, merging arrays or objects, and passing elements of an array as arguments to a function.
+The spread operator (`...`) in JavaScript expands the elements of an iterable (like an array) into individual elements, and copies the own enumerable properties of an object into a new object. It is commonly used for copying arrays or objects, merging arrays or objects, and passing elements of an array as arguments to a function.
 
 ```js live
 // Copying an array
@@ -2899,7 +2899,7 @@ console.log(sum(1, 2, 3)); // Output: 6
 
 <!-- Update here: /questions/what-are-iterators-and-generators-and-what-are-they-used-for/en-US.mdx -->
 
-In JavaScript, iterators and generators are powerful tools for managing sequences of data and controlling the flow of execution in a more flexible way.
+In JavaScript, iterators and generators are tools for managing sequences of data and controlling the flow of execution in a more flexible way.
 
 **Iterators** are objects that define a sequence and potentially a return value upon its termination. They adhere to a specific interface:
 
@@ -2950,7 +2950,7 @@ console.log(gen.next()); // { value: 5, done: false }
 console.log(gen.next()); // { value: undefined, done: true }
 ```
 
-Generators are powerful for creating iterators on-demand, especially for infinite sequences or complex iteration logic. They can be used for:
+Generators are useful for creating iterators on demand, especially for infinite sequences or complex iteration logic. They can be used for:
 
 - Lazy evaluation – processing elements only when needed, improving memory efficiency for large datasets.
 - Implementing iterators for custom data structures.
@@ -2990,7 +2990,7 @@ var foo = function () {
 };
 ```
 
-Another key difference is in the scope of the function name. Function expressions can be named by defining a name after the `function` keyword and before the parentheses. However, when using named function expressions, the function name is only accessible within the function itself. Trying to access it outside will result in an error or `undefined`.
+Another key difference is in the scope of the function name. Function expressions can be named by defining a name after the `function` keyword and before the parentheses. However, when using named function expressions, the function name is only accessible within the function itself. Trying to access it outside will result in a `ReferenceError`.
 
 ```js live
 const myFunc = function namedFunc() {
@@ -3107,7 +3107,7 @@ console.log(doubled); // [2, 4, 6]
 
 - `function Person(){}`: A function declaration in JavaScript. It can be used as a regular function or as a constructor.
 - `const person = Person()`: Calls `Person` as a regular function, not a constructor. If `Person` is intended to be a constructor, this will lead to unexpected behavior.
-- `const person = new Person()`: Creates a new instance of `Person`, correctly utilizing the constructor function to initialize the new object.
+- `const person = new Person()`: Creates a new instance of `Person`, correctly using the constructor function to initialize the new object.
 
 | Aspect | `function Person(){}` | `const person = Person()` | `const person = new Person()` |
 | --- | --- | --- | --- |
@@ -3396,7 +3396,7 @@ console.log(arr); // Final state: [1, 5, 3]
 
 <!-- Update here: /questions/what-are-the-different-ways-to-copy-an-object-or-an-array/en-US.mdx -->
 
-To copy an object or an array in JavaScript, you can use several methods. For shallow copies, you can use the spread operator (`...`) or `Object.assign()`. For deep copies, you can use `JSON.parse(JSON.stringify())` or libraries like Lodash's `_.cloneDeep()`.
+To copy an object or an array in JavaScript, you can use several methods. For shallow copies, you can use the spread operator (`...`) or `Object.assign()`. For deep copies, you can use the built-in `structuredClone()`, `JSON.parse(JSON.stringify())`, or libraries like Lodash's `_.cloneDeep()`.
 
 ```js live
 // Shallow copy of an array
@@ -3407,11 +3407,11 @@ console.log(shallowCopyArray); // [1, 2, 3]
 // Shallow copy of an object
 const originalObject = { a: 1, b: 2 };
 const shallowCopyObject = { ...originalObject };
-console.log(shallowCopyObject); // { a: 1, b: 2 };
+console.log(shallowCopyObject); // { a: 1, b: 2 }
 
 // Deep copy using JSON methods
 const deepCopyObject = JSON.parse(JSON.stringify(originalObject));
-console.log(deepCopyObject); // { a: 1, b: 2 };
+console.log(deepCopyObject); // { a: 1, b: 2 }
 ```
 
 <!-- Update here: /questions/what-are-the-different-ways-to-copy-an-object-or-an-array/en-US.mdx -->
@@ -3480,7 +3480,7 @@ console.log(obj2); // { a: 1, b: 2, c: 3 }
 
 <!-- Update here: /questions/how-do-you-check-if-an-object-has-a-specific-property/en-US.mdx -->
 
-To check if an object has a specific property, you can use the `in` operator or the `hasOwnProperty` method. The `in` operator checks for both own and inherited properties, while `hasOwnProperty` checks only for own properties.
+To check if an object has a specific property, you can use the `in` operator or the `hasOwnProperty` method. The `in` operator checks for both own and inherited properties, while `hasOwnProperty` checks only for own properties. Since ES2022, `Object.hasOwn()` is the recommended way to check for own properties as it works safely even on objects created with `Object.create(null)`.
 
 ```js live
 const obj = { key: 'value' };
@@ -3608,7 +3608,7 @@ obj.name = 'Jane'; // Allowed
 obj.age = 30; // Not allowed, throws an error in strict mode
 delete obj.name; // Not allowed, throws an error in strict mode
 
-console.log(obj); // { name: 'Jane } (unchanged)
+console.log(obj); // { name: 'Jane' } (age was not added, name was not deleted)
 ```
 
 <!-- Update here: /questions/what-is-objectseal-for/en-US.mdx -->
@@ -3698,9 +3698,9 @@ In JavaScript, property flags and descriptors manage the behavior and attributes
 
 Property flags are used to specify the behavior of a property on an object. Here are the available flags:
 
-- `writable`: Specifies whether the property can be written to. Defaults to `true`.
-- `enumerable`: Specifies whether the property is enumerable. Defaults to `true`.
-- `configurable`: Specifies whether the property can be deleted or its attributes changed. Default is `true`.
+- `writable`: Specifies whether the property can be written to.
+- `enumerable`: Specifies whether the property is enumerable.
+- `configurable`: Specifies whether the property can be deleted or its attributes changed.
 
 **Property descriptors**
 
@@ -3899,7 +3899,7 @@ let promise = new Promise((resolve, reject) => {
 
 <!-- Update here: /questions/what-are-the-pros-and-cons-of-using-promises-instead-of-callbacks/en-US.mdx -->
 
-Promises offer a cleaner alternative to callbacks, helping to avoid callback hell and making asynchronous code more readable. They facilitate writing sequential and parallel asynchronous operations with ease. However, using promises may introduce slightly more complex code.
+Promises offer a cleaner alternative to callbacks, helping to avoid callback hell and making asynchronous code more readable. They make it easier to write sequential and parallel asynchronous operations and to handle errors with `.catch()`. However, using Promises may introduce slightly more complex code.
 
 <!-- Update here: /questions/what-are-the-pros-and-cons-of-using-promises-instead-of-callbacks/en-US.mdx -->
 
@@ -3987,7 +3987,7 @@ To handle errors in asynchronous operations, you can use `try...catch` blocks wi
 ```js live
 async function fetchData() {
   try {
-    // Invalid URl
+    // This request will fail (example domain)
     const response = await fetch('https://api.example.com/data');
     const data = await response.json();
     console.log(data);
@@ -4002,7 +4002,7 @@ fetchData(); // Error fetching data: ....
 With Promises, you can use the `.catch()` method:
 
 ```js live
-fetch('https://api.example.com/data') // Invalid URl
+fetch('https://api.example.com/data') // This request will fail (example domain)
   .then((response) => response.json())
   .then((data) => console.log(data))
   .catch((error) => console.error('Error fetching data:', error));
@@ -4056,7 +4056,7 @@ In this example, `process.nextTick()` will execute first, followed by either `se
 
 <!-- Update here: /questions/explain-how-prototypal-inheritance-works/en-US.mdx -->
 
-Prototypical inheritance in JavaScript is a way for objects to inherit properties and methods from other objects. Every JavaScript object has a special hidden property called `[[Prototype]]` (commonly accessed via `__proto__` or using `Object.getPrototypeOf()`) that is a reference to another object, which is called the object's "prototype".
+Prototypal inheritance in JavaScript is a way for objects to inherit properties and methods from other objects. Every JavaScript object has a special hidden property called `[[Prototype]]` (commonly accessed via `__proto__` or using `Object.getPrototypeOf()`) that is a reference to another object, which is called the object's "prototype".
 
 When a property is accessed on an object and if the property is not found on that object, the JavaScript engine looks at the object's `__proto__`, and the `__proto__`'s `__proto__` and so on, until it finds the property defined on one of the `__proto__`s or until it reaches the end of the prototype chain.
 
@@ -4100,7 +4100,7 @@ bolt.bark(); // "Woof!"
 Things to note are:
 
 - `.makeSound` is not defined on `Dog`, so the JavaScript engine goes up the prototype chain and finds `.makeSound` on the inherited `Animal`.
-- Using `Object.create()` to build the inheritance chain is no longer recommended. Use `Object.setPrototypeOf()` instead.
+- In modern code, `class` and `extends` are the preferred way to set up inheritance; they are syntactic sugar over this prototype mechanism.
 
 <!-- Update here: /questions/explain-how-prototypal-inheritance-works/en-US.mdx -->
 
@@ -4313,7 +4313,7 @@ It's much more verbose to use inheritance in ES5, and the ES2015 version is easi
 | Constructor | Function with properties assigned using `this` | `constructor` method inside the class |
 | Method Definition | Defined on the prototype | Defined inside the class body |
 | Static Methods | Added directly to the constructor function | Defined using the `static` keyword |
-| Inheritance | Uses `Object.create()` and manually sets prototype chain | Uses `extends` keyword and `super` function |
+| Inheritance | Uses `Object.create()` and manually sets prototype chain | Uses `extends` keyword and `super` |
 | Readability | Less intuitive and more verbose | More concise and intuitive |
 
 <!-- Update here: /questions/what-are-the-differences-between-es6-class-and-es5-function-constructors/en-US.mdx -->
@@ -4655,7 +4655,7 @@ The `bind` method is particularly useful in scenarios where you need to ensure t
 
 The `this` keyword in JavaScript can be bound in several ways:
 
-- Default binding: In non-strict mode, `this` refers to the global object (window in browsers). In strict mode, `this` is `undefined`.
+- Default binding: In non-strict mode, `this` refers to the global object (`window` in browsers). In strict mode, `this` is `undefined`.
 - Implicit binding: When a function is called as a method of an object, `this` refers to the object.
 - Explicit binding: Using `call`, `apply`, or `bind` methods to explicitly set `this`.
 - New binding: When a function is used as a constructor with the `new` keyword, `this` refers to the newly created object.
@@ -5032,7 +5032,7 @@ Here's a table summarizing the 3 client storage mechanisms.
 | Lifespan | As specified | Until deleted | Until tab is closed |
 | Persistent across browser sessions | If a future expiry date is set | Yes | No |
 | Sent to server with every HTTP request | Yes, sent via `Cookie` header | No | No |
-| Total capacity (per domain) | 4kb | 5MB | 5MB |
+| Total capacity (per domain) | 4KB | 5MB | 5MB |
 | Access | Across windows/tabs | Across windows/tabs | Same tab |
 | Security | JavaScript cannot access `HttpOnly` cookies | None | None |
 
@@ -5182,7 +5182,7 @@ AJAX (Asynchronous JavaScript and XML) is a technique in JavaScript that allows 
 - Handling caching with `XMLHttpRequest` is difficult, but caching is supported by `fetch()` by default via the `cache` value of the second parameter to `fetch()` or `Request()`.
 - `fetch()` requires an `AbortController` for cancelation, while `XMLHttpRequest` provides an `abort()` method.
 - `XMLHttpRequest` has good support for progress tracking, which `fetch()` lacks.
-- `XMLHttpRequest` is only available in the browser and not natively supported in Node.js environments. On the other hand `fetch()` is part of the JavaScript language and is supported on all modern JavaScript runtimes.
+- `XMLHttpRequest` is only available in the browser and not natively supported in Node.js environments. On the other hand, `fetch()` is part of the web platform (the WHATWG Fetch standard) and is supported on all modern JavaScript runtimes, including Node.js.
 
 These days `fetch()` is preferred for its cleaner syntax and modern features.
 
@@ -5600,7 +5600,7 @@ In this example, the server sends a "Hello from server" message initially, and t
 
 <!-- Update here: /questions/what-are-progressive-web-applications-pwas/en-US.mdx -->
 
-Progressive Web Applications (PWAs) are web applications that use modern web capabilities to deliver an app-like experience to users. They are reliable, fast, and engaging. PWAs can work offline, send push notifications, and be installed on a user's home screen. They leverage technologies like service workers, web app manifests, and HTTPS to provide these features.
+Progressive Web Applications (PWAs) are web applications that use modern web capabilities to deliver an app-like experience to users. They are reliable, fast, and engaging. PWAs can work offline, send push notifications, and be installed on a user's home screen. They use technologies like service workers, web app manifests, and HTTPS to provide these features.
 
 <!-- Update here: /questions/what-are-progressive-web-applications-pwas/en-US.mdx -->
 
@@ -6024,9 +6024,9 @@ Currying transforms a function with multiple arguments into a sequence of functi
 
 ```js live
 // Set example
-let mySet = new Set([1, 2, 3, 3]); // Set {1, 2, 3} (duplicate values are not added)
+let mySet = new Set([1, 2, 3, 3]); // Set(3) {1, 2, 3} (duplicate values are not added)
 mySet.add(4);
-console.log(mySet); // Set {1, 2, 3, 4}
+console.log(mySet); // Set(4) {1, 2, 3, 4}
 
 // Map example
 let myMap = new Map();
@@ -6060,7 +6060,7 @@ The primary difference between `Map`/`Set` and `WeakMap`/`WeakSet` in JavaScript
 
 **`Set` vs. `WeakSet`**
 
-Similar to `Map`, `Set`s allow any data type as keys. The elements within a `Set` must be unique. `Set`s are useful for storing unique values and checking for membership efficiently. Common use cases include removing duplicates from arrays or keeping track of completed tasks.
+Similar to `Map`, `Set`s allow any data type as elements. The elements within a `Set` must be unique. `Set`s are useful for storing unique values and checking for membership efficiently. Common use cases include removing duplicates from arrays or keeping track of completed tasks.
 
 On the other hand, `WeakSet` only allows objects as elements, and these object elements are held weakly, similar to `WeakMap` keys. `WeakSet`s are less commonly used, but applicable when you want a collection of unique objects without affecting their garbage collection. This might be necessary for:
 
@@ -6217,7 +6217,7 @@ const handleResize = throttle(() => {
 let intervalId = setInterval(() => {
   handleResize();
 }, 100);
-// 'Window resized' is outputted only every 2 seconds due to throttling
+// 'Window resized' is logged only every 2 seconds due to throttling
 ```
 
 <!-- Update here: /questions/explain-the-concept-of-debouncing-and-throttling/en-US.mdx -->
@@ -6232,7 +6232,7 @@ let intervalId = setInterval(() => {
 
 <!-- Update here: /questions/how-can-you-optimize-dom-manipulation-for-better-performance/en-US.mdx -->
 
-To optimize DOM manipulation for better performance, minimize direct DOM access and updates. Use techniques like batching DOM changes, using `documentFragment` for multiple elements, and leveraging virtual DOM libraries like React. Also, consider using `requestAnimationFrame` for animations and avoid layout thrashing by reading and writing DOM properties separately.
+To optimize DOM manipulation for better performance, minimize direct DOM access and updates. Use techniques like batching DOM changes, using `DocumentFragment` for multiple elements, and using virtual DOM libraries like React. Also, consider using `requestAnimationFrame` for animations and avoid layout thrashing by reading and writing DOM properties separately.
 
 <!-- Update here: /questions/how-can-you-optimize-dom-manipulation-for-better-performance/en-US.mdx -->
 
@@ -6336,7 +6336,7 @@ To measure and analyze JavaScript performance, you can use tools like Chrome Dev
 
 <!-- Update here: /questions/how-can-you-optimize-network-requests-for-better-performance/en-US.mdx -->
 
-To optimize network requests for better performance, you can minimize the number of requests, use caching, compress data, and leverage modern web technologies like HTTP/2 and service workers. For example, you can combine multiple CSS files into one to reduce the number of requests, use `Cache-Control` headers to cache static assets, and enable Gzip compression on your server to reduce the size of the data being transferred.
+To optimize network requests for better performance, you can minimize the number of requests, use caching, compress data, and use modern web technologies like HTTP/2 and service workers. For example, you can combine multiple CSS files into one to reduce the number of requests, use `Cache-Control` headers to cache static assets, and enable Gzip compression on your server to reduce the size of the data being transferred.
 
 <!-- Update here: /questions/how-can-you-optimize-network-requests-for-better-performance/en-US.mdx -->
 
@@ -6798,7 +6798,7 @@ lightOnCommand.undo(); // Light is off
 
 Extending a built-in/native JavaScript object means adding properties/functions to its `prototype`. While this may seem like a good idea at first, it is dangerous in practice. Imagine your code uses two libraries that both extend the `Array.prototype` by adding the same `contains` method; the implementations will overwrite each other and your code will have unpredictable behavior if these two methods do not work the same way.
 
-The only time you may want to extend a native object is when you want to create a polyfill, essentially providing your own implementation for a method that is part of the JavaScript specification but might not exist in the user's browser due to it being an older browser.
+The only time you may want to extend a native object is when you want to create a polyfill, providing your own implementation for a method that is part of the JavaScript specification but might not exist in the user's browser due to it being an older browser.
 
 <!-- Update here: /questions/why-is-extending-built-in-javascript-objects-not-a-good-idea/en-US.mdx -->
 
@@ -6943,7 +6943,7 @@ Input validation is the process of ensuring that user input is correct, safe, an
 
 <!-- Update here: /questions/what-are-some-tools-and-techniques-for-identifying-security-vulnerabilities-in-javascript-code/en-US.mdx -->
 
-To identify security vulnerabilities in JavaScript code, you can use static code analysis tools like ESLint with security plugins, dynamic analysis tools like OWASP ZAP, and dependency checkers like npm audit. Additionally, manual code reviews and adhering to secure coding practices are essential techniques.
+To identify security vulnerabilities in JavaScript code, you can use static code analysis tools like ESLint with security plugins, dynamic analysis tools like OWASP ZAP, and dependency checkers like npm audit. Manual code reviews and adhering to secure coding practices are also essential techniques.
 
 <!-- Update here: /questions/what-are-some-tools-and-techniques-for-identifying-security-vulnerabilities-in-javascript-code/en-US.mdx -->
 
@@ -6957,7 +6957,7 @@ To identify security vulnerabilities in JavaScript code, you can use static code
 
 <!-- Update here: /questions/how-can-you-implement-secure-authentication-and-authorization-in-javascript-applications/en-US.mdx -->
 
-To implement secure authentication and authorization in JavaScript applications, use HTTPS to encrypt data in transit, and store sensitive data like tokens securely using `localStorage` or `sessionStorage`. Implement token-based authentication using JWTs, and validate tokens on the server side. Use libraries like OAuth for third-party authentication and ensure proper role-based access control (RBAC) for authorization.
+To implement secure authentication and authorization in JavaScript applications, use HTTPS to encrypt data in transit. Implement token-based authentication using JWTs, and validate tokens on the server side. Prefer storing tokens in `HttpOnly` cookies over `localStorage` or `sessionStorage`, since the latter are accessible to JavaScript and therefore vulnerable to XSS. Use protocols like OAuth for third-party authentication and ensure proper role-based access control (RBAC) for authorization.
 
 <!-- Update here: /questions/how-can-you-implement-secure-authentication-and-authorization-in-javascript-applications/en-US.mdx -->
 
@@ -7003,7 +7003,7 @@ The same-origin policy is a security measure implemented in web browsers to prev
 - No more access to `function.caller` and `function.arguments`.
 - Concatenation of scripts written in different strict modes might cause issues.
 
-Overall, the benefits outweigh the disadvantages and there is not really a need to rely on the features that strict mode prohibits. We should all be using strict mode by default.
+The benefits outweigh the disadvantages and there is not really a need to rely on the features that strict mode prohibits. We should all be using strict mode by default.
 
 <!-- Update here: /questions/what-is-use-strict-what-are-the-advantages-and-disadvantages-to-using-it/en-US.mdx -->
 
@@ -7024,7 +7024,7 @@ Some of the most commonly used tools and techniques for debugging JavaScript:
   - `debugger` statement
 - Breakpoints (browser or IDE)
 - JavaScript frameworks
-  - [React Devtools](https://github.com/facebook/react-devtools)
+  - [React Devtools](https://github.com/facebook/react/tree/main/packages/react-devtools)
   - [Redux Devtools](https://github.com/gaearon/redux-devtools)
   - [Vue Devtools](https://github.com/vuejs/vue-devtools)
 - Browser developer tools
@@ -7062,7 +7062,7 @@ This algorithm effectively identifies and removes objects that have become unrea
 
 **Generational garbage collection**
 
-Leveraged by modern JavaScript engines, objects are divided into different generations based on their age and usage patterns. Frequently accessed objects are moved to younger generations, while less frequently used objects are promoted to older generations. This optimization reduces the overhead of garbage collection by focusing on the younger generations, where most objects are short-lived.
+Used by modern JavaScript engines, objects are divided into different generations based on their age. Objects start in the young generation, and those that survive several collections are promoted to the old generation. This optimization reduces the overhead of garbage collection by focusing on the younger generation, where most objects are short-lived.
 
 Different JavaScript engines (which differ across browsers) implement different garbage collection algorithms and there's no standard way of doing garbage collection.
 

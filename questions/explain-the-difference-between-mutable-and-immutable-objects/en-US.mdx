@@ -115,7 +115,7 @@ frozenPerson = { name: 'Jane' }; // Error: Assignment to constant variable
 
 In the first example with `const`, reassigning a new object to `person` is not allowed, but modifying the `name` property is permitted. In the second example, `Object.freeze()` makes the `frozenPerson` object immutable, preventing any changes to its properties.
 
-It's important to note that `Object.freeze()` creates a shallow immutable object. If the object contains nested objects or arrays, those nested data structures are still mutable unless frozen separately.
+`Object.freeze()` creates a shallow immutable object. If the object contains nested objects or arrays, those nested data structures are still mutable unless frozen separately.
 
 Therefore, while `const` provides immutability for primitive values, creating truly immutable objects requires using `Object.freeze()` or other immutability techniques like deep freezing or using immutable data structures from libraries like [Immer](https://immerjs.github.io/immer/) or [Immutable.js](https://immutable-js.com/).
 
@@ -182,7 +182,7 @@ person.age = 35;
 console.log(person); // Output: { name: 'John Doe', age: 35 }
 
 // Try to re-configure an existing property descriptor (this will fail silently)
-Object.defineProperty(person, 'name', { writable: false }); // Fails silently in non strict mode
+Object.defineProperty(person, 'name', { writable: false }); // Fails silently in non-strict mode
 
 // Check if the object is sealed
 console.log(Object.isSealed(person)); // Output: true
@@ -190,7 +190,7 @@ console.log(Object.isSealed(person)); // Output: true
 
 ### Freezing an object
 
-`Object.freeze()` creates a frozen object, which means it takes an existing object and essentially calls `Object.seal()` on it, but it also marks all "data accessor" properties as writable:false, so that their values cannot be changed.
+`Object.freeze()` creates a frozen object, which means it takes an existing object and essentially calls `Object.seal()` on it, but it also marks all "data accessor" properties as `writable: false`, so that their values cannot be changed.
 
 This approach is the highest level of immutability that you can attain for an object itself, as it prevents any changes to the object or to any of its direct properties (though, as mentioned above, the contents of any referenced other objects are unaffected).
 
@@ -226,7 +226,7 @@ console.log(obj.user.name); //Output: 'John'
 
 ### Cons
 
-- **Complex to create yourself**: Naive implementations of immutable data structures and their operations can result in extremely poor performance because new objects are created each time. It is recommended to use libraries for efficient immutable data structures and operations that leverage structural sharing.
+- **Complex to create yourself**: Naive implementations of immutable data structures and their operations can result in extremely poor performance because new objects are created each time. It is recommended to use libraries for efficient immutable data structures and operations that use structural sharing.
 - **Potential negative performance**: Allocation (and deallocation) of many small objects rather than modifying existing ones can cause a performance impact. The complexity of either the allocator or the garbage collector usually depends on the number of objects on the heap.
 - **Complexity for cyclic data structures**: Cyclic data structures such as graphs are difficult to implement.
 

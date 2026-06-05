@@ -84,7 +84,7 @@ function escapeHTML(strings, ...values) {
 
 const userInput = '<script>alert("XSS")</script>';
 const result = escapeHTML`User input: ${userInput}`;
-console.log(result); // "User input: &lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;"
+console.log(result); // "User input: &lt;script&gt;alert("XSS")&lt;/script&gt;"
 ```
 
 ## Further reading

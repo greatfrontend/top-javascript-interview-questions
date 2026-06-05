@@ -24,11 +24,12 @@ Clickjacking is a type of attack where a malicious site tricks users into clicki
 
 ### Using the `X-Frame-Options` header
 
-The `X-Frame-Options` HTTP header can be used to control whether a browser should be allowed to render a page in a `<frame>`, `<iframe>`, `<embed>`, or `<object>`. This header has three possible values:
+The `X-Frame-Options` HTTP header can be used to control whether a browser should be allowed to render a page in a `<frame>`, `<iframe>`, `<embed>`, or `<object>`. This header has two valid values:
 
 - `DENY`: Prevents the page from being displayed in a frame, regardless of the site attempting to do so.
 - `SAMEORIGIN`: Allows the page to be displayed in a frame on the same origin as the page itself.
-- `ALLOW-FROM uri`: Allows the page to be displayed in a frame only on the specified origin.
+
+A third value, `ALLOW-FROM uri`, is obsolete and not supported by modern browsers. To allow specific origins to frame your page, use the CSP `frame-ancestors` directive instead.
 
 Example:
 

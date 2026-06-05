@@ -4,7 +4,7 @@ title: How can you implement secure authentication and authorization in JavaScri
 
 ## TL;DR
 
-To implement secure authentication and authorization in JavaScript applications, use HTTPS to encrypt data in transit, and store sensitive data like tokens securely using `localStorage` or `sessionStorage`. Implement token-based authentication using JWTs, and validate tokens on the server side. Use libraries like OAuth for third-party authentication and ensure proper role-based access control (RBAC) for authorization.
+To implement secure authentication and authorization in JavaScript applications, use HTTPS to encrypt data in transit. Implement token-based authentication using JWTs, and validate tokens on the server side. Prefer storing tokens in `HttpOnly` cookies over `localStorage` or `sessionStorage`, since the latter are accessible to JavaScript and therefore vulnerable to XSS. Use protocols like OAuth for third-party authentication and ensure proper role-based access control (RBAC) for authorization.
 
 ---
 
@@ -43,7 +43,7 @@ try {
 
 ### Secure storage
 
-Store sensitive data like tokens securely. Use `localStorage` or `sessionStorage` for storing tokens, but be aware of their vulnerabilities. For more security, consider using HttpOnly cookies.
+Store sensitive data like tokens securely. `localStorage` and `sessionStorage` are accessible to any JavaScript running on the page, so a single XSS vulnerability can leak the token. Prefer `HttpOnly` cookies (combined with the `Secure` and `SameSite` attributes), which are not readable by JavaScript.
 
 #### Example of storing a token in `localStorage`
 
@@ -113,6 +113,6 @@ app.get('/admin', checkRole('admin'), (req, res) => {
 ## Further reading
 
 - [JWT.io](https://jwt.io/)
-- [Passport.js documentation](http://www.passportjs.org/docs/)
+- [Passport.js documentation](https://www.passportjs.org/docs/)
 - [OWASP Secure Coding Practices-Quick Reference Guide](https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/)
-- [MDN Web Docs on HTTPS](https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security)
+- [MDN Web Docs on HTTP Strict Transport Security (HSTS)](https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security)

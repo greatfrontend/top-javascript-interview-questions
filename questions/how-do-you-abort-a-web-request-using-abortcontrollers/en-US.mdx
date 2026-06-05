@@ -141,7 +141,7 @@ setTimeout(() => {
 setTimeout(() => {
   fetchData('https://jsonplaceholder.typicode.com/posts/3');
 }, 5);
-// Only the last request should (posts/3) will be allowed to complete
+// Only the last request (posts/3) will be allowed to complete
 ```
 
 In this example, when the `fetchData()` function is called multiple times triggering multiple fetch requests, `AbortController`s will cancel all the previous requests except the latest request. This is common in scenarios like type-ahead search or infinite scrolling, where new requests are triggered frequently.
@@ -159,4 +159,4 @@ In situations where the user has navigated away from the page, aborting the requ
 ## Further reading
 
 - [AbortController | MDN](https://developer.mozilla.org/en-US/docs/Web/API/AbortController)
-- [Fetch: Abort | Javascript.info](https://javascript.info/fetch-abort)
+- [Fetch: Abort | JavaScript.info](https://javascript.info/fetch-abort)

@@ -9,7 +9,7 @@ To handle errors in asynchronous operations, you can use `try...catch` blocks wi
 ```js live
 async function fetchData() {
   try {
-    // Invalid URl
+    // This request will fail (example domain)
     const response = await fetch('https://api.example.com/data');
     const data = await response.json();
     console.log(data);
@@ -24,7 +24,7 @@ fetchData(); // Error fetching data: ....
 With Promises, you can use the `.catch()` method:
 
 ```js live
-fetch('https://api.example.com/data') // Invalid URl
+fetch('https://api.example.com/data') // This request will fail (example domain)
   .then((response) => response.json())
   .then((data) => console.log(data))
   .catch((error) => console.error('Error fetching data:', error));
@@ -41,7 +41,7 @@ When using `async/await`, you can handle errors by wrapping your asynchronous co
 ```js live
 async function fetchData() {
   try {
-    // Invalid URl
+    // This request will fail (example domain)
     const response = await fetch('https://api.example.com/data');
     const data = await response.json();
     console.log(data);

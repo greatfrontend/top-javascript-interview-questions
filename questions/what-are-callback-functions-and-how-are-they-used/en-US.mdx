@@ -92,7 +92,7 @@ Callbacks are frequently used in making API calls to handle the response data.
 
 ```js live
 function getUserData(userId, callback) {
-  fetch(`https://jsonplaceholder.typicode.com/todos/2`)
+  fetch(`https://jsonplaceholder.typicode.com/todos/${userId}`)
     .then((response) => response.json())
     .then((data) => callback(data))
     .catch((error) => console.error('Error:', error));

@@ -52,7 +52,7 @@ timer.increment(); // 1
 timer.increment(); // 2
 ```
 
-In the example above, using a traditional function inside `setInterval` would require additional steps to maintain the correct `this` context.
+In the example above, using a traditional function for `increment` would lose the correct `this` context when called, requiring additional steps like `bind` to fix it.
 
 ### Using arrow functions in array methods
 

@@ -12,7 +12,7 @@ title: What are the differences between `XMLHttpRequest` and `fetch()` in JavaSc
 - Handling caching with `XMLHttpRequest` is difficult, but caching is supported by `fetch()` by default via the `cache` value of the second parameter to `fetch()` or `Request()`.
 - `fetch()` requires an `AbortController` for cancelation, while `XMLHttpRequest` provides an `abort()` method.
 - `XMLHttpRequest` has good support for progress tracking, which `fetch()` lacks.
-- `XMLHttpRequest` is only available in the browser and not natively supported in Node.js environments. On the other hand `fetch()` is part of the JavaScript language and is supported on all modern JavaScript runtimes.
+- `XMLHttpRequest` is only available in the browser and not natively supported in Node.js environments. On the other hand, `fetch()` is part of the web platform (the WHATWG Fetch standard) and is supported on all modern JavaScript runtimes, including Node.js.
 
 These days `fetch()` is preferred for its cleaner syntax and modern features.
 
@@ -237,5 +237,5 @@ In modern development scenarios, `fetch()` is the preferred choice due to its cl
 - [Fetch API | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)
 - [XMLHttpRequest | MDN](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
 - [Request: cache property | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Request/cache)
-- [XMLHttpRequest | Javascript.info](https://javascript.info/xmlhttprequest)
+- [XMLHttpRequest | JavaScript.info](https://javascript.info/xmlhttprequest)
 - [This API is so Fetching! - Mozilla Hacks](https://hacks.mozilla.org/2015/03/this-api-is-so-fetching/)

@@ -4,7 +4,7 @@ title: How do you check if an object has a specific property?
 
 ## TL;DR
 
-To check if an object has a specific property, you can use the `in` operator or the `hasOwnProperty` method. The `in` operator checks for both own and inherited properties, while `hasOwnProperty` checks only for own properties.
+To check if an object has a specific property, you can use the `in` operator or the `hasOwnProperty` method. The `in` operator checks for both own and inherited properties, while `hasOwnProperty` checks only for own properties. Since ES2022, `Object.hasOwn()` is the recommended way to check for own properties as it works safely even on objects created with `Object.create(null)`.
 
 ```js live
 const obj = { key: 'value' };
@@ -46,6 +46,24 @@ const obj = { key: 'value' };
 if (obj.hasOwnProperty('key')) {
   console.log('Property exists');
 }
+```
+
+### Using `Object.hasOwn()`
+
+`Object.hasOwn()` (introduced in ES2022) is the recommended way to check for own properties. Unlike `obj.hasOwnProperty()`, it works on objects created with `Object.create(null)` (which have no prototype) and on objects that override the `hasOwnProperty` method.
+
+```js live
+const obj = { key: 'value' };
+
+if (Object.hasOwn(obj, 'key')) {
+  console.log('Property exists');
+}
+
+// `Object.hasOwn` works even when there is no prototype
+const bare = Object.create(null);
+bare.key = 'value';
+console.log(Object.hasOwn(bare, 'key')); // true
+// bare.hasOwnProperty('key') would throw: bare.hasOwnProperty is not a function
 ```
 
 ### Differences between `in` and `hasOwnProperty`

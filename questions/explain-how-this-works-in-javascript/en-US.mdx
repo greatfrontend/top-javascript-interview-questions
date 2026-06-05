@@ -22,7 +22,7 @@ For an in-depth explanation, do check out [Arnav Aggrawal's article on Medium](h
 
 ## `this` keyword
 
-In JavaScript, `this` is a keyword that refers to the current execution context of a function or script. It's a fundamental concept in JavaScript, and understanding how `this` works is crucial for building robust and maintainable applications.
+In JavaScript, `this` is a keyword that refers to the current execution context of a function or script. It's a fundamental concept in JavaScript, and understanding how `this` works is crucial for building maintainable applications.
 
 ### Used globally
 
@@ -211,7 +211,7 @@ When a function is called as a DOM event handler, `this` refers to the element t
 <!-- Logs the button element -->
 ```
 
-When setting an event handler using JavaScript, this also refers to the element that received the event.
+When setting an event handler using JavaScript, `this` also refers to the element that received the event.
 
 ```js
 document.getElementById('my-button').addEventListener('click', function () {
@@ -227,10 +227,10 @@ document.getElementById('my-button').addEventListener('click', () => {
 });
 ```
 
-In summary, `this` in JavaScript refers to the current execution context of a function or script, and its value can change depending on the context in which it is used. Understanding how `this` works is essential for building robust and maintainable JavaScript applications.
+In summary, `this` in JavaScript refers to the current execution context of a function or script, and its value can change depending on the context in which it is used. Understanding how `this` works is essential for building maintainable JavaScript applications.
 
 ## Further reading
 
 - [this - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
-- [The Simple Rules to `this` in Javascript](https://medium.com/m/global-identity-2?redirectUrl=https%3A%2F%2Fcodeburst.io%2Fthe-simple-rules-to-this-in-javascript-35d97f31bde3)
+- [The Simple Rules to `this` in JavaScript](https://medium.com/m/global-identity-2?redirectUrl=https%3A%2F%2Fcodeburst.io%2Fthe-simple-rules-to-this-in-javascript-35d97f31bde3)
 - [Gentle Explanation of `this` in JavaScript](https://dmitripavlutin.com/gentle-explanation-of-this-in-javascript/)

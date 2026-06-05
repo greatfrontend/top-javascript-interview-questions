@@ -87,6 +87,7 @@ console.log(childObj.key); // Output: 'value' (still has the inherited property)
 
 - **Prototype properties**: The methods above only check for the object's own properties, not properties inherited from its prototype.
 - **Non-enumerable properties**: These methods do not account for non-enumerable properties.
+- **`hasOwnProperty` safety**: In the `for...in` example, calling `obj.hasOwnProperty(key)` directly can fail if the object has a `null` prototype or shadows `hasOwnProperty`. Prefer `Object.hasOwn(obj, key)` (Baseline across modern browsers since 2022) or `Object.prototype.hasOwnProperty.call(obj, key)`.
 
 ## Further reading
 

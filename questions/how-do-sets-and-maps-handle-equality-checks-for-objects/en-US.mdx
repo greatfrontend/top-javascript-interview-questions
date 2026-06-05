@@ -63,6 +63,7 @@ In this example, `obj1` and `obj2` are different object references, so the `Map`
 
 ### Practical implications
 
+- Internally, `Set`s and `Map`s compare values using the [SameValueZero](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#same-value-zero_equality) algorithm. For objects this reduces to reference equality, while for primitives it behaves like `===` except that `NaN` is considered equal to itself.
 - If you need to check for deep equality (i.e., objects with the same properties and values), you will need to implement your own comparison logic or use a library like Lodash.
 - Be mindful of object references when using `Set`s and `Map`s, especially when dealing with complex data structures.
 

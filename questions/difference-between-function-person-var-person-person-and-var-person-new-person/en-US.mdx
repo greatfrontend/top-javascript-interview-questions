@@ -6,7 +6,7 @@ title: 'Difference between: `function Person(){}`, `const person = Person()`, an
 
 - `function Person(){}`: A function declaration in JavaScript. It can be used as a regular function or as a constructor.
 - `const person = Person()`: Calls `Person` as a regular function, not a constructor. If `Person` is intended to be a constructor, this will lead to unexpected behavior.
-- `const person = new Person()`: Creates a new instance of `Person`, correctly utilizing the constructor function to initialize the new object.
+- `const person = new Person()`: Creates a new instance of `Person`, correctly using the constructor function to initialize the new object.
 
 | Aspect | `function Person(){}` | `const person = Person()` | `const person = new Person()` |
 | --- | --- | --- | --- |
@@ -38,9 +38,9 @@ function Person(name) {
   this.name = name;
 }
 
-const person = Person('John'); // Throws error in strict mode
+const person = Person('John'); // In non-strict mode, `this` refers to the global object; in strict mode, `this` is `undefined` and `this.name = name` throws.
 console.log(person); // undefined
-console.log(person.name); // Uncaught TypeError: Cannot read property 'name' of undefined
+console.log(person.name); // Uncaught TypeError: Cannot read properties of undefined (reading 'name')
 ```
 
 In this case, `Person('John')` does not create a new object. The `person` variable is assigned `undefined` because the `Person` function does not explicitly return a value. Attempting to access `person.name` throws an error because `person` is `undefined`.
@@ -67,7 +67,7 @@ console.log(person1.name); // 'John'
 
 In this case, `new Person('John')` creates a new object, and `this` within `Person` refers to this new object. The `name` property is correctly set on the new object. The `person` variable is assigned the new instance of `Person` with the `name` property set to `'John'`. For the alternative object creation, `Object.create(Person.prototype)` creates a new object with `Person.prototype` as its prototype, and `Person.call(person, 'John')` initializes the object, setting the `name` property.
 
-## Follow-Up Questions
+## Follow-up questions
 
 - What are the differences between function constructors and ES6 class syntax?
 - What are some common use cases for `Object.create`?

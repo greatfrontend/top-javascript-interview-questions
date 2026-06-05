@@ -88,6 +88,20 @@ const newObject = { ...object, c: 3 };
 console.log(newObject); // { a: 1, b: 2, c: 3 }
 ```
 
+### Caveat: the copy is shallow
+
+The spread operator only copies the top level. Nested objects and arrays are shared by reference, so mutating a nested value affects both copies.
+
+```js live
+const original = { a: 1, nested: { b: 2 } };
+const copy = { ...original };
+
+copy.nested.b = 99;
+console.log(original.nested.b); // 99 (the nested object is shared)
+```
+
+For a fully independent copy, use `structuredClone(original)` or another deep-clone approach.
+
 ## Further reading
 
 - [MDN Web Docs: Spread syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)

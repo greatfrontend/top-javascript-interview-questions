@@ -17,7 +17,7 @@ This algorithm effectively identifies and removes objects that have become unrea
 
 **Generational garbage collection**
 
-Leveraged by modern JavaScript engines, objects are divided into different generations based on their age and usage patterns. Frequently accessed objects are moved to younger generations, while less frequently used objects are promoted to older generations. This optimization reduces the overhead of garbage collection by focusing on the younger generations, where most objects are short-lived.
+Used by modern JavaScript engines, objects are divided into different generations based on their age. Objects start in the young generation, and those that survive several collections are promoted to the old generation. This optimization reduces the overhead of garbage collection by focusing on the younger generation, where most objects are short-lived.
 
 Different JavaScript engines (which differ across browsers) implement different garbage collection algorithms and there's no standard way of doing garbage collection.
 
@@ -45,8 +45,8 @@ If there is a chain of references from a root to an object, that object is consi
 ### Garbage collection algorithms
 
 1. **Mark-and-sweep**:
-   - **Mark Phase**: The garbage collector starts from the root objects and marks all reachable objects.
-   - **Sweep Phase**: It then scans memory for objects that were not marked and reclaims their memory.
+   - **Mark phase**: The garbage collector starts from the root objects and marks all reachable objects.
+   - **Sweep phase**: It then scans memory for objects that were not marked and reclaims their memory.
 2. **Reference counting**:
    - This algorithm keeps a count of references to each object. When an object's reference count drops to zero, it is considered unreachable and can be collected.
    - A drawback of reference counting is that it cannot handle circular references well (e.g., two objects referencing each other but not referenced by any other object).

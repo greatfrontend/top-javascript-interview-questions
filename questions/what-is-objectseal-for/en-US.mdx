@@ -16,7 +16,7 @@ obj.name = 'Jane'; // Allowed
 obj.age = 30; // Not allowed, throws an error in strict mode
 delete obj.name; // Not allowed, throws an error in strict mode
 
-console.log(obj); // { name: 'Jane } (unchanged)
+console.log(obj); // { name: 'Jane' } (age was not added, name was not deleted)
 ```
 
 ---
@@ -57,7 +57,7 @@ person.age = 30; // Allowed
 person.gender = 'female'; // Not allowed, throws an error in strict mode
 delete person.name; // Not allowed, throws an error in strict mode
 
-console.log(person); // { name: 'Bob', age: 30 } (unchanged)
+console.log(person); // { name: 'Bob', age: 30 } (gender not added, name not deleted)
 ```
 
 ### Use cases

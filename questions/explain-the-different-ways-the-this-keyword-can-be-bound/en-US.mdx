@@ -6,7 +6,7 @@ title: Explain the different ways the `this` keyword can be bound
 
 The `this` keyword in JavaScript can be bound in several ways:
 
-- Default binding: In non-strict mode, `this` refers to the global object (window in browsers). In strict mode, `this` is `undefined`.
+- Default binding: In non-strict mode, `this` refers to the global object (`window` in browsers). In strict mode, `this` is `undefined`.
 - Implicit binding: When a function is called as a method of an object, `this` refers to the object.
 - Explicit binding: Using `call`, `apply`, or `bind` methods to explicitly set `this`.
 - New binding: When a function is used as a constructor with the `new` keyword, `this` refers to the newly created object.
@@ -16,7 +16,7 @@ The `this` keyword in JavaScript can be bound in several ways:
 
 ## Default binding
 
-In non-strict mode, if a function is called without any context, `this` refers to the global object (window in browsers). In strict mode, `this` is `undefined`.
+In non-strict mode, if a function is called without any context, `this` refers to the global object (`window` in browsers). In strict mode, `this` is `undefined`.
 
 ```js
 function showThis() {

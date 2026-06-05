@@ -26,7 +26,7 @@ Note that event capturing is disabled by default. To enable it, you have to pass
 
 During the capturing phase, the event starts at the document root and propagates down to the target element. Any event listeners on ancestor elements in this path will be triggered before the target element's handler. Note that event capturing will not happen unless the third argument of `addEventListener()` is set to `true` as shown below (the default value is `false`).
 
-Here's an example using modern ES2015 syntax to demonstrate event capturing:
+Here's an example demonstrating event capturing:
 
 ```js
 // HTML:

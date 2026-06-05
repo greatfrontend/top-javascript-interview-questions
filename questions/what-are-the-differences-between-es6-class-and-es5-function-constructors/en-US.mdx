@@ -73,7 +73,7 @@ It's much more verbose to use inheritance in ES5, and the ES2015 version is easi
 | Constructor | Function with properties assigned using `this` | `constructor` method inside the class |
 | Method Definition | Defined on the prototype | Defined inside the class body |
 | Static Methods | Added directly to the constructor function | Defined using the `static` keyword |
-| Inheritance | Uses `Object.create()` and manually sets prototype chain | Uses `extends` keyword and `super` function |
+| Inheritance | Uses `Object.create()` and manually sets prototype chain | Uses `extends` keyword and `super` |
 | Readability | Less intuitive and more verbose | More concise and intuitive |
 
 ---
@@ -128,7 +128,7 @@ const person1 = new Person('John', 30);
 person1.greet(); // Hello, my name is John and I am 30 years old.
 ```
 
-### Key Differences
+### Key differences
 
 1. **Syntax and Readability**:
    - **ES5**: Uses function constructors and prototypes, which can be less intuitive and harder to read.
@@ -162,7 +162,7 @@ person1.greet(); // Hello, my name is John and I am 30 years old.
 
 3. **Inheritance**
    - **ES5**: Inheritance is achieved using `Object.create()` and manually setting the prototype chain.
-   - **ES2015**: Inheritance is much simpler and more intuitive with the extends keyword.
+   - **ES2015**: Inheritance is much simpler and more intuitive with the `extends` keyword.
 
    ```js live
    // ES5 Inheritance
@@ -238,6 +238,6 @@ While both ES5 and ES2015 approaches can achieve the same functionality, ES2015 
 ## Resources
 
 - [Classes - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
-- [Inheritance- MDN ](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes#inheritance)
+- [Inheritance - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes#inheritance)
 - [The Secret Life Of Objects](https://eloquentjavascript.net/06_object.html)
 - [ES2015 vs ES5](https://www.educative.io/courses/learn-object-oriented-programming-in-javascript/es2015-vs-es5)

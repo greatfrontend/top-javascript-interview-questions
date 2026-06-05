@@ -53,7 +53,7 @@ Here are the main differences between a `Map` object and a plain object:
 3. **Iteration**: A `Map` is iterable, which means you can use `for...of` loops to iterate over its key-value pairs. A plain object is not iterable by default, but you can use `Object.keys()` or `Object.entries()` to iterate over its properties.
 4. **Performance**: `Map` objects are generally faster and more efficient than plain objects, especially when dealing with large datasets.
 5. **Methods**: A `Map` object provides additional methods, such as `get`, `set`, `has`, and `delete`, which make it easier to work with key-value pairs.
-6. **Serialization**: When serializing a `Map` object to JSON, it will be converted to an object but the existing `Map` properties might be lost in the conversion. A plain object, on the other hand, is serialized to a JSON object with the same structure.
+6. **Serialization**: `JSON.stringify()` does not serialize a `Map`'s entries; it produces an empty object (`{}`) because the entries are not own enumerable properties. A plain object, on the other hand, is serialized to a JSON object with the same structure.
 
 ## When to use which
 
@@ -70,7 +70,7 @@ Use a `Map` object when:
 - You need to iterate over the key-value pairs in a specific order.
 - You're working with a large dataset and need better performance.
 
-In summary, while both plain objects and `Map` objects can be used to store key-value pairs, `Map` objects offer more advanced features, better performance, and additional methods, making them a better choice for more complex use cases.
+While both plain objects and `Map` objects can be used to store key-value pairs, `Map` objects offer more features, better performance for frequent additions and deletions, and built-in methods, making them a better choice for more complex use cases.
 
 ## Notes
 

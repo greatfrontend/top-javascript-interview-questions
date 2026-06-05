@@ -63,7 +63,7 @@ The `X-XSS-Protection` header enables the cross-site scripting (XSS) filter buil
 X-XSS-Protection: 1; mode=block
 ```
 
-This policy enables the XSS filter and instructs the browser to block the page if an attack is detected.
+This policy enables the XSS filter and instructs the browser to block the page if an attack is detected. Note that `X-XSS-Protection` is deprecated and ignored by modern browsers, which removed their built-in XSS auditors. Use a strong `Content-Security-Policy` instead.
 
 ### Referrer-Policy
 

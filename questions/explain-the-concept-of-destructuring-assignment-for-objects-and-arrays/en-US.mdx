@@ -59,6 +59,18 @@ console.log(first); // 1
 console.log(second); // 2
 ```
 
+#### Rest elements
+
+You can collect the remaining elements into a new array using the rest syntax (`...`).
+
+```js live
+const numbers = [1, 2, 3, 4];
+const [first, ...rest] = numbers;
+
+console.log(first); // 1
+console.log(rest); // [2, 3, 4]
+```
+
 ### Object destructuring
 
 Object destructuring allows you to unpack properties from objects into distinct variables using curly braces.
@@ -111,6 +123,18 @@ const {
 console.log(name); // John
 console.log(city); // New York
 console.log(zip); // 10001
+```
+
+#### Rest properties
+
+You can collect the remaining properties into a new object using the rest syntax (`...`).
+
+```js live
+const person = { name: 'John', age: 30, city: 'New York' };
+const { name, ...rest } = person;
+
+console.log(name); // John
+console.log(rest); // { age: 30, city: 'New York' }
 ```
 
 ## Further reading

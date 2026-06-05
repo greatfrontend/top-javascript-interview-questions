@@ -45,7 +45,7 @@ const Singleton = (function () {
   let instance;
 
   function createInstance() {
-    const object = new Object('I am the instance');
+    const object = { description: 'I am the instance' };
     return object;
   }
 

@@ -23,13 +23,13 @@ subtitle: What are the advantages and disadvantages to using it?
 - No more access to `function.caller` and `function.arguments`.
 - Concatenation of scripts written in different strict modes might cause issues.
 
-Overall, the benefits outweigh the disadvantages and there is not really a need to rely on the features that strict mode prohibits. We should all be using strict mode by default.
+The benefits outweigh the disadvantages and there is not really a need to rely on the features that strict mode prohibits. We should all be using strict mode by default.
 
 ---
 
 ## What is `"use strict"` in JavaScript?
 
-In essence, `"use strict"` is a directive introduced in ECMAScript 5 (ES5) that signals to the JavaScript engine that the code it surrounds should be executed in "strict mode". Strict mode imposes stricter parsing and error handling rules, essentially making your code more secure and less error-prone.
+`"use strict"` is a directive introduced in ECMAScript 5 (ES5) that signals to the JavaScript engine that the code it surrounds should be executed in "strict mode". Strict mode imposes stricter parsing and error handling rules, making your code more secure and less error-prone.
 
 When you use `"use strict"`, it helps you write cleaner code, such as preventing you from using undeclared variables. It can also make your code more secure because it disallows some potentially insecure actions.
 
@@ -65,8 +65,8 @@ When you use `"use strict"`, it helps you write cleaner code, such as preventing
    - Using reserved keywords as identifiers.
    - Duplicating parameter names in functions.
 2. **Improved security**: Strict mode helps in writing more secure code by:
-   - Preventing the use of deprecated features like arguments.caller and arguments.callee.
-   - Restricting the use of eval() to prevent variable declarations in the calling scope.
+   - Preventing the use of deprecated features like `arguments.caller` and `arguments.callee`.
+   - Restricting the use of `eval()` to prevent variable declarations in the calling scope.
 3. **Compatibility**: Strict mode ensures compatibility with future versions of JavaScript by preventing the use of reserved keywords as identifiers.
 
 ### Examples
@@ -215,7 +215,7 @@ If you are writing an ES module or a React/Vue component, you are already in str
 ### Notes
 
 1. **Placement**: The `'use strict'` directive must be placed at the beginning of the file or function. Placing it anywhere else will not have any effect.
-1. **Compatibility**: Strict mode is supported by all modern browsers except Internet Explorer 9 and lower.
+1. **Compatibility**: Strict mode is Baseline and supported across all modern browsers.
 1. **Irreversible**: There is no way to cancel `'use strict'` after it has been set.
 
 ## Further reading

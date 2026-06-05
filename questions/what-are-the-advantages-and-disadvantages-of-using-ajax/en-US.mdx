@@ -109,7 +109,7 @@ The modern version is shorter, easier to read, and composes naturally with `Prom
 Several disadvantages historically listed for AJAX are no longer real concerns in modern apps:
 
 - **SEO challenges**: Googlebot has rendered JavaScript since around 2015, and modern frameworks ship SSR (Next.js, Nuxt, Remix), SSG (Astro, 11ty), or React Server Components for content that needs to be indexable. The AJAX-era SEO problem is largely solved if you choose your rendering strategy intentionally.
-- **Bookmarking and back-button issues**: the History API (`pushState`, `popState`) and modern routers (Next.js, React Router, Vue Router) handle URL state automatically. AJAX-era apps that broke the back button were generally not using these.
+- **Bookmarking and back-button issues**: the History API (`pushState` and the `popstate` event) and modern routers (Next.js, React Router, Vue Router) handle URL state automatically. AJAX-era apps that broke the back button were generally not using these.
 - **Browser support**: `fetch` is in every evergreen browser (Chrome, Firefox, Safari, Edge). Internet Explorer is end-of-life, and the browser-compatibility argument no longer applies.
 - **Reliance on JavaScript**: a tiny minority of users have JavaScript disabled, and modern apps generally assume JavaScript anyway. If you need a no-JS fallback, you build a server-rendered version (which RSC and progressive enhancement support directly).
 

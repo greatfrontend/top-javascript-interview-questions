@@ -18,7 +18,7 @@ Here's a table summarizing the 3 client storage mechanisms.
 | Lifespan | As specified | Until deleted | Until tab is closed |
 | Persistent across browser sessions | If a future expiry date is set | Yes | No |
 | Sent to server with every HTTP request | Yes, sent via `Cookie` header | No | No |
-| Total capacity (per domain) | 4kb | 5MB | 5MB |
+| Total capacity (per domain) | 4KB | 5MB | 5MB |
 | Access | Across windows/tabs | Across windows/tabs | Same tab |
 | Security | JavaScript cannot access `HttpOnly` cookies | None | None |
 
@@ -58,7 +58,7 @@ Cookies are used to store small pieces of data on the client side that can be se
 ```js
 // Set a cookie for the name/key `auth_token` with an expiry.
 document.cookie =
-  'auth_token=abc123def; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/';
+  'auth_token=abc123def; expires=Fri, 31 Dec 2100 23:59:59 GMT; path=/';
 
 // Read all cookies. There's no way to read specific cookies using `document.cookie`.
 // You have to parse the string yourself.
@@ -89,7 +89,7 @@ cookieStore.delete('auth_token').then(() =>
 );
 ```
 
-The CookieStore API is relatively new and may not be supported in all browsers (supported in latest Chrome and Edge as of June 2024). Refer to [caniuse.com](https://caniuse.com/mdn-api_cookiestore) for the latest compatibility.
+The Cookie Store API may not be supported in all browsers. Refer to [caniuse.com](https://caniuse.com/mdn-api_cookiestore) for the latest compatibility.
 
 ### `localStorage`
 
@@ -118,7 +118,7 @@ localStorage.clear();
 
 `sessionStorage` is used to store data for the duration of the page session. It is designed for temporary storage of data.
 
-- **Storage Capacity**: Typically around 5MB per origin (varies by browser).
+- **Storage capacity**: Typically around 5MB per origin (varies by browser).
 - **Lifespan**: Data in `sessionStorage` is cleared when the page session ends (i.e., when the browser or tab is closed). Reloading the page does not destroy data within `sessionStorage`.
 - **Access**: Data is accessible only within the current tab (or browsing context). Different tabs share different `sessionStorage` objects even if they belong to the same browser window. In this context, window refers to a browser window that can contain multiple tabs.
 - **Security**: All JavaScript on the same page has access to values within `sessionStorage` for that page.

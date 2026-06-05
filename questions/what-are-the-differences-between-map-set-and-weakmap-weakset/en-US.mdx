@@ -17,7 +17,7 @@ The primary difference between `Map`/`Set` and `WeakMap`/`WeakSet` in JavaScript
 
 **`Set` vs. `WeakSet`**
 
-Similar to `Map`, `Set`s allow any data type as keys. The elements within a `Set` must be unique. `Set`s are useful for storing unique values and checking for membership efficiently. Common use cases include removing duplicates from arrays or keeping track of completed tasks.
+Similar to `Map`, `Set`s allow any data type as elements. The elements within a `Set` must be unique. `Set`s are useful for storing unique values and checking for membership efficiently. Common use cases include removing duplicates from arrays or keeping track of completed tasks.
 
 On the other hand, `WeakSet` only allows objects as elements, and these object elements are held weakly, similar to `WeakMap` keys. `WeakSet`s are less commonly used, but applicable when you want a collection of unique objects without affecting their garbage collection. This might be necessary for:
 

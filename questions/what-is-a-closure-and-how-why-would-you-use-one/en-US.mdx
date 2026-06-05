@@ -96,7 +96,7 @@ console.log(b.inc(), b.inc()); // 1 2
 
 | Concern | Closure | Class with `#private` fields |
 | --- | --- | --- |
-| Privacy | Lexical scope; inaccessible from outside the closure | Private slot; access outside the class throws `TypeError` |
+| Privacy | Lexical scope; inaccessible from outside the closure | Private slot; referencing the field outside the class body is a `SyntaxError` |
 | Memory per instance | New closure scope and new function objects per call | Instance state per `new`; methods shared via the prototype |
 | `this` binding | Not required; methods close over outer variables | Methods use `this`; additional care required for callbacks |
 | Prototype sharing | Not supported; each instance has its own methods | Supported; instance methods share the prototype |
@@ -277,7 +277,7 @@ You can read more about [memory leaks and other pitfalls of closures](/questions
 ## Further reading
 
 - [Closures - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures)
-- [Closures - Javascript.info](https://javascript.info/closure)
-- [Closure - Eloquent Javascript](https://eloquentjavascript.net/03_functions.html)
+- [Closures - JavaScript.info](https://javascript.info/closure)
+- [Closure - Eloquent JavaScript](https://eloquentjavascript.net/03_functions.html)
 - [You Don't Know JS Yet: Scope & Closures](https://github.com/getify/You-Dont-Know-JS/tree/2nd-ed/scope-closures)
 - [React: Referencing values with refs](https://react.dev/learn/referencing-values-with-refs)

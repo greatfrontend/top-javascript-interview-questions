@@ -84,7 +84,7 @@ A function expression is a function assigned to a variable binding. When the bin
 
 ```js live
 console.log(bar); // undefined
-bar(); // Uncaught TypeError: bar is not a function
+bar(); // TypeError: bar is not a function
 
 var bar = function () {
   console.log('BARRRR');

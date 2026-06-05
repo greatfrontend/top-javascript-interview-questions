@@ -6,7 +6,7 @@ title: Why is extending built-in JavaScript objects not a good idea?
 
 Extending a built-in/native JavaScript object means adding properties/functions to its `prototype`. While this may seem like a good idea at first, it is dangerous in practice. Imagine your code uses two libraries that both extend the `Array.prototype` by adding the same `contains` method; the implementations will overwrite each other and your code will have unpredictable behavior if these two methods do not work the same way.
 
-The only time you may want to extend a native object is when you want to create a polyfill, essentially providing your own implementation for a method that is part of the JavaScript specification but might not exist in the user's browser due to it being an older browser.
+The only time you may want to extend a native object is when you want to create a polyfill, providing your own implementation for a method that is part of the JavaScript specification but might not exist in the user's browser due to it being an older browser.
 
 ---
 
@@ -32,7 +32,7 @@ console.log(reverseString('hello world')); // Outputs 'dlrow olleh'
 
 ## Disadvantages
 
-Extending built-in JavaScript objects is essentially modifying the global scope and it's not a good idea because:
+Extending built-in JavaScript objects modifies the global scope and it's not a good idea because:
 
 1. **Future-proofing**: If a browser decides to implement its own version of a method, your custom extension might get overridden silently, leading to unexpected behavior or conflicts.
 2. **Collisions**: Adding custom methods to built-in objects can lead to collisions with future browser implementations or other libraries, causing unexpected behavior or errors.
@@ -42,7 +42,7 @@ Extending built-in JavaScript objects is essentially modifying the global scope 
 6. **Compatibility**: Custom extensions to built-in objects may not be compatible with all browsers or environments, leading to issues with cross-browser compatibility.
 7. **Namespace clashes**: Extending built-in objects can lead to namespace clashes if multiple libraries or scripts extend the same object in different ways, causing conflicts and unexpected behavior.
 
-We dive deeper into [why it is a bad idea to modify the global scope](/questions/quiz/why-is-it-in-general-a-good-idea-to-leave-the-global-scope-of-a-website-as-is-and-never-touch-it).
+Read more about [why it is a bad idea to modify the global scope](/questions/quiz/why-is-it-in-general-a-good-idea-to-leave-the-global-scope-of-a-website-as-is-and-never-touch-it).
 
 It is not recommended to extend built-in objects due to these potential issues. Instead, use composition or create custom classes and utility functions to achieve the desired functionality.
 

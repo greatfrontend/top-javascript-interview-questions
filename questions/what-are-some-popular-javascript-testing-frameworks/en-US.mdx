@@ -86,9 +86,28 @@ describe('My First Test', function () {
 });
 ```
 
+### Vitest
+
+Vitest is a testing framework built on top of Vite, designed for fast unit testing with a Jest-compatible API. It is commonly used in projects already using Vite as their build tool.
+
+- It offers a Jest-compatible API, making migration from Jest straightforward
+- It provides fast test runs through Vite's transform pipeline and native ES modules support
+- It includes built-in support for TypeScript, watch mode, and code coverage
+
+Example:
+
+```js
+import { expect, test } from 'vitest';
+
+test('adds 1 + 2 to equal 3', () => {
+  expect(1 + 2).toBe(3);
+});
+```
+
 ## Further reading
 
 - [Jest documentation](https://jestjs.io/docs/getting-started)
 - [Mocha documentation](https://mochajs.org/#getting-started)
 - [Jasmine documentation](https://jasmine.github.io/pages/getting_started.html)
 - [Cypress documentation](https://docs.cypress.io/guides/overview/why-cypress)
+- [Vitest documentation](https://vitest.dev/guide/)

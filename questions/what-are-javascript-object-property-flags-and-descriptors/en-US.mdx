@@ -10,9 +10,9 @@ In JavaScript, property flags and descriptors manage the behavior and attributes
 
 Property flags are used to specify the behavior of a property on an object. Here are the available flags:
 
-- `writable`: Specifies whether the property can be written to. Defaults to `true`.
-- `enumerable`: Specifies whether the property is enumerable. Defaults to `true`.
-- `configurable`: Specifies whether the property can be deleted or its attributes changed. Default is `true`.
+- `writable`: Specifies whether the property can be written to.
+- `enumerable`: Specifies whether the property is enumerable.
+- `configurable`: Specifies whether the property can be deleted or its attributes changed.
 
 **Property descriptors**
 
@@ -35,13 +35,15 @@ In JavaScript, property flags and descriptors are used to manage the behavior an
 
 Property flags are used to specify the behavior of a property. They are set using the `Object.defineProperty()` method, which allows you to define a property on an object with specific attributes. The available property flags are:
 
-- `writable`: Specifies whether the property can be written to. Defaults to `true`.
-- `enumerable`: Specifies whether the property is enumerable. Defaults to `true`.
-- `configurable`: Specifies whether the property can be deleted or its attributes changed. Default is `true`.
+- `writable`: Specifies whether the property can be written to.
+- `enumerable`: Specifies whether the property is enumerable.
+- `configurable`: Specifies whether the property can be deleted or its attributes changed.
+
+For properties created through normal assignment (e.g. `obj.name = 'John'`), all three flags default to `true`. However, when a property is created via `Object.defineProperty()`, any flag you omit defaults to `false`.
 
 ## Property descriptors
 
-Property descriptors provide detailed information about an object's property, encapsulating its value and flags. They are retrieved using `Object.getOwnPropertyDescriptor()` and set using `Object.defineProperty()`
+Property descriptors provide detailed information about an object's property, encapsulating its value and flags. They are retrieved using `Object.getOwnPropertyDescriptor()` and set using `Object.defineProperty()`.
 
 ```js live
 let user = { name: 'John Doe' };
@@ -97,7 +99,7 @@ for (const prop in obj1) {
 }
 ```
 
-## `configurable` flag
+### `configurable` flag
 
 The `configurable` flag specifies whether a property can be deleted or its attributes changed. When `configurable` is `false`, trying to delete or change the property fails silently in non-strict mode, and it throws a `TypeError` in strict mode.
 

@@ -4,7 +4,7 @@ title: What are iterators and generators in JavaScript and what are they used fo
 
 ## TL;DR
 
-In JavaScript, iterators and generators are powerful tools for managing sequences of data and controlling the flow of execution in a more flexible way.
+In JavaScript, iterators and generators are tools for managing sequences of data and controlling the flow of execution in a more flexible way.
 
 **Iterators** are objects that define a sequence and potentially a return value upon its termination. They adhere to a specific interface:
 
@@ -55,7 +55,7 @@ console.log(gen.next()); // { value: 5, done: false }
 console.log(gen.next()); // { value: undefined, done: true }
 ```
 
-Generators are powerful for creating iterators on-demand, especially for infinite sequences or complex iteration logic. They can be used for:
+Generators are useful for creating iterators on demand, especially for infinite sequences or complex iteration logic. They can be used for:
 
 - Lazy evaluation – processing elements only when needed, improving memory efficiency for large datasets.
 - Implementing iterators for custom data structures.
@@ -295,7 +295,7 @@ Generators are also used extensively in JavaScript libraries and frameworks, suc
 
 ## Summary
 
-Iterators and generators provide a powerful and flexible way to work with collections of data in JavaScript. Iterators define a standardized way to traverse data sequences, while generators offer a more expressive and efficient way to create iterators, handle asynchronous operations, and compose complex data pipelines.
+Iterators and generators provide a flexible way to work with collections of data in JavaScript. Iterators define a standardized way to traverse data sequences, while generators offer a more expressive and efficient way to create iterators, handle asynchronous operations, and compose complex data pipelines.
 
 ## Further reading
 

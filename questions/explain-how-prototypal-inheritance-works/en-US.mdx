@@ -4,7 +4,7 @@ title: Explain how prototypal inheritance works in JavaScript
 
 ## TL;DR
 
-Prototypical inheritance in JavaScript is a way for objects to inherit properties and methods from other objects. Every JavaScript object has a special hidden property called `[[Prototype]]` (commonly accessed via `__proto__` or using `Object.getPrototypeOf()`) that is a reference to another object, which is called the object's "prototype".
+Prototypal inheritance in JavaScript is a way for objects to inherit properties and methods from other objects. Every JavaScript object has a special hidden property called `[[Prototype]]` (commonly accessed via `__proto__` or using `Object.getPrototypeOf()`) that is a reference to another object, which is called the object's "prototype".
 
 When a property is accessed on an object and if the property is not found on that object, the JavaScript engine looks at the object's `__proto__`, and the `__proto__`'s `__proto__` and so on, until it finds the property defined on one of the `__proto__`s or until it reaches the end of the prototype chain.
 
@@ -48,13 +48,13 @@ bolt.bark(); // "Woof!"
 Things to note are:
 
 - `.makeSound` is not defined on `Dog`, so the JavaScript engine goes up the prototype chain and finds `.makeSound` on the inherited `Animal`.
-- Using `Object.create()` to build the inheritance chain is no longer recommended. Use `Object.setPrototypeOf()` instead.
+- In modern code, `class` and `extends` are the preferred way to set up inheritance; they are syntactic sugar over this prototype mechanism.
 
 ---
 
-## Prototypical Inheritance in Javascript
+## Prototypal inheritance in JavaScript
 
-Prototypical inheritance is a feature in JavaScript used to create objects that inherit properties and methods from other objects. Instead of a class-based inheritance model, JavaScript uses a prototype-based model, where objects can directly inherit from other objects.
+Prototypal inheritance is a feature in JavaScript used to create objects that inherit properties and methods from other objects. Instead of a class-based inheritance model, JavaScript uses a prototype-based model, where objects can directly inherit from other objects.
 
 ### Key Concepts
 
@@ -102,7 +102,7 @@ console.log(john.sayHello); // undefined
 
 2. **Prototype chain**: When a property or method is accessed on an object, JavaScript first looks for it on the object itself. If it doesn't find it there, it looks at the object's prototype, and then the prototype's prototype, and so on, until it either finds the property or reaches the end of the chain (i.e., `null`).
 
-3. **Constructor functions**: JavaScript provides constructor functions to create objects. When a function is used as a constructor with the new keyword, the new object's prototype (`[[Prototype]]`) is set to the constructor's prototype property.
+3. **Constructor functions**: JavaScript provides constructor functions to create objects. When a function is used as a constructor with the `new` keyword, the new object's prototype (`[[Prototype]]`) is set to the constructor's prototype property.
 
 ```js live
 // Define a constructor function

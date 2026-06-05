@@ -23,7 +23,7 @@ element.addEventListener('click', handler, true); // true indicates capturing ph
 The target phase is the second phase of event propagation. In this phase, the event has reached the target element itself. Event listeners registered directly on the target element will be triggered during this phase.
 
 ```js
-element.addEventListener('click', handler); // default is target phase
+element.addEventListener('click', handler); // listener on the target fires during the target phase
 ```
 
 ### Bubbling phase

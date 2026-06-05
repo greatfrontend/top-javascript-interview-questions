@@ -8,9 +8,9 @@ title: What are `Set`s and `Map`s and how are they used?
 
 ```js live
 // Set example
-let mySet = new Set([1, 2, 3, 3]); // Set {1, 2, 3} (duplicate values are not added)
+let mySet = new Set([1, 2, 3, 3]); // Set(3) {1, 2, 3} (duplicate values are not added)
 mySet.add(4);
-console.log(mySet); // Set {1, 2, 3, 4}
+console.log(mySet); // Set(4) {1, 2, 3, 4}
 
 // Map example
 let myMap = new Map();
@@ -33,7 +33,7 @@ You can create a `Set` using the `Set` constructor:
 
 ```js live
 let mySet = new Set([1, 2, 3, 3]);
-console.log(mySet); // Set {1, 2, 3}
+console.log(mySet); // Set(3) {1, 2, 3}
 ```
 
 ### Common methods
@@ -73,7 +73,7 @@ You can create a `Map` using the `Map` constructor:
 let myMap = new Map();
 myMap.set('key1', 'value1');
 myMap.set('key2', 'value2');
-console.log(myMap); // Map { key1: "value1", key2: "value2" }
+console.log(myMap); // Map(2) {'key1' => 'value1', 'key2' => 'value2'}
 ```
 
 ### Common methods

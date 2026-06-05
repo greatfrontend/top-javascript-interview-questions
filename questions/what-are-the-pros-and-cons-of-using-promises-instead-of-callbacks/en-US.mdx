@@ -4,7 +4,7 @@ title: What are the pros and cons of using Promises instead of callbacks in Java
 
 ## TL;DR
 
-Promises offer a cleaner alternative to callbacks, helping to avoid callback hell and making asynchronous code more readable. They facilitate writing sequential and parallel asynchronous operations with ease. However, using promises may introduce slightly more complex code.
+Promises offer a cleaner alternative to callbacks, helping to avoid callback hell and making asynchronous code more readable. They make it easier to write sequential and parallel asynchronous operations and to handle errors with `.catch()`. However, using Promises may introduce slightly more complex code.
 
 ---
 
@@ -44,6 +44,8 @@ getFirstData((data) => {
 ```
 
 Promises address the problem of callback hell by providing a more linear and readable structure for your code.
+
+Note that this is just for illustration. The cleanest modern approach is to use `async`/`await`, which builds on Promises.
 
 ```js live
 // Example of sequential asynchronous code using setTimeout and Promises
@@ -158,7 +160,7 @@ getFirstData()
   });
 ```
 
-### With promises, these scenarios which are present in callbacks-only coding, will not happen:
+### With Promises, these scenarios which are present in callbacks-only coding, will not happen:
 
 - Call the callback too early
 - Call the callback too late (or never)

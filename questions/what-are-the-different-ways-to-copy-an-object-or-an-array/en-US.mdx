@@ -4,7 +4,7 @@ title: What are the different ways to copy an object or an array?
 
 ## TL;DR
 
-To copy an object or an array in JavaScript, you can use several methods. For shallow copies, you can use the spread operator (`...`) or `Object.assign()`. For deep copies, you can use `JSON.parse(JSON.stringify())` or libraries like Lodash's `_.cloneDeep()`.
+To copy an object or an array in JavaScript, you can use several methods. For shallow copies, you can use the spread operator (`...`) or `Object.assign()`. For deep copies, you can use the built-in `structuredClone()`, `JSON.parse(JSON.stringify())`, or libraries like Lodash's `_.cloneDeep()`.
 
 ```js live
 // Shallow copy of an array
@@ -15,11 +15,11 @@ console.log(shallowCopyArray); // [1, 2, 3]
 // Shallow copy of an object
 const originalObject = { a: 1, b: 2 };
 const shallowCopyObject = { ...originalObject };
-console.log(shallowCopyObject); // { a: 1, b: 2 };
+console.log(shallowCopyObject); // { a: 1, b: 2 }
 
 // Deep copy using JSON methods
 const deepCopyObject = JSON.parse(JSON.stringify(originalObject));
-console.log(deepCopyObject); // { a: 1, b: 2 };
+console.log(deepCopyObject); // { a: 1, b: 2 }
 ```
 
 ---
@@ -41,7 +41,7 @@ console.log(shallowCopyArray); // [1, 2, 3]
 // Shallow copy of an object
 const originalObject = { a: 1, b: 2 };
 const shallowCopyObject = { ...originalObject };
-console.log(shallowCopyObject); // { a: 1, b: 2 };
+console.log(shallowCopyObject); // { a: 1, b: 2 }
 ```
 
 #### Using `Object.assign()`
@@ -51,10 +51,20 @@ console.log(shallowCopyObject); // { a: 1, b: 2 };
 ```js live
 const originalObject = { a: 1, b: 2 };
 const shallowCopyObject = Object.assign({}, originalObject);
-console.log(shallowCopyObject); // { a: 1, b: 2 };
+console.log(shallowCopyObject); // { a: 1, b: 2 }
 ```
 
 ### Deep copy
+
+#### Using `structuredClone()`
+
+`structuredClone()` is a built-in function (Baseline across modern browsers and available in Node.js 17+) that creates a deep copy. It handles nested objects, arrays, `Date`, `Map`, `Set`, and circular references, but it cannot clone functions or DOM nodes (those throw a `DataCloneError`).
+
+```js live
+const originalObject = { a: 1, b: { c: 2 } };
+const deepCopyObject = structuredClone(originalObject);
+console.log(deepCopyObject); // { a: 1, b: { c: 2 } }
+```
 
 #### Using `JSON.parse(JSON.stringify())`
 
@@ -110,6 +120,7 @@ console.log(deepCopyObject); // { a: 1, b: { c: 2 } }
 
 - [MDN Web Docs: Spread syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
 - [MDN Web Docs: Object.assign()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
+- [MDN Web Docs: structuredClone()](https://developer.mozilla.org/en-US/docs/Web/API/Window/structuredClone)
 - [Lodash documentation: \_.cloneDeep](https://lodash.com/docs/4.17.15#cloneDeep)
 - [MDN Web Docs: JSON.parse()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)
 - [MDN Web Docs: JSON.stringify()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)

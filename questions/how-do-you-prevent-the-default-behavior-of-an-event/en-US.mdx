@@ -59,6 +59,8 @@ document.addEventListener('contextmenu', function (event) {
 
 - The `preventDefault` method should be called within the event handler function.
 - Not all events have a default behavior that can be prevented. For example, custom events do not have default actions.
+- Calling `preventDefault` has no effect on listeners added with `{ passive: true }`. Browsers treat some events like `touchstart` and `wheel` as passive by default to improve scrolling performance, so you must explicitly pass `{ passive: false }` if you need to prevent their default behavior.
+- You can check `event.cancelable` to see whether an event's default action can be prevented, and `event.defaultPrevented` to check if `preventDefault` has already been called.
 
 ## Further reading
 

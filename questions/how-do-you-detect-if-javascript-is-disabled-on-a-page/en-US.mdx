@@ -71,6 +71,23 @@ You can also style the content inside the `<noscript>` tag using CSS to make it 
 
 In this example, the message will be styled with red text and bold font to make it stand out.
 
+### Detecting from the JavaScript side
+
+The inverse approach is to assume JavaScript is disabled by default and let JavaScript prove otherwise. A common pattern is to add a class such as `no-js` to the `<html>` element and have JavaScript immediately replace it with `js`. CSS can then style the page differently depending on which class is present.
+
+```html
+<html class="no-js">
+  <head>
+    <script>
+      // Runs only if JavaScript is enabled.
+      document.documentElement.className = 'js';
+    </script>
+  </head>
+</html>
+```
+
+If JavaScript is disabled, the script never runs and the `no-js` class remains, which CSS can target to hide JavaScript-dependent UI.
+
 ## Further reading
 
 - [MDN Web Docs: `<noscript>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript)

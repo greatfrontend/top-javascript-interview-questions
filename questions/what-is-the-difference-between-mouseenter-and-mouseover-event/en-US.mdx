@@ -24,7 +24,7 @@ The main difference lies in the bubbling behavior of `mouseenter` and `mouseover
 
 A use case for `mouseenter` is when you want to detect the mouse entering an element without worrying about child elements triggering the event multiple times.
 
-### `mouseover` Event:
+### `mouseover` event:
 
 - **Bubbles up the DOM**: The `mouseover` event bubbles up through the DOM. This means that if you have an event listener on a parent element, it will also trigger when the mouse pointer moves over any child elements.
 - **Triggered multiple times**: The `mouseover` event is triggered every time the mouse pointer moves over an element or any of its child elements. This can lead to multiple triggers if you have nested elements.

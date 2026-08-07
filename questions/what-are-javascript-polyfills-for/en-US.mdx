@@ -13,7 +13,7 @@ Common use cases include:
 - **New JavaScript Methods**: For example, `Array.prototype.includes()`, `Object.assign()`, etc.
 - **New APIs**: Such as `fetch()`, `Promise`, `IntersectionObserver`, etc. Modern browsers support these now, but for a long time they had to be polyfilled.
 
-Libraries and services for polyfills:
+A commonly used polyfill library is:
 
 - **`core-js`**: A modular standard library for JavaScript which includes polyfills for a wide range of ECMAScript features.
 
@@ -23,11 +23,7 @@ Libraries and services for polyfills:
   [1, 2].flatMap((it) => [it, it]); // => [1, 1, 2, 2]
   ```
 
-- **Polyfill.io**: A service that provides polyfills based on the features and user agents specified in the request.
-
-  ```js
-  <script src="https://polyfill.io/v3/polyfill.min.js"></script>
-  ```
+Prefer installing maintained polyfills as project dependencies and bundling them with your application instead of loading executable code from a third-party polyfill service at runtime.
 
 ---
 
@@ -75,7 +71,7 @@ By including this polyfill, we can safely use `Array.prototype.includes()` even 
 - **Size and performance**: Polyfills can increase the JavaScript bundle size, so minification and compression techniques should be used to mitigate this impact.
 - **Existing libraries**: Consider using existing libraries and tools that offer comprehensive polyfill solutions for multiple features, handling feature detection, conditional loading, and fallbacks efficiently.
 
-### Libraries and services for polyfills
+### Libraries for polyfills
 
 - **`core-js`**: A modular standard library for JavaScript which includes polyfills for a wide range of ECMAScript features.
 
@@ -85,11 +81,7 @@ By including this polyfill, we can safely use `Array.prototype.includes()` even 
   [1, 2].flatMap((it) => [it, it]); // => [1, 1, 2, 2]
   ```
 
-- **Polyfill.io**: A service that provides polyfills based on the features and user agents specified in the request.
-
-  ```js
-  <script src="https://polyfill.io/v3/polyfill.min.js"></script>
-  ```
+Prefer installing maintained polyfills as project dependencies and bundling them with your application instead of loading executable code from a third-party polyfill service at runtime.
 
 ## Further reading
 

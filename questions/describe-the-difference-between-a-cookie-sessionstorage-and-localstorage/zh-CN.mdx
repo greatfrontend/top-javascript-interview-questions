@@ -18,7 +18,7 @@ title: 描述浏览器中 cookie、`sessionStorage` 和 `localStorage` 之间的
 | 寿命 | 如指定 | 直到删除 | 直到选项卡关闭 |
 | 是否跨浏览器会话持久 | 如果设置了未来的过期日期 | 是 | 否 |
 | 是否随每个 HTTP 请求发送到服务器 | 是，通过 `Cookie` 标头发送 | 否 | 否 |
-| 总容量（每个域） | 4kb | 5MB | 5MB |
+| 典型存储限制 | 每个 cookie 约 4 KB | 每个来源约 5 MB（因浏览器而异） | 每个来源约 5 MB（因浏览器而异） |
 | 访问 | 跨窗口/选项卡 | 跨窗口/选项卡 | 相同选项卡 |
 | 安全性 | JavaScript 无法访问 `HttpOnly` cookies | 无 | 无 |
 
@@ -50,7 +50,7 @@ Cookies、`localStorage` 和 `sessionStorage` 都是客户端（Web 浏览器）
 
 Cookies 用于在客户端存储小块数据，这些数据可以通过每个 HTTP 请求发送回服务器。
 
-- **存储容量**：所有 cookies 限制在 4KB 左右。
+- **存储容量**：每个 cookie 限制在 4 KB 左右。浏览器还会限制每个域可存储的 cookie 数量。
 - **寿命**：Cookies 可以使用 `Expires` 或 `Max-Age` 属性设置特定的过期日期。如果未设置过期日期，则在浏览器关闭时删除 cookie（会话 cookie）。
 - **访问**：Cookies 是特定于域的，可以在同一域内的不同页面和子域之间共享。
 - **安全性**：Cookies 可以标记为 `HttpOnly` 以防止从 JavaScript 访问，从而降低 XSS 攻击的风险。它们也可以使用 `Secure` 标志进行保护，以确保仅在使用 HTTPS 时发送它们。

@@ -4,7 +4,7 @@ title: 如何检查对象是否具有特定属性？
 
 ## TL;DR
 
-要检查对象是否具有特定属性，可以使用 `in` 运算符或 `hasOwnProperty` 方法。`in` 运算符检查自有属性和继承属性，而 `hasOwnProperty` 仅检查自有属性。
+要检查对象是否具有特定属性，可以使用 `in` 运算符、`hasOwnProperty` 方法或 `Object.hasOwn()`。`in` 运算符检查自有属性和继承属性，而后两种方法仅检查自有属性。自 ES2022 起，建议使用 `Object.hasOwn()`，因为它也能安全地处理无原型对象。
 
 ```js live
 const obj = { key: 'value' };
@@ -48,10 +48,26 @@ if (obj.hasOwnProperty('key')) {
 }
 ```
 
-### `in` 和 `hasOwnProperty` 之间的区别
+### 使用 `Object.hasOwn()`
+
+`Object.hasOwn()`（ES2022 引入）是检查自有属性的推荐方式。与 `obj.hasOwnProperty()` 不同，它适用于通过 `Object.create(null)` 创建的无原型对象，也适用于覆盖了 `hasOwnProperty` 方法的对象。
+
+```js live
+const obj = { key: 'value' };
+
+if (Object.hasOwn(obj, 'key')) {
+  console.log('Property exists');
+}
+
+const bare = Object.create(null);
+bare.key = 'value';
+console.log(Object.hasOwn(bare, 'key')); // true
+```
+
+### `in`、`hasOwnProperty` 和 `Object.hasOwn()` 之间的区别
 
 - `in` 运算符检查自有属性和继承属性。
-- `hasOwnProperty` 方法仅检查自有属性。
+- `hasOwnProperty` 和 `Object.hasOwn()` 仅检查自有属性，但 `Object.hasOwn()` 对无原型对象和覆盖该方法的对象更安全。
 
 ### 具有继承属性的示例
 
@@ -70,3 +86,4 @@ console.log(childObj.hasOwnProperty('ownKey')); // true
 
 - [MDN Web Docs: in operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/in)
 - [MDN Web Docs: Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+- [MDN Web Docs: Object.hasOwn()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwn)

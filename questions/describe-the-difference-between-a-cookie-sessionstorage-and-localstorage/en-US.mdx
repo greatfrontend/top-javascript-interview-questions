@@ -18,7 +18,7 @@ Here's a table summarizing the 3 client storage mechanisms.
 | Lifespan | As specified | Until deleted | Until tab is closed |
 | Persistent across browser sessions | If a future expiry date is set | Yes | No |
 | Sent to server with every HTTP request | Yes, sent via `Cookie` header | No | No |
-| Total capacity (per domain) | 4KB | 5MB | 5MB |
+| Typical storage limit | About 4 KB per cookie | About 5 MB per origin (browser-dependent) | About 5 MB per origin (browser-dependent) |
 | Access | Across windows/tabs | Across windows/tabs | Same tab |
 | Security | JavaScript cannot access `HttpOnly` cookies | None | None |
 
@@ -50,7 +50,7 @@ The following sections dive deeper into each client storage mechanism.
 
 Cookies are used to store small pieces of data on the client side that can be sent back to the server with every HTTP request.
 
-- **Storage capacity**: Limited to around 4KB for all cookies.
+- **Storage capacity**: Limited to around 4 KB per cookie. Browsers also limit how many cookies can be stored per domain.
 - **Lifespan**: Cookies can have a specific expiration date set using the `Expires` or `Max-Age` attributes. If no expiration date is set, the cookie is deleted when the browser is closed (session cookie).
 - **Access**: Cookies are domain-specific and can be shared across different pages and subdomains within the same domain.
 - **Security**: Cookies can be marked as `HttpOnly` to prevent access from JavaScript, reducing the risk of XSS attacks. They can also be secured with the `Secure` flag to ensure they are sent only when HTTPS is used.

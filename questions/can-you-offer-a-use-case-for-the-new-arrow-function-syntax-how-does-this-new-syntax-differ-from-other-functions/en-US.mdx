@@ -48,11 +48,12 @@ function Timer() {
 }
 
 const timer = new Timer();
-timer.increment(); // 1
-timer.increment(); // 2
+const increment = timer.increment;
+increment(); // 1
+increment(); // 2
 ```
 
-In the example above, using a traditional function for `increment` would lose the correct `this` context when called, requiring additional steps like `bind` to fix it.
+In the example above, `increment` is called without `timer` as its receiver, but the arrow function still uses the `this` value captured by the `Timer` constructor. A traditional function would lose that context when detached this way unless it was explicitly bound.
 
 ### Using arrow functions in array methods
 

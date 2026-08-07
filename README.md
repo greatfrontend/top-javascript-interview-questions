@@ -387,7 +387,7 @@ The event loop is a concept within the JavaScript runtime environment regarding 
 3. Once the asynchronous operation completes, its callback function is placed in the respective queues – task queues (also known as macrotask queues / callback queues) or microtask queues. We will refer to "task queue" as "macrotask queue" from here on to better differentiate from the microtask queue.
 4. The event loop continuously monitors the call stack and executes items on the call stack. If/when the call stack is empty:
    1. Microtask queue is processed. Microtasks include promise callbacks (`then`, `catch`, `finally`), `await` continuations, `MutationObserver` callbacks, and calls to `queueMicrotask()`. The event loop takes the first callback from the microtask queue and pushes it to the call stack for execution. This repeats until the microtask queue is empty.
-   2. Macrotask queue is processed. Macrotasks include web APIs like `setTimeout()`, HTTP requests, user interface event handlers like clicks, scrolls, etc. The event loop dequeues the first callback from the macrotask queue and pushes it onto the call stack for execution. However, after a macrotask queue callback is processed, the event loop does not proceed with the next macrotask yet! The event loop first checks the microtask queue. Checking the microtask queue is necessary as microtasks have higher priority than macrotask queue callbacks. The macrotask queue callback that was just executed could have added more microtasks!
+   2. Macrotask queue is processed. It contains tasks scheduled by the host, such as timer callbacks and user interface event callbacks. APIs such as `setTimeout()` and networking APIs are not themselves macrotasks; they arrange for callbacks or promise reactions to be queued when appropriate. The event loop dequeues the first callback from the macrotask queue and pushes it onto the call stack for execution. However, after a macrotask queue callback is processed, the event loop does not proceed with the next macrotask yet! The event loop first checks the microtask queue. Checking the microtask queue is necessary as microtasks have higher priority than macrotask queue callbacks. The macrotask queue callback that was just executed could have added more microtasks!
       1. If the microtask queue is non-empty, process them as per the previous step.
       2. If the microtask queue is empty, the next macrotask queue callback is processed. This repeats until the macrotask queue is empty.
 5. This process continues indefinitely, allowing the JavaScript engine to handle both synchronous and asynchronous operations efficiently without blocking the call stack.
@@ -475,7 +475,7 @@ Here's a table summarizing the 3 client storage mechanisms.
 | Lifespan | As specified | Until deleted | Until tab is closed |
 | Persistent across browser sessions | If a future expiry date is set | Yes | No |
 | Sent to server with every HTTP request | Yes, sent via `Cookie` header | No | No |
-| Total capacity (per domain) | 4KB | 5MB | 5MB |
+| Typical storage limit | About 4 KB per cookie | About 5 MB per origin (browser-dependent) | About 5 MB per origin (browser-dependent) |
 | Access | Across windows/tabs | Across windows/tabs | Same tab |
 | Security | JavaScript cannot access `HttpOnly` cookies | None | None |
 
@@ -1331,7 +1331,7 @@ Common use cases include:
 - **New JavaScript Methods**: For example, `Array.prototype.includes()`, `Object.assign()`, etc.
 - **New APIs**: Such as `fetch()`, `Promise`, `IntersectionObserver`, etc. Modern browsers support these now, but for a long time they had to be polyfilled.
 
-Libraries and services for polyfills:
+A commonly used polyfill library is:
 
 - **`core-js`**: A modular standard library for JavaScript which includes polyfills for a wide range of ECMAScript features.
 
@@ -1341,11 +1341,7 @@ Libraries and services for polyfills:
   [1, 2].flatMap((it) => [it, it]); // => [1, 1, 2, 2]
   ```
 
-- **Polyfill.io**: A service that provides polyfills based on the features and user agents specified in the request.
-
-  ```js
-  <script src="https://polyfill.io/v3/polyfill.min.js"></script>
-  ```
+Prefer installing maintained polyfills as project dependencies and bundling them with your application instead of loading executable code from a third-party polyfill service at runtime.
 
 <!-- Update here: /questions/what-are-javascript-polyfills-for/en-US.mdx -->
 
@@ -3753,7 +3749,7 @@ The event loop is a concept within the JavaScript runtime environment regarding 
 3. Once the asynchronous operation completes, its callback function is placed in the respective queues – task queues (also known as macrotask queues / callback queues) or microtask queues. We will refer to "task queue" as "macrotask queue" from here on to better differentiate from the microtask queue.
 4. The event loop continuously monitors the call stack and executes items on the call stack. If/when the call stack is empty:
    1. Microtask queue is processed. Microtasks include promise callbacks (`then`, `catch`, `finally`), `await` continuations, `MutationObserver` callbacks, and calls to `queueMicrotask()`. The event loop takes the first callback from the microtask queue and pushes it to the call stack for execution. This repeats until the microtask queue is empty.
-   2. Macrotask queue is processed. Macrotasks include web APIs like `setTimeout()`, HTTP requests, user interface event handlers like clicks, scrolls, etc. The event loop dequeues the first callback from the macrotask queue and pushes it onto the call stack for execution. However, after a macrotask queue callback is processed, the event loop does not proceed with the next macrotask yet! The event loop first checks the microtask queue. Checking the microtask queue is necessary as microtasks have higher priority than macrotask queue callbacks. The macrotask queue callback that was just executed could have added more microtasks!
+   2. Macrotask queue is processed. It contains tasks scheduled by the host, such as timer callbacks and user interface event callbacks. APIs such as `setTimeout()` and networking APIs are not themselves macrotasks; they arrange for callbacks or promise reactions to be queued when appropriate. The event loop dequeues the first callback from the macrotask queue and pushes it onto the call stack for execution. However, after a macrotask queue callback is processed, the event loop does not proceed with the next macrotask yet! The event loop first checks the microtask queue. Checking the microtask queue is necessary as microtasks have higher priority than macrotask queue callbacks. The macrotask queue callback that was just executed could have added more microtasks!
       1. If the microtask queue is non-empty, process them as per the previous step.
       2. If the microtask queue is empty, the next macrotask queue callback is processed. This repeats until the macrotask queue is empty.
 5. This process continues indefinitely, allowing the JavaScript engine to handle both synchronous and asynchronous operations efficiently without blocking the call stack.
@@ -5032,7 +5028,7 @@ Here's a table summarizing the 3 client storage mechanisms.
 | Lifespan | As specified | Until deleted | Until tab is closed |
 | Persistent across browser sessions | If a future expiry date is set | Yes | No |
 | Sent to server with every HTTP request | Yes, sent via `Cookie` header | No | No |
-| Total capacity (per domain) | 4KB | 5MB | 5MB |
+| Typical storage limit | About 4 KB per cookie | About 5 MB per origin (browser-dependent) | About 5 MB per origin (browser-dependent) |
 | Access | Across windows/tabs | Across windows/tabs | Same tab |
 | Security | JavaScript cannot access `HttpOnly` cookies | None | None |
 
@@ -5326,7 +5322,7 @@ Common use cases include:
 - **New JavaScript Methods**: For example, `Array.prototype.includes()`, `Object.assign()`, etc.
 - **New APIs**: Such as `fetch()`, `Promise`, `IntersectionObserver`, etc. Modern browsers support these now, but for a long time they had to be polyfilled.
 
-Libraries and services for polyfills:
+A commonly used polyfill library is:
 
 - **`core-js`**: A modular standard library for JavaScript which includes polyfills for a wide range of ECMAScript features.
 
@@ -5336,11 +5332,7 @@ Libraries and services for polyfills:
   [1, 2].flatMap((it) => [it, it]); // => [1, 1, 2, 2]
   ```
 
-- **Polyfill.io**: A service that provides polyfills based on the features and user agents specified in the request.
-
-  ```js
-  <script src="https://polyfill.io/v3/polyfill.min.js"></script>
-  ```
+Prefer installing maintained polyfills as project dependencies and bundling them with your application instead of loading executable code from a third-party polyfill service at runtime.
 
 <!-- Update here: /questions/what-are-javascript-polyfills-for/en-US.mdx -->
 

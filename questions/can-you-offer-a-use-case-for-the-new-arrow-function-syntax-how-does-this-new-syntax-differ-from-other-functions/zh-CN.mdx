@@ -48,11 +48,12 @@ function Timer() {
 }
 
 const timer = new Timer();
-timer.increment(); // 1
-timer.increment(); // 2
+const increment = timer.increment;
+increment(); // 1
+increment(); // 2
 ```
 
-在上面的例子中，在 `setInterval` 中使用传统函数需要额外的步骤来维护正确的 `this` 上下文。
+在上面的例子中，调用 `increment` 时没有将 `timer` 作为接收者，但箭头函数仍然使用 `Timer` 构造函数捕获的 `this`。如果使用传统函数，以这种方式脱离对象调用时会丢失该上下文，除非显式绑定它。
 
 ### 在数组方法中使用箭头函数
 

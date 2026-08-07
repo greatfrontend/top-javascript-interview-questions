@@ -61,12 +61,12 @@ console.log(isEmpty(obj2)); // false
 
 ### 使用 `for...in` 循环
 
-您还可以使用 `for...in` 循环来检查对象是否具有任何属性。如果循环没有遍历任何属性，则该对象为空。
+您还可以使用 `for...in` 循环。由于它会遍历对象自身及其原型链上的可枚举属性，因此应使用 `Object.hasOwn()` 只统计对象自身的属性。
 
 ```js live
 const isEmpty = (obj) => {
-  for (let key in obj) {
-    if (obj.hasOwnProperty(key)) {
+  for (const key in obj) {
+    if (Object.hasOwn(obj, key)) {
       return false;
     }
   }
@@ -87,6 +87,7 @@ console.log(childObj.key); // Output: 'value' (still has the inherited property)
 
 - **原型属性**：上述方法仅检查对象自身的属性，而不是从其原型继承的属性。
 - **不可枚举属性**：这些方法不考虑不可枚举属性。
+- **自有属性检查**：直接调用 `obj.hasOwnProperty(key)` 在无原型对象或覆盖了 `hasOwnProperty` 的对象上可能失败。优先使用 `Object.hasOwn(obj, key)` 或 `Object.prototype.hasOwnProperty.call(obj, key)`。
 
 ## 延伸阅读
 

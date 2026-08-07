@@ -13,7 +13,7 @@ JavaScript 中的 Polyfill 是一段代码，它为较旧的浏览器提供现�
 - **新的 JavaScript 方法**：例如，`Array.prototype.includes()`、`Object.assign()` 等。
 - **新的 API**：例如 `fetch()`、`Promise`、`IntersectionObserver` 等。现代浏览器现在支持这些，但很长一段时间内它们必须被 polyfilled。
 
-用于 polyfill 的库和服务：
+常用的 polyfill 库包括：
 
 - **`core-js`**：一个用于 JavaScript 的模块化标准库，其中包括各种 ECMAScript 特性的 polyfill。
 
@@ -23,11 +23,7 @@ JavaScript 中的 Polyfill 是一段代码，它为较旧的浏览器提供现�
   [1, 2].flatMap((it) => [it, it]); // => [1, 1, 2, 2]
   ```
 
-- **Polyfill.io**：一项服务，根据请求中指定的功能和用户代理提供 polyfill。
-
-  ```js
-  <script src="https://polyfill.io/v3/polyfill.min.js"></script>
-  ```
+建议将维护良好的 polyfill 安装为项目依赖并与应用一起打包，而不是在运行时从第三方 polyfill 服务加载可执行代码。
 
 ---
 
@@ -75,7 +71,7 @@ console.log([1, 2, 3].includes(4)); // false
 - **大小和性能**：polyfill 可能会增加 JavaScript 捆绑包的大小，因此应使用缩小和压缩技术来减轻这种影响。
 - **现有库**：考虑使用现有的库和工具，这些库和工具为多个功能提供全面的 polyfill 解决方案，有效地处理功能检测、条件加载和后备
 
-### 用于 polyfill 的库和服务
+### 用于 polyfill 的库
 
 - **`core-js`**：一个用于 JavaScript 的模块化标准库，其中包括各种 ECMAScript 特性的 polyfill。
 
@@ -85,11 +81,7 @@ console.log([1, 2, 3].includes(4)); // false
   [1, 2].flatMap((it) => [it, it]); // => [1, 1, 2, 2]
   ```
 
-- **Polyfill.io**：一项服务，根据请求中指定的功能和用户代理提供 polyfill。
-
-  ```js
-  <script src="https://polyfill.io/v3/polyfill.min.js"></script>
-  ```
+建议将维护良好的 polyfill 安装为项目依赖并与应用一起打包，而不是在运行时从第三方 polyfill 服务加载可执行代码。
 
 ## 延伸阅读
 

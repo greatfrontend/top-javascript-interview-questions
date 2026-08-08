@@ -139,23 +139,26 @@ element.removeEventListener('click', handleClick);
 
 ### Unoptimized promises
 
-Chain promises properly to avoid blocking the main thread.
+Promise chains and `async`/`await` are equivalent ways to express the same asynchronous control flow. Performance suffers when independent operations are awaited one after another; start them together when their results do not depend on each other.
 
 ```js
-// Inefficient
-fetch('url')
-  .then((response) => response.json())
-  .then((data) => {
-    // Process data
-  });
-
-// Efficient
-async function fetchData() {
-  const response = await fetch('url');
-  const data = await response.json();
-  // Process data
+// Inefficient: independent requests run sequentially.
+async function fetchDashboardDataSequentially() {
+  const user = await fetch('/api/user').then((response) => response.json());
+  const notifications = await fetch('/api/notifications').then((response) =>
+    response.json(),
+  );
+  return { user, notifications };
 }
-fetchData();
+
+// Efficient: independent requests run concurrently.
+async function fetchDashboardDataConcurrently() {
+  const [user, notifications] = await Promise.all([
+    fetch('/api/user').then((response) => response.json()),
+    fetch('/api/notifications').then((response) => response.json()),
+  ]);
+  return { user, notifications };
+}
 ```
 
 ### Debouncing and throttling

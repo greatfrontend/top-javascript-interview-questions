@@ -19,6 +19,26 @@ However, do note that:
 
 ---
 
+## One ancestor listener for many descendants
+
+Delegation relies on bubbling: a stable ancestor receives descendant events and decides which matching child originated the interaction.
+
+```mermaid
+---
+title: Event delegation through a common ancestor
+---
+flowchart TD
+  Click["User clicks a descendant"] --> Target["Event target is the deepest clicked node"]
+  Target --> Bubble["Event bubbles to the common ancestor"]
+  Bubble --> Listener["Ancestor listener calls target.closest(selector)"]
+  Listener --> Match{"Matching descendant inside the ancestor?"}
+  Match -->|"Yes"| Handle["Handle the delegated action"]
+  Match -->|"No"| Ignore["Ignore the event"]
+  Dynamic["Descendant added later"] --> Click
+```
+
+Because the listener belongs to the ancestor, newly added matching descendants work without separate listener registration.
+
 ## Event delegation
 
 Event delegation is a design pattern in JavaScript used to efficiently manage and handle events on multiple child elements by attaching a single event listener to a common ancestor element. This pattern is particularly valuable in scenarios where you have a large number of similar elements, such as list items, and want to optimize event handling.

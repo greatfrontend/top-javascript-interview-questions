@@ -8,6 +8,30 @@ Cross-Site Request Forgery (CSRF) tricks a browser into sending an unwanted stat
 
 ---
 
+## How ambient credentials enable CSRF
+
+A malicious page can cause the victim's browser to send a state-changing request, and eligible cookies may accompany it automatically.
+
+```mermaid
+---
+title: CSRF attack and server-side checks
+---
+sequenceDiagram
+  participant Attacker as Attacker site
+  participant Browser as Victim browser
+  participant App as Target application
+  Attacker->>Browser: Trigger cross-site form or request
+  Browser->>App: State-changing request with eligible cookies
+  alt Required anti-CSRF checks pass
+    App->>App: Verify token and/or request origin as designed
+    App-->>Browser: Process authorized request
+  else Missing or invalid anti-CSRF evidence
+    App-->>Browser: Reject request
+  end
+```
+
+`SameSite` cookies reduce exposure but should be combined with an appropriate token or origin check for cookie-authenticated state changes.
+
 ## Cross-Site Request Forgery (CSRF) and its mitigation techniques
 
 ### What is CSRF?

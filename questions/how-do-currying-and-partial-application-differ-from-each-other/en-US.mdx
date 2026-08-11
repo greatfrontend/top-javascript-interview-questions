@@ -8,6 +8,27 @@ Currying transforms a function with multiple arguments into a sequence of functi
 
 ---
 
+## Different ways to preconfigure arguments
+
+Currying changes a multi-argument function into a chain of unary functions; partial application fixes some arguments without requiring unary steps.
+
+```mermaid
+---
+title: Currying and partial application
+---
+flowchart TD
+  Original["f(a, b, c)"] --> Curry["Curry"]
+  Curry --> A["f(a)"]
+  A --> B["returns g(b)"]
+  B --> C["returns h(c)"]
+  C --> CurriedResult["result"]
+  Original --> Partial["Partially apply a and b"]
+  Partial --> Remaining["g(c)"]
+  Remaining --> PartialResult["result"]
+```
+
+Both techniques create reusable specialized functions, but partial application can leave any practical number of parameters for the later call.
+
 ## Currying vs partial application
 
 ### Currying

@@ -8,6 +8,10 @@ import { QuestionFrontmatter, QuestionItem, QuestionMetadata } from './types';
 import { GITHUB_ORG, GITHUB_REPO } from './constants';
 import questionsAll from '../data/questions.json';
 import url from 'node:url';
+import {
+  normalizeTldrForReadme,
+  replaceGeneratedSection,
+} from './generated-sections';
 
 const README_PATH_EN = 'README.md';
 
@@ -64,10 +68,8 @@ async function processQuestion(
       }),
     title,
     titleSlug: slug(title),
-    content: tlDrPart
-      // Replace relative links with absolute links.
-      .replace('](/', '](https://www.greatfrontend.com/')
-      .trim(),
+    // Replace relative links with absolute links.
+    content: normalizeTldrForReadme(tlDrPart).trim(),
   };
 }
 
@@ -190,16 +192,12 @@ async function generateList(qns: string[], options: Options) {
 
   const readmeFile = String(fs.readFileSync(README_PATH_EN));
 
-  const tocRegex = new RegExp(
-    `(<!-- ${tocStart} -->)([\\s\\S]*?)(<!-- ${tocEnd} -->)`,
+  const updatedText = replaceGeneratedSection(
+    replaceGeneratedSection(readmeFile, tocStart, tocEnd, qnTableOfContents),
+    qnsStart,
+    qnsEnd,
+    qnAnswers,
   );
-  const qnsRegex = new RegExp(
-    `(<!-- ${qnsStart} -->)([\\s\\S]*?)(<!-- ${qnsEnd} -->)`,
-  );
-
-  const updatedText = readmeFile
-    .replace(tocRegex, `$1\n\n${qnTableOfContents}\n\n$3`)
-    .replace(qnsRegex, `$1\n\n${qnAnswers}\n\n$3`);
 
   fs.writeFileSync(README_PATH_EN, updatedText);
 }
@@ -226,11 +224,12 @@ async function generateBulletList(
 
   const readmeFile = String(fs.readFileSync(README_PATH_EN));
 
-  const qnsRegex = new RegExp(
-    `(<!-- ${qnsStart} -->)([\\s\\S]*?)(<!-- ${qnsEnd} -->)`,
+  const updatedText = replaceGeneratedSection(
+    readmeFile,
+    qnsStart,
+    qnsEnd,
+    qnAnswers,
   );
-
-  const updatedText = readmeFile.replace(qnsRegex, `$1\n\n${qnAnswers}\n\n$3`);
 
   fs.writeFileSync(README_PATH_EN, updatedText);
 }

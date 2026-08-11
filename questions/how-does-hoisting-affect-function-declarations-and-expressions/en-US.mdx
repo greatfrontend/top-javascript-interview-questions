@@ -48,14 +48,14 @@ var bar = function () {
 };
 ```
 
-In this example, the variable `bar` is hoisted to the top of its scope, but the assignment `function() { return 'Hello'; }` is not. Therefore, calling `bar()` before the assignment results in a `TypeError`.
+In this example, scope setup creates `bar` and initializes it to `undefined`, but the assignment `function() { return 'Hello'; }` runs only at its source location. Therefore, calling `bar()` before the assignment results in a `TypeError`.
 
 ### Differences between `var`, `let`, and `const`
 
 The hoisting behavior differs between `var`, `let`, and `const` when used with function expressions.
 
-- `var`: The variable is hoisted and initialized with `undefined`.
-- `let` and `const`: The variables are hoisted but not initialized, leading to a `ReferenceError` if accessed before initialization.
+- `var`: The binding is created and initialized with `undefined` during scope setup.
+- `let` and `const`: The bindings are created but remain uninitialized in the TDZ, leading to a `ReferenceError` if accessed before initialization.
 
 ```js live
 console.log(baz); // undefined

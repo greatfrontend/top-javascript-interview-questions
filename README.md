@@ -297,14 +297,14 @@ This list contains a longer list of important JavaScript questions. Not all of t
 
 <!-- Update here: /questions/explain-hoisting/en-US.mdx -->
 
-Hoisting is a JavaScript mechanism where variable and function declarations are moved ("hoisted") to the top of their containing scope during the compile phase.
+"Hoisting" is informal shorthand for how JavaScript creates and initializes bindings while it instantiates a scope, before evaluating that scope's statements. The engine does not move source text.
 
-- **Variable declarations (`var`)**: Declarations are hoisted, but not initializations. The value of the variable is `undefined` if accessed before initialization.
-- **Variable declarations (`let` and `const`)**: Declarations are hoisted, but not initialized. Accessing them results in `ReferenceError` until the actual declaration is encountered.
-- **Function expressions (`var`)**: Declarations are hoisted, but not initializations. The value of the variable is `undefined` if accessed before initialization.
-- **Function declarations (`function`)**: Both declaration and definition are fully hoisted.
-- **Class declarations (`class`)**: Declarations are hoisted, but not initialized. Accessing them results in `ReferenceError` until the actual declaration is encountered.
-- **Import declarations (`import`)**: Declarations are hoisted, and side effects of importing the module are executed before the rest of the code.
+- **Variable declarations (`var`)**: The binding is created and initialized to `undefined` before statements run. Its assignment still happens at the declaration's source location.
+- **Variable declarations (`let` and `const`)**: The binding is created but remains uninitialized in the temporal dead zone (TDZ) until evaluation reaches the declaration. Accessing it earlier throws `ReferenceError`.
+- **Function expressions (`var`)**: The `var` binding initially contains `undefined`; the function is created only when the expression is evaluated.
+- **Function declarations (`function`)**: The binding is initialized with the function during scope setup, so it can be called before its declaration appears in source order.
+- **Class declarations (`class`)**: The binding exists during scope setup but remains in the TDZ until the class declaration is evaluated.
+- **Import declarations (`import`)**: Imported bindings are linked before module evaluation. Dependencies normally evaluate before the importing module's body, although cycles can expose an uninitialized binding.
 
 The following behavior summarizes the result of accessing the variables before they are declared.
 
@@ -316,7 +316,7 @@ The following behavior summarizes the result of accessing the variables before t
 | `class Foo`                    | `ReferenceError`             |
 | `var foo = function() { ... }` | `undefined`                  |
 | `function foo() { ... }`       | Normal                       |
-| `import`                       | Normal                       |
+| `import`                       | Normal, except some cycles   |
 
 <!-- Update here: /questions/explain-hoisting/en-US.mdx -->
 
@@ -380,17 +380,13 @@ In JavaScript, `let`, `var`, and `const` are all keywords used to declare variab
 
 <!-- Update here: /questions/what-is-event-loop-what-is-the-difference-between-call-stack-and-task-queue/en-US.mdx -->
 
-The event loop is a concept within the JavaScript runtime environment regarding how asynchronous operations are executed within JavaScript engines. It works as such:
+The event loop is the host runtime's scheduling mechanism for coordinating JavaScript jobs, asynchronous operations, and—in browsers—rendering. A simplified browser turn works like this:
 
-1. The JavaScript engine starts executing scripts, placing synchronous operations on the call stack.
-2. When an asynchronous operation is encountered (e.g., `setTimeout()`, HTTP request), it is offloaded to the respective Web API or Node.js API to handle the operation in the background.
-3. Once the asynchronous operation completes, its callback function is placed in the respective queues – task queues (also known as macrotask queues / callback queues) or microtask queues. We will refer to "task queue" as "macrotask queue" from here on to better differentiate from the microtask queue.
-4. The event loop continuously monitors the call stack and executes items on the call stack. If/when the call stack is empty:
-   1. Microtask queue is processed. Microtasks include promise callbacks (`then`, `catch`, `finally`), `await` continuations, `MutationObserver` callbacks, and calls to `queueMicrotask()`. The event loop takes the first callback from the microtask queue and pushes it to the call stack for execution. This repeats until the microtask queue is empty.
-   2. A task is selected from a host-defined task queue. Tasks include running timer callbacks and dispatching user interface events. APIs such as `setTimeout()` and networking APIs are not themselves tasks; they arrange for tasks or promise reactions to be queued when appropriate. After a task completes, the runtime performs a microtask checkpoint before selecting another task. This is an ordering rule rather than a general-purpose priority system, and continuously queuing microtasks can delay later tasks and rendering.
-      1. If the microtask queue is non-empty, process them as per the previous step.
-      2. If the microtask queue is empty, the next macrotask queue callback is processed. This repeats until the macrotask queue is empty.
-5. This process continues indefinitely, allowing the JavaScript engine to handle both synchronous and asynchronous operations efficiently without blocking the call stack.
+1. The host runs one task, such as initial script evaluation, a timer callback, or an input-event callback. Function calls made by that task use the JavaScript agent's call stack.
+2. Timers, networking, and other host APIs continue outside the currently executing JavaScript stack. When work becomes ready, the host queues a task or settles a promise, which queues its reactions as microtasks.
+3. After the current task finishes and its stack is empty, the runtime performs a microtask checkpoint. It drains promise reactions, `queueMicrotask()` callbacks, and other microtasks, including microtasks added while the checkpoint is running.
+4. The browser may update rendering, then the host selects one eligible task and runs it. After that task, it performs another microtask checkpoint; it does not drain every task queue in one pass.
+5. These turns continue for the lifetime of the event loop. An unbounded microtask chain can delay later tasks and rendering.
 
 <!-- Update here: /questions/what-is-event-loop-what-is-the-difference-between-call-stack-and-task-queue/en-US.mdx -->
 
@@ -1233,16 +1229,16 @@ AJAX (Asynchronous JavaScript and XML) is a technique in JavaScript that allows 
 
 **Advantages**
 
-- **Smoother user experience**: Updates happen without full page reloads, like in mail and chat applications.
-- **Lighter server load**: Only necessary data is fetched via AJAX, reducing server load and improving perceived performance of webpages.
-- **Maintains client state**: User interactions and any client states are persisted within the page.
+- **Partial updates**: The page can update selected regions without a full navigation, which can make interactions feel faster.
+- **Potentially smaller transfers**: An endpoint can return only the data needed for an update instead of another complete document.
+- **Preserved in-page state**: Inputs, scroll position, and other client state remain in place because the document is not replaced.
 
 **Disadvantages**
 
-- **Reliance on JavaScript**: If disabled, AJAX functionality breaks.
-- **Bookmarking issues**: Dynamic content makes bookmarking specific page states difficult.
-- **SEO challenges**: Search engines may struggle to index dynamic content.
-- **Performance concerns**: Processing AJAX data on low-end devices can be slow.
+- **Asynchronous complexity**: Applications must handle cancellation, errors, retries, race conditions, stale responses, and loading states.
+- **State and navigation design**: URLs, browser history, caching, and indexability do not follow automatically from an in-page request.
+- **Client-side cost**: Extra JavaScript, rendering, and state management can offset savings from smaller responses.
+- **Security risks**: Untrusted response data must be handled safely; inserting returned HTML can introduce XSS.
 
 <!-- Update here: /questions/what-are-the-advantages-and-disadvantages-of-using-ajax/en-US.mdx -->
 
@@ -1914,7 +1910,7 @@ Property flags are used to specify the behavior of a property on an object. Here
 
 - `writable`: Specifies whether the property can be written to.
 - `enumerable`: Specifies whether the property is enumerable.
-- `configurable`: Specifies whether the property can be deleted or its attributes changed.
+- `configurable`: Controls whether the property can be deleted and whether most parts of its descriptor can be reconfigured.
 
 **Property descriptors**
 
@@ -1924,8 +1920,8 @@ The use cases of property descriptors are as follows:
 
 - Making a property non-writable by setting `writable: false` to ensure data consistency.
 - Hiding a property from enumeration by setting `enumerable: false`.
-- Preventing property deletion and modification by setting `configurable: false`.
-- Freezing or sealing objects to prevent modifications globally.
+- Preventing property deletion and most descriptor changes by setting `configurable: false`. A writable data property's value can still change, and `writable` can still change from `true` to `false`.
+- Applying descriptor restrictions to every existing own property with `Object.seal()` or `Object.freeze()`. Both are shallow, and sealing still permits writes to writable data properties.
 
 <!-- Update here: /questions/what-are-javascript-object-property-flags-and-descriptors/en-US.mdx -->
 
@@ -2409,14 +2405,14 @@ Use cases include:
 
 <!-- Update here: /questions/explain-hoisting/en-US.mdx -->
 
-Hoisting is a JavaScript mechanism where variable and function declarations are moved ("hoisted") to the top of their containing scope during the compile phase.
+"Hoisting" is informal shorthand for how JavaScript creates and initializes bindings while it instantiates a scope, before evaluating that scope's statements. The engine does not move source text.
 
-- **Variable declarations (`var`)**: Declarations are hoisted, but not initializations. The value of the variable is `undefined` if accessed before initialization.
-- **Variable declarations (`let` and `const`)**: Declarations are hoisted, but not initialized. Accessing them results in `ReferenceError` until the actual declaration is encountered.
-- **Function expressions (`var`)**: Declarations are hoisted, but not initializations. The value of the variable is `undefined` if accessed before initialization.
-- **Function declarations (`function`)**: Both declaration and definition are fully hoisted.
-- **Class declarations (`class`)**: Declarations are hoisted, but not initialized. Accessing them results in `ReferenceError` until the actual declaration is encountered.
-- **Import declarations (`import`)**: Declarations are hoisted, and side effects of importing the module are executed before the rest of the code.
+- **Variable declarations (`var`)**: The binding is created and initialized to `undefined` before statements run. Its assignment still happens at the declaration's source location.
+- **Variable declarations (`let` and `const`)**: The binding is created but remains uninitialized in the temporal dead zone (TDZ) until evaluation reaches the declaration. Accessing it earlier throws `ReferenceError`.
+- **Function expressions (`var`)**: The `var` binding initially contains `undefined`; the function is created only when the expression is evaluated.
+- **Function declarations (`function`)**: The binding is initialized with the function during scope setup, so it can be called before its declaration appears in source order.
+- **Class declarations (`class`)**: The binding exists during scope setup but remains in the TDZ until the class declaration is evaluated.
+- **Import declarations (`import`)**: Imported bindings are linked before module evaluation. Dependencies normally evaluate before the importing module's body, although cycles can expose an uninitialized binding.
 
 The following behavior summarizes the result of accessing the variables before they are declared.
 
@@ -2428,7 +2424,7 @@ The following behavior summarizes the result of accessing the variables before t
 | `class Foo`                    | `ReferenceError`             |
 | `var foo = function() { ... }` | `undefined`                  |
 | `function foo() { ... }`       | Normal                       |
-| `import`                       | Normal                       |
+| `import`                       | Normal, except some cycles   |
 
 <!-- Update here: /questions/explain-hoisting/en-US.mdx -->
 
@@ -2442,7 +2438,7 @@ The following behavior summarizes the result of accessing the variables before t
 
 <!-- Update here: /questions/explain-the-difference-in-hoisting-between-var-let-and-const/en-US.mdx -->
 
-`var` declarations are hoisted to the top of their scope and initialized with `undefined`, allowing them to be used before their declaration. `let` and `const` declarations are also hoisted but are not initialized, resulting in a `ReferenceError` if accessed before their declaration. `const` additionally requires an initial value at the time of declaration.
+Before a scope's statements run, JavaScript creates its `var`, `let`, and `const` bindings; it does not move source text. A `var` binding is initialized to `undefined`, so it can be read before its declaration appears. A `let` or `const` binding remains uninitialized in the temporal dead zone (TDZ), so reading it before evaluation reaches the declaration throws `ReferenceError`. `const` also requires an initializer and cannot be reassigned.
 
 <!-- Update here: /questions/explain-the-difference-in-hoisting-between-var-let-and-const/en-US.mdx -->
 
@@ -3011,7 +3007,7 @@ console.log(add.apply(null, [1, 2])); // 3
 
 <!-- Update here: /questions/can-you-offer-a-use-case-for-the-new-arrow-function-syntax-how-does-this-new-syntax-differ-from-other-functions/en-US.mdx -->
 
-Arrow functions provide a concise syntax for writing functions in JavaScript. They are particularly useful for maintaining the `this` context within methods and callbacks. For example, in an event handler or array method like `map`, arrow functions can simplify the code and avoid issues with `this` binding.
+Arrow functions provide concise syntax and capture `this` and `arguments` from their surrounding scope. They work well for array transformations and for callbacks created inside a method or constructor that need the surrounding receiver. An arrow used directly as an object method does **not** receive the object as `this`; use a regular method when the caller's receiver should determine `this`. Arrow functions also cannot be called with `new`, do not have a `prototype`, and cannot be generators.
 
 ```js live
 const numbers = [1, 2, 3];
@@ -3631,7 +3627,7 @@ Property flags are used to specify the behavior of a property on an object. Here
 
 - `writable`: Specifies whether the property can be written to.
 - `enumerable`: Specifies whether the property is enumerable.
-- `configurable`: Specifies whether the property can be deleted or its attributes changed.
+- `configurable`: Controls whether the property can be deleted and whether most parts of its descriptor can be reconfigured.
 
 **Property descriptors**
 
@@ -3641,8 +3637,8 @@ The use cases of property descriptors are as follows:
 
 - Making a property non-writable by setting `writable: false` to ensure data consistency.
 - Hiding a property from enumeration by setting `enumerable: false`.
-- Preventing property deletion and modification by setting `configurable: false`.
-- Freezing or sealing objects to prevent modifications globally.
+- Preventing property deletion and most descriptor changes by setting `configurable: false`. A writable data property's value can still change, and `writable` can still change from `true` to `false`.
+- Applying descriptor restrictions to every existing own property with `Object.seal()` or `Object.freeze()`. Both are shallow, and sealing still permits writes to writable data properties.
 
 <!-- Update here: /questions/what-are-javascript-object-property-flags-and-descriptors/en-US.mdx -->
 
@@ -3677,17 +3673,13 @@ console.log(isEmpty(obj)); // true
 
 <!-- Update here: /questions/what-is-event-loop-what-is-the-difference-between-call-stack-and-task-queue/en-US.mdx -->
 
-The event loop is a concept within the JavaScript runtime environment regarding how asynchronous operations are executed within JavaScript engines. It works as such:
+The event loop is the host runtime's scheduling mechanism for coordinating JavaScript jobs, asynchronous operations, and—in browsers—rendering. A simplified browser turn works like this:
 
-1. The JavaScript engine starts executing scripts, placing synchronous operations on the call stack.
-2. When an asynchronous operation is encountered (e.g., `setTimeout()`, HTTP request), it is offloaded to the respective Web API or Node.js API to handle the operation in the background.
-3. Once the asynchronous operation completes, its callback function is placed in the respective queues – task queues (also known as macrotask queues / callback queues) or microtask queues. We will refer to "task queue" as "macrotask queue" from here on to better differentiate from the microtask queue.
-4. The event loop continuously monitors the call stack and executes items on the call stack. If/when the call stack is empty:
-   1. Microtask queue is processed. Microtasks include promise callbacks (`then`, `catch`, `finally`), `await` continuations, `MutationObserver` callbacks, and calls to `queueMicrotask()`. The event loop takes the first callback from the microtask queue and pushes it to the call stack for execution. This repeats until the microtask queue is empty.
-   2. A task is selected from a host-defined task queue. Tasks include running timer callbacks and dispatching user interface events. APIs such as `setTimeout()` and networking APIs are not themselves tasks; they arrange for tasks or promise reactions to be queued when appropriate. After a task completes, the runtime performs a microtask checkpoint before selecting another task. This is an ordering rule rather than a general-purpose priority system, and continuously queuing microtasks can delay later tasks and rendering.
-      1. If the microtask queue is non-empty, process them as per the previous step.
-      2. If the microtask queue is empty, the next macrotask queue callback is processed. This repeats until the macrotask queue is empty.
-5. This process continues indefinitely, allowing the JavaScript engine to handle both synchronous and asynchronous operations efficiently without blocking the call stack.
+1. The host runs one task, such as initial script evaluation, a timer callback, or an input-event callback. Function calls made by that task use the JavaScript agent's call stack.
+2. Timers, networking, and other host APIs continue outside the currently executing JavaScript stack. When work becomes ready, the host queues a task or settles a promise, which queues its reactions as microtasks.
+3. After the current task finishes and its stack is empty, the runtime performs a microtask checkpoint. It drains promise reactions, `queueMicrotask()` callbacks, and other microtasks, including microtasks added while the checkpoint is running.
+4. The browser may update rendering, then the host selects one eligible task and runs it. After that task, it performs another microtask checkpoint; it does not drain every task queue in one pass.
+5. These turns continue for the lifetime of the event loop. An unbounded microtask chain can delay later tasks and rendering.
 
 <!-- Update here: /questions/what-is-event-loop-what-is-the-difference-between-call-stack-and-task-queue/en-US.mdx -->
 
@@ -5081,16 +5073,16 @@ AJAX (Asynchronous JavaScript and XML) is a technique in JavaScript that allows 
 
 **Advantages**
 
-- **Smoother user experience**: Updates happen without full page reloads, like in mail and chat applications.
-- **Lighter server load**: Only necessary data is fetched via AJAX, reducing server load and improving perceived performance of webpages.
-- **Maintains client state**: User interactions and any client states are persisted within the page.
+- **Partial updates**: The page can update selected regions without a full navigation, which can make interactions feel faster.
+- **Potentially smaller transfers**: An endpoint can return only the data needed for an update instead of another complete document.
+- **Preserved in-page state**: Inputs, scroll position, and other client state remain in place because the document is not replaced.
 
 **Disadvantages**
 
-- **Reliance on JavaScript**: If disabled, AJAX functionality breaks.
-- **Bookmarking issues**: Dynamic content makes bookmarking specific page states difficult.
-- **SEO challenges**: Search engines may struggle to index dynamic content.
-- **Performance concerns**: Processing AJAX data on low-end devices can be slow.
+- **Asynchronous complexity**: Applications must handle cancellation, errors, retries, race conditions, stale responses, and loading states.
+- **State and navigation design**: URLs, browser history, caching, and indexability do not follow automatically from an in-page request.
+- **Client-side cost**: Extra JavaScript, rendering, and state management can offset savings from smaller responses.
+- **Security risks**: Untrusted response data must be handled safely; inserting returned HTML can introduce XSS.
 
 <!-- Update here: /questions/what-are-the-advantages-and-disadvantages-of-using-ajax/en-US.mdx -->
 
@@ -5194,11 +5186,10 @@ There are three main types of workers in JavaScript:
 
 The WebSocket API provides a way to open a persistent connection between a client and a server, allowing for real-time, two-way communication. Unlike HTTP, which is request-response based, WebSocket enables full-duplex communication, meaning both the client and server can send and receive messages independently. This is particularly useful for applications like chat apps, live updates, and online gaming.
 
-The following example uses Postman's WebSocket echo service to demonstrate how web sockets work.
+The following non-live example uses a placeholder URL; replace it with a WebSocket endpoint you control.
 
-```js live
-// Postman's echo server that will echo back messages you send
-const socket = new WebSocket('wss://ws.postman-echo.com/raw');
+```js
+const socket = new WebSocket('wss://example.com/socket');
 
 // Event listener for when the connection is open
 socket.addEventListener('open', function (event) {
@@ -5208,6 +5199,7 @@ socket.addEventListener('open', function (event) {
 // Event listener for when a message is received from the server
 socket.addEventListener('message', function (event) {
   console.log('Message from server ', event.data);
+  socket.close(1000, 'Example complete');
 });
 ```
 
@@ -5358,7 +5350,7 @@ window.addEventListener('message', (event) => {
 
 `DOMContentLoaded` fires after the HTML has been parsed and deferred and module scripts have executed. It does not directly wait for images, subframes, or stylesheets, although a blocking stylesheet can delay a script and therefore indirectly delay `DOMContentLoaded`. The window `load` event waits for the document and its dependent resources, apart from resources loaded lazily.
 
-```javascript
+```js
 document.addEventListener('DOMContentLoaded', function () {
   console.log('DOM fully loaded and parsed');
 });
@@ -5594,15 +5586,19 @@ ECMAScript modules use `export` to define a module's public bindings and `import
 Resolution depends on the host. Browsers need module scripts and URL-like specifiers (unless an import map is used); Node.js uses its ESM and package-resolution rules; bundlers may support additional aliases. An import working in one environment does not guarantee it resolves in another.
 
 ```js
-// Exporting a module
+// my-module.js
 export const myFunction = () => {
   /* ... */
 };
 export default myFunction;
+```
 
-// Importing a module
-import { myFunction } from './myModule';
-import myFunction from './myModule';
+```js
+// app.js
+import defaultFunction, { myFunction } from './my-module.js';
+
+myFunction();
+defaultFunction();
 ```
 
 <!-- Update here: /questions/how-do-you-import-and-export-modules-in-javascript/en-US.mdx -->
@@ -6038,7 +6034,7 @@ Both `Map` objects and plain objects in JavaScript can store key-value pairs, bu
 
 <!-- Update here: /questions/how-do-sets-and-maps-handle-equality-checks-for-objects/en-US.mdx -->
 
-`Set`s and `Map`s in JavaScript handle equality checks for objects based on reference equality, not deep equality. This means that two objects are considered equal only if they reference the same memory location. For example, if you add two different object literals with the same properties to a `Set`, they will be treated as distinct entries.
+`Set`s and `Map`s in JavaScript handle equality checks for objects based on identity, not deep equality. Two object values are considered equal only when they refer to the same object. For example, if you add two different object literals with the same properties to a `Set`, they will be treated as distinct entries.
 
 ```js live
 const set = new Set();
@@ -6114,8 +6110,10 @@ const handleResize = throttle(() => {
 }, 2000);
 
 // Simulate rapid calls to handleResize every 100ms
-let intervalId = setInterval(() => {
+let callCount = 0;
+const intervalId = setInterval(() => {
   handleResize();
+  if (++callCount >= 30) clearInterval(intervalId);
 }, 100);
 // 'Window resized' is logged only every 2 seconds due to throttling
 ```
@@ -6737,7 +6735,7 @@ Keep untrusted values separate from SQL syntax by using parameterized queries or
 const sql = `SELECT * FROM users WHERE email = '${request.body.email}'`;
 
 // Safe shape: the driver sends the value separately from the SQL text.
-const result = await database.query('SELECT * FROM users WHERE email = <!-- QUESTIONS:ALL:START -->', [
+const result = await database.query('SELECT * FROM users WHERE email = $1', [
   request.body.email,
 ]);
 ```
@@ -6788,7 +6786,7 @@ Content-Security-Policy: default-src 'self'; script-src 'nonce-r4nd0m'; object-s
 
 Security headers are HTTP response headers that help protect web applications from various attacks. Some common security headers include:
 
-- `Content-Security-Policy (CSP)`: Prevents cross-site scripting (XSS) and other code injection attacks by specifying allowed content sources.
+- `Content-Security-Policy (CSP)`: Helps mitigate cross-site scripting (XSS) and other code injection attacks by restricting allowed content sources. It is a defense-in-depth control, not a replacement for safe output handling.
 - `X-Content-Type-Options`: Prevents MIME type sniffing by instructing the browser to follow the declared `Content-Type`.
 - `Strict-Transport-Security (HSTS)`: Enforces secure (HTTPS) connections to the server.
 - `Content-Security-Policy: frame-ancestors ...`: Controls which sites may embed the page, helping prevent clickjacking. `X-Frame-Options` is a narrower legacy fallback.
@@ -6984,7 +6982,7 @@ For indexable routes, return meaningful HTML and correct status codes, canonical
 
 Share code through modules with an explicit public API. ECMAScript modules (`export` / `import`) are the language standard and work in browsers, Node.js, and toolchains with host-specific resolution rules. CommonJS (`module.exports` / `require`) remains relevant to existing Node.js code and packages; do not mix the two formats without checking the runtime's interoperability rules.
 
-```javascript
+```js
 // file1.js
 export function greet() {
   console.log('Hello, world!');
@@ -6997,7 +6995,7 @@ greet();
 
 Alternatively, in Node.js, you can use `module.exports` and `require`:
 
-```javascript
+```js
 // file1.js
 module.exports = function greet() {
   console.log('Hello, world!');

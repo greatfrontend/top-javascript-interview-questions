@@ -21,6 +21,28 @@ fetchData((data) => {
 
 ---
 
+## Callback handoff
+
+The caller supplies behavior now, but the host invokes it only after the asynchronous operation produces an outcome and the runtime can schedule the callback.
+
+```mermaid
+---
+title: Asynchronous callback handoff
+---
+sequenceDiagram
+  participant Caller
+  participant API as Asynchronous API
+  participant Host
+  participant Queue
+  Caller->>API: start(options, callback)
+  API->>Host: Begin operation
+  API-->>Caller: Return before completion
+  Host->>Queue: Enqueue completion callback
+  Queue->>Caller: callback(error, result)
+```
+
+The callback must handle its error and result contract explicitly, and throwing later from that callback does not travel back to the original call site.
+
 ## What is a callback function?
 
 A callback function is a function that is passed as an argument to another function and is executed after some operation has been completed. This is particularly useful in asynchronous programming, where operations like network requests, file I/O, or timers need to be handled without blocking the main execution thread.

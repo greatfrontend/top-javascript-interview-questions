@@ -41,13 +41,38 @@ const handleResize = throttle(() => {
 }, 2000);
 
 // Simulate rapid calls to handleResize every 100ms
-let intervalId = setInterval(() => {
+let callCount = 0;
+const intervalId = setInterval(() => {
   handleResize();
+  if (++callCount >= 30) clearInterval(intervalId);
 }, 100);
 // 'Window resized' is logged only every 2 seconds due to throttling
 ```
 
 ---
+
+## Controlling a burst of calls
+
+Debouncing waits for a quiet period, while throttling permits work at a bounded rate during a continuing burst.
+
+```mermaid
+---
+title: Debounce and throttle control flow
+---
+flowchart TD
+  Event["A high-frequency event arrives"] --> Technique{"Technique"}
+  Technique -->|"Debounce"| Reset["Reset the delay timer"]
+  Reset --> Quiet{"Did the delay pass without another event?"}
+  Quiet -->|"No"| Reset
+  Quiet -->|"Yes"| Debounced["Invoke once after the burst"]
+  Technique -->|"Throttle"| Window{"Is the rate-limit window open?"}
+  Window -->|"Yes"| Throttled["Invoke and close the window"]
+  Window -->|"No"| Suppress["Suppress or retain a trailing call"]
+  Throttled --> Reopen["Reopen after the interval"]
+  Reopen --> Window
+```
+
+Leading and trailing options change the edges of these timelines, but not the core distinction between quiet-period detection and rate limiting.
 
 ## What is debouncing in JavaScript?
 

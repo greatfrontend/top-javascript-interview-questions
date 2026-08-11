@@ -16,6 +16,25 @@ element.textContent = '<strong>Bold Text</strong>'; // Renders as plain text: <s
 
 ---
 
+## Text insertion versus HTML parsing
+
+The APIs send the same string through different browser pipelines.
+
+```mermaid
+---
+title: innerHTML and textContent processing
+---
+flowchart TD
+  Input["String value"] --> API{"Assignment target"}
+  API -->|"textContent"| Text["Create or replace text content"]
+  Text --> Literal["Markup characters remain visible text"]
+  API -->|"innerHTML"| Parse["Parse the string as HTML"]
+  Parse --> Nodes["Create DOM nodes from markup"]
+  Nodes --> Risk["Untrusted active markup can create XSS"]
+```
+
+Use `textContent` for plain text. Use `innerHTML` only when HTML interpretation is intentional and the value comes from a trusted or correctly sanitized source.
+
 ## Difference between `innerHTML` and `textContent`
 
 ### `innerHTML`

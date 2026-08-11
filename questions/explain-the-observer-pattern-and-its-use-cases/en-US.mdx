@@ -10,6 +10,28 @@ Use it when one-to-many notifications reduce coupling. Prefer a direct function 
 
 ---
 
+## Subscription and notification
+
+Observers register with a subject, which later broadcasts a state change without needing to know each observer's concrete behavior.
+
+```mermaid
+---
+title: Observer pattern notification flow
+---
+sequenceDiagram
+  participant A as Observer A
+  participant S as Subject
+  participant B as Observer B
+  A->>S: subscribe(updateA)
+  B->>S: subscribe(updateB)
+  S->>S: State changes
+  S-->>A: notify(newState)
+  S-->>B: notify(newState)
+  A->>S: unsubscribe(updateA)
+```
+
+Unsubscription and failure isolation matter in long-lived systems so stale observers do not leak and one observer cannot prevent all later notifications.
+
 ## A practical implementation
 
 ```js live

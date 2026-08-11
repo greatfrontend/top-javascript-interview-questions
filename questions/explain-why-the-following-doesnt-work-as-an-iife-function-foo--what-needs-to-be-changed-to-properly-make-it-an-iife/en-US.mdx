@@ -12,7 +12,7 @@ The code `function foo(){}();` doesn't work as an Immediately Invoked Function E
 
 ### Function declaration vs. function expression
 
-In JavaScript, a function declaration and a function expression are treated differently by the parser. The code `function foo(){}` is interpreted as a function declaration. Function declarations are not immediately invoked; they are hoisted to the top of their scope and can be called later in the code.
+In JavaScript, a function declaration and a function expression are treated differently by the parser. The code `function foo(){}` is interpreted as a function declaration. A declaration does not produce an expression for a following call operator to invoke, although its binding is initialized during scope setup and can be called by name.
 
 ### Syntax error
 
@@ -24,19 +24,19 @@ When you add `()` after the function declaration, the parser does not treat it a
 
 To convert the function declaration into a function expression, you need to wrap the function declaration in parentheses. This tells the JavaScript parser to treat it as an expression. Here is the corrected code:
 
-```javascript
+```js
 (function foo() {})();
 ```
 
 ### Alternative syntax
 
-You can also wrap the entire invocation (function and call) in a single pair of parentheses:
+An arrow function can also be used when the IIFE does not need its own name or dynamic `this` binding:
 
-```javascript
-(function foo() {})();
+```js
+(() => {})();
 ```
 
-Both of these syntaxes are valid and will correctly create an IIFE. Other ways to force the function into an expression context include prefixing it with a unary operator, such as `!function foo() {}();` or `void function foo() {}();`.
+Both forms create and immediately invoke a function expression. Other ways to force a traditional function into an expression context include prefixing it with a unary operator, such as `!function foo() {}();` or `void function foo() {}();`.
 
 ## Further reading
 

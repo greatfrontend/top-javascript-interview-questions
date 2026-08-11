@@ -45,6 +45,33 @@ Use cases include:
 
 ---
 
+## Proxy interception at a glance
+
+A proxy sits between a caller and a target, giving its handler a chance to intercept an operation before forwarding it.
+
+```mermaid
+---
+title: Proxy property access
+---
+sequenceDiagram
+  participant Caller
+  participant Proxy
+  participant Handler
+  participant Target
+  Caller->>Proxy: Read proxy.value
+  alt Handler defines a get trap
+    Proxy->>Handler: get(target, "value", receiver)
+    Handler->>Target: Reflect.get(...)
+    Target-->>Handler: Property result
+    Handler-->>Caller: Trap result
+  else No get trap
+    Proxy->>Target: Forward property read
+    Target-->>Caller: Property result
+  end
+```
+
+Using `Reflect` inside a trap usually preserves the corresponding default operation while still allowing validation, logging, or adaptation around it.
+
 ## JavaScript proxies
 
 In JavaScript, a proxy is an object that allows you to customize the behavior of another object, often referred to as the target object. Proxies can intercept and redefine various operations for the target object, such as property access, assignment, enumeration, function invocation, and more. This makes proxies useful for a variety of use cases, such as validation, logging, performance monitoring, and implementing advanced data structures.

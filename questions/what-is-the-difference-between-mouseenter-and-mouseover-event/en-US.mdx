@@ -17,6 +17,25 @@ The main difference lies in the bubbling behavior of `mouseenter` and `mouseover
 
 ---
 
+## Moving from a parent into its child
+
+The behavioral difference is clearest when the pointer crosses an internal descendant boundary.
+
+```mermaid
+---
+title: mouseenter and mouseover across nested elements
+---
+flowchart LR
+  Outside["Pointer outside parent"] --> Parent["Pointer enters parent"]
+  Parent --> ParentEvents["parent gets mouseenter and mouseover"]
+  ParentEvents --> Child["Pointer moves into child"]
+  Child --> Over["child gets mouseover; it bubbles to parent"]
+  Child --> Enter["child gets mouseenter"]
+  Enter --> NoRepeat["parent does not get another mouseenter"]
+```
+
+`mouseenter` models entry into an element as a whole and does not bubble, while `mouseover` fires for descendant crossings and bubbles.
+
 ### `mouseenter` event:
 
 - **Does not bubble**: The `mouseenter` event does not bubble. It is only triggered when the mouse pointer enters the element to which the event listener is attached, not when it enters any child elements.

@@ -28,6 +28,28 @@ There are three main types of workers in JavaScript:
 
 ---
 
+## Separate agents communicating by messages
+
+A worker runs in a separate JavaScript agent with its own event loop and global scope; it does not share the page's call stack or DOM.
+
+```mermaid
+---
+title: Main thread and worker communication
+---
+sequenceDiagram
+  participant Main as Main thread
+  participant Clone as Structured clone or transfer
+  participant Worker as Worker thread
+  Main->>Clone: postMessage(input, transfer?)
+  Clone->>Worker: Deliver message event
+  Worker->>Worker: Perform CPU-intensive work
+  Worker->>Clone: postMessage(result, transfer?)
+  Clone->>Main: Deliver message event
+  Main->>Main: Update the DOM
+```
+
+Messages are copied with the structured-clone algorithm unless transferable ownership is moved, so communication cost remains part of the design.
+
 ## Workers in JavaScript
 
 Workers in JavaScript are a way to run scripts in background threads, separate from the main execution thread of a web page. This allows for long-running or computationally intensive tasks to be offloaded from the main thread, preventing the user interface from becoming unresponsive or janky.

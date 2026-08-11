@@ -18,6 +18,28 @@ const result = await database.query('SELECT * FROM users WHERE email = $1', [
 
 ---
 
+## Keep query structure separate from values
+
+SQL injection becomes possible when untrusted input is concatenated into query syntax; parameterization sends the command and values through separate channels.
+
+```mermaid
+---
+title: Concatenated and parameterized SQL queries
+---
+flowchart TD
+  Input["Untrusted input"] --> Build{"Query construction"}
+  Build -->|"String concatenation"| SQLText["Input becomes part of SQL text"]
+  SQLText --> Alter["Attacker can alter query structure"]
+  Alter --> Database["Database executes unintended command"]
+  Build -->|"Parameterized query"| Template["Fixed SQL template with placeholders"]
+  Input --> Bound["Bound parameter value"]
+  Template --> Driver["Database driver or prepared statement"]
+  Bound --> Driver
+  Driver --> Safe["Database treats the value as data"]
+```
+
+Allow-list validation is still needed for identifiers or sort directions that cannot be bound as values, and the application database account should have least privilege.
+
 ## The concrete threat
 
 Suppose an attacker submits this email value:

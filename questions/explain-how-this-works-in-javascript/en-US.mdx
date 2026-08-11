@@ -20,6 +20,28 @@ For an in-depth explanation, do check out [Arnav Aggrawal's article on Medium](h
 
 ---
 
+## Resolve `this` from the function and call form
+
+For ordinary functions, `this` is usually selected at invocation time; arrow functions are the major lexical exception.
+
+```mermaid
+---
+title: JavaScript this resolution
+---
+flowchart TD
+  Call["A function is invoked"] --> Arrow{"Arrow function?"}
+  Arrow -->|"Yes"| Lexical["Use this from the enclosing lexical scope"]
+  Arrow -->|"No"| New{"Called with new?"}
+  New -->|"Yes"| Instance["Use the new instance"]
+  New -->|"No"| Explicit{"Bound or called with call/apply?"}
+  Explicit -->|"Yes"| Supplied["Use the supplied this value"]
+  Explicit -->|"No"| Method{"Called as object.method()?"}
+  Method -->|"Yes"| Receiver["Use the object before the dot"]
+  Method -->|"No"| Default["undefined in strict mode; global object in sloppy non-module code"]
+```
+
+Copying a method into a variable changes its call form and can therefore change `this`.
+
 ## `this` keyword
 
 In JavaScript, `this` is a keyword that refers to the current execution context of a function or script. It's a fundamental concept in JavaScript, and understanding how `this` works is crucial for building maintainable applications.

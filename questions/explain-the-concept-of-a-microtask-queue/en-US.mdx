@@ -8,6 +8,27 @@ The microtask queue holds callbacks such as promise reactions, `queueMicrotask()
 
 ---
 
+## Microtask checkpoint
+
+After a task finishes, the runtime drains microtasks until the queue is empty, including microtasks added by other microtasks.
+
+```mermaid
+---
+title: Microtask checkpoint between browser tasks
+---
+flowchart LR
+  Task["Run one task"] --> Sync["Finish its synchronous stack"]
+  Sync --> Check{"Microtask queued?"}
+  Check -->|"Yes"| Microtask["Run one microtask"]
+  Microtask --> Enqueue["It may enqueue more microtasks"]
+  Enqueue --> Check
+  Check -->|"No"| Render["Browser may render"]
+  Render --> Next["Select the next task"]
+  Next --> Task
+```
+
+Because the queue drains recursively, an unbounded microtask chain can postpone timers, input handling, and rendering.
+
 ## The concept of a microtask queue
 
 ### What is a microtask queue?

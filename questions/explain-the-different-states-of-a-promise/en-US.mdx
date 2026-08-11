@@ -14,6 +14,24 @@ Fulfilled and rejected Promises are **settled**. Once settled, a Promise cannot 
 
 ---
 
+## Promise state transitions
+
+A promise begins pending and can settle exactly once into one of two terminal states.
+
+```mermaid
+---
+title: Promise state transitions
+---
+stateDiagram-v2
+  [*] --> Pending
+  Pending --> Fulfilled: fulfill with a value
+  Pending --> Rejected: reject with a reason
+  Fulfilled --> [*]
+  Rejected --> [*]
+```
+
+“Resolved” is broader than “fulfilled”: resolving with another pending promise locks in adoption of that promise while the outer promise can remain pending.
+
 ## Observe the state transition
 
 JavaScript does not expose a synchronous `promise.state` property. You observe the outcome by attaching handlers:

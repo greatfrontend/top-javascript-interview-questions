@@ -20,6 +20,24 @@ Promise.all([promise1, promise2, promise3]).then((values) => {
 
 ---
 
+## Aggregate completion
+
+`Promise.all()` subscribes to every input concurrently and preserves input order in its result, regardless of completion order.
+
+```mermaid
+---
+title: Promise.all aggregate behavior
+---
+flowchart TD
+  Inputs["Iterable of values and promises"] --> Normalize["Convert each input with Promise.resolve"]
+  Normalize --> Wait["Wait for all inputs"]
+  Wait --> Outcome{"What happens first?"}
+  Outcome -->|"Every input fulfills"| Values["Fulfill with values in input order"]
+  Outcome -->|"Any input rejects"| Reject["Reject with that reason"]
+```
+
+Fail-fast rejection does not cancel the other operations; cancellation must be designed separately, for example with `AbortController`.
+
 ## What is the use of `Promise.all()`
 
 ### Overview

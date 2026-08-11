@@ -17,6 +17,28 @@ title: 'Difference between: `function Person(){}`, `const person = Person()`, an
 
 ---
 
+## Calling versus constructing
+
+The same function body follows a different invocation path depending on whether the call uses `new`.
+
+```mermaid
+---
+title: Person call compared with new Person
+---
+flowchart TD
+  Invoke{"Invocation form"} -->|"Person()"| Call["Perform an ordinary function call"]
+  Call --> CallThis["this follows ordinary call rules"]
+  CallThis --> CallResult["Return the function's explicit result or undefined"]
+  Invoke -->|"new Person()"| Allocate["Create a new object"]
+  Allocate --> Link["Link its prototype to Person.prototype"]
+  Link --> Construct["Call Person with this set to the new object"]
+  Construct --> Return{"Constructor returns an object?"}
+  Return -->|"Yes"| Explicit["Use the explicit object"]
+  Return -->|"No"| Instance["Use the newly created instance"]
+```
+
+Without `new`, JavaScript does not allocate or return a `Person` instance automatically.
+
 ## Function declaration
 
 `function Person(){}` is a standard function declaration in JavaScript. When written in PascalCase, it follows the convention for functions intended to be used as constructors.

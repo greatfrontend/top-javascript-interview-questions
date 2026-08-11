@@ -70,6 +70,30 @@ In this example, the server sends a "Hello from server" message initially, and t
 
 ---
 
+## One-way event stream
+
+`EventSource` maintains a long-lived HTTP connection through which the server sends framed events to the browser.
+
+```mermaid
+---
+title: Server-Sent Events connection and reconnection
+---
+sequenceDiagram
+  participant App
+  participant EventSource
+  participant Server
+  App->>EventSource: new EventSource(url)
+  EventSource->>Server: HTTP GET with text/event-stream
+  loop While connected
+    Server-->>EventSource: id, event, and data fields
+    EventSource-->>App: message or named event
+  end
+  Server--xEventSource: Connection closes
+  EventSource->>Server: Reconnect, optionally with Last-Event-ID
+```
+
+SSE is server-to-client only; client-to-server messages still use another HTTP request or a bidirectional protocol such as WebSocket.
+
 ## What are Server-Sent Events?
 
 Server-Sent Events (SSE) is a standard that allows a server to push updates to a web client over a single, long-lived HTTP connection. It enables real-time updates without the client having to constantly poll the server for new data.

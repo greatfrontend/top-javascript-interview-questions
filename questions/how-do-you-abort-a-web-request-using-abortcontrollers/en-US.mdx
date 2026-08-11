@@ -10,6 +10,28 @@ Aborting releases the client from waiting and may cancel network activity, but i
 
 ---
 
+## One cancellation signal, multiple consumers
+
+An `AbortSignal` can coordinate cancellation across every operation that was started with that signal.
+
+```mermaid
+---
+title: AbortController signal fan-out
+---
+flowchart LR
+  Controller["AbortController"] --> Signal["controller.signal"]
+  Signal --> FetchA["fetch request A"]
+  Signal --> FetchB["fetch request B"]
+  Signal --> Listener["abort event listener"]
+  Caller["Caller invokes controller.abort(reason)"] --> Controller
+  Controller --> Aborted["Signal becomes permanently aborted"]
+  Aborted --> FetchA
+  Aborted --> FetchB
+  Aborted --> Listener
+```
+
+Aborting rejects pending fetches with an abort-related error; it does not roll back work that the server has already completed.
+
 ## Basic request cancellation
 
 ```js

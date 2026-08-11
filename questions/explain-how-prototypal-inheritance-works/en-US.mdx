@@ -52,6 +52,26 @@ Things to note are:
 
 ---
 
+## Delegation through a prototype chain
+
+Property lookup starts on the instance and follows internal `[[Prototype]]` links until it finds a matching property or reaches `null`.
+
+```mermaid
+---
+title: Dog instance prototype delegation
+---
+flowchart LR
+  Dog["bolt instance"] -->|"[[Prototype]]"| DogProto["Dog.prototype"]
+  DogProto -->|"[[Prototype]]"| AnimalProto["Animal.prototype"]
+  AnimalProto -->|"[[Prototype]]"| ObjectProto["Object.prototype"]
+  ObjectProto -->|"[[Prototype]]"| Null["null"]
+  Dog --> Name["own property: name"]
+  DogProto --> Bark["method: bark"]
+  AnimalProto --> Sound["method: makeSound"]
+```
+
+`bolt.makeSound` succeeds by delegation even though `makeSound` is not an own property of `bolt` or `Dog.prototype`.
+
 ## Prototypal inheritance in JavaScript
 
 Prototypal inheritance is a feature in JavaScript used to create objects that inherit properties and methods from other objects. Instead of a class-based inheritance model, JavaScript uses a prototype-based model, where objects can directly inherit from other objects.

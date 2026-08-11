@@ -6,7 +6,7 @@ title: How can you share code between JavaScript files?
 
 Share code through modules with an explicit public API. ECMAScript modules (`export` / `import`) are the language standard and work in browsers, Node.js, and toolchains with host-specific resolution rules. CommonJS (`module.exports` / `require`) remains relevant to existing Node.js code and packages; do not mix the two formats without checking the runtime's interoperability rules.
 
-```javascript
+```js
 // file1.js
 export function greet() {
   console.log('Hello, world!');
@@ -19,7 +19,7 @@ greet();
 
 Alternatively, in Node.js, you can use `module.exports` and `require`:
 
-```javascript
+```js
 // file1.js
 module.exports = function greet() {
   console.log('Hello, world!');
@@ -38,7 +38,7 @@ greet();
 
 To share code, you can use the `export` keyword to export variables, functions, or classes from a module:
 
-```javascript
+```js
 // utils.js
 export function add(a, b) {
   return a + b;
@@ -51,7 +51,7 @@ export const PI = 3.14;
 
 You can then import the exported code in another file using the `import` keyword:
 
-```javascript
+```js
 // main.js
 import { add, PI } from './utils.js';
 
@@ -63,7 +63,7 @@ console.log(PI); // 3.14
 
 You can also export a single default value from a module:
 
-```javascript
+```js
 // math.js
 export default function subtract(a, b) {
   return a - b;
@@ -72,7 +72,7 @@ export default function subtract(a, b) {
 
 And import it without curly braces:
 
-```javascript
+```js
 // main.js
 import subtract from './math.js';
 
@@ -87,7 +87,7 @@ Node.js supports both ESM and CommonJS. The file extension, nearest `package.jso
 
 In Node.js, you can use `module.exports` to export code:
 
-```javascript
+```js
 // utils.js
 module.exports.add = function (a, b) {
   return a + b;
@@ -100,7 +100,7 @@ module.exports.PI = 3.14;
 
 You can then import the exported code using `require`:
 
-```javascript
+```js
 // main.js
 const utils = require('./utils.js');
 
@@ -112,7 +112,7 @@ console.log(utils.PI); // 3.14
 
 You can also export a single value:
 
-```javascript
+```js
 // math.js
 module.exports = function subtract(a, b) {
   return a - b;
@@ -121,7 +121,7 @@ module.exports = function subtract(a, b) {
 
 And import it directly:
 
-```javascript
+```js
 // main.js
 const subtract = require('./math.js');
 

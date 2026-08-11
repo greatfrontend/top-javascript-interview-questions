@@ -8,6 +8,28 @@ JSONP (JSON with Padding) is a legacy technique for reading cross-origin data by
 
 ---
 
+## JSONP request flow
+
+JSONP exploits the browser's ability to load a cross-origin classic script, so the response is executable JavaScript rather than JSON returned to `fetch()`.
+
+```mermaid
+---
+title: JSONP callback flow
+---
+sequenceDiagram
+  participant Page
+  participant Browser
+  participant Server as Cross-origin server
+  Page->>Page: Define handleData callback
+  Page->>Browser: Insert script with callback=handleData
+  Browser->>Server: GET script URL
+  Server-->>Browser: handleData(payload)
+  Browser->>Page: Execute response as script
+  Page->>Page: Callback receives payload
+```
+
+Because the remote response executes with the page's privileges, JSONP requires complete trust in the endpoint and should be replaced by CORS-enabled requests in modern code.
+
 ## How JSONP works (and how it's not really Ajax)
 
 ### What is JSONP?

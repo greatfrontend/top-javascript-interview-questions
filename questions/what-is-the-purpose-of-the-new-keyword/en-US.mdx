@@ -17,6 +17,25 @@ console.log(person1.name); // Alice
 
 ---
 
+## Constructor invocation steps
+
+`new` combines allocation, prototype linkage, invocation, and return selection into one operation.
+
+```mermaid
+---
+title: Steps performed by the new operator
+---
+flowchart TD
+  Start["Evaluate new Constructor(arguments)"] --> Allocate["Create a fresh ordinary object"]
+  Allocate --> Link["Set [[Prototype]] from Constructor.prototype"]
+  Link --> Invoke["Call Constructor with this set to the object"]
+  Invoke --> Result{"Did the constructor return an object?"}
+  Result -->|"Yes"| Explicit["Return that explicit object"]
+  Result -->|"No"| Created["Return the created object"]
+```
+
+A primitive explicit return is ignored, but an explicitly returned object replaces the newly allocated instance.
+
 ## The purpose of the `new` keyword
 
 ### Creating a new object

@@ -12,6 +12,27 @@ Use a mix based on risk. A checkout calculation deserves many unit cases, the or
 
 ---
 
+## Test scope and boundaries
+
+The layers differ primarily in how much real system behavior they include and which boundaries they replace.
+
+```mermaid
+---
+title: Unit, integration, and end-to-end test scope
+---
+flowchart TD
+  Feature["User-visible feature"] --> E2E["End-to-end test"]
+  E2E --> Full["UI, application, backend, and infrastructure path"]
+  Feature --> Integration["Integration test"]
+  Integration --> Connected["Several real modules or services together"]
+  Feature --> Unit["Unit test"]
+  Unit --> Isolated["One small unit with controlled collaborators"]
+  Full --> Confidence["Broader confidence, slower and harder to diagnose"]
+  Isolated --> Feedback["Fast, focused feedback with narrower confidence"]
+```
+
+A healthy suite combines the layers rather than treating one as a universal replacement for the others.
+
 ## Compare the layers through one feature
 
 | Layer | Checkout example | Common tools | Main tradeoff |

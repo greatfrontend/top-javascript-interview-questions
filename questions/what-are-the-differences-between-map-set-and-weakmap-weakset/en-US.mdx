@@ -39,6 +39,26 @@ Similar to `Map`, `Set`s allow any data type as elements. The elements within a 
 
 ---
 
+## Strong and weak reachability
+
+Ordinary collections retain their entries strongly, while weak collections do not keep object keys or values alive by themselves.
+
+```mermaid
+---
+title: Reachability in Map and WeakMap
+---
+flowchart LR
+  Root["Reachable application root"] --> Map["Map"]
+  Map -->|"strong reference"| MapKey["Object used as a Map key"]
+  Root --> WeakMap["WeakMap"]
+  WeakMap -. "weak association" .-> WeakKey["Object used as a WeakMap key"]
+  WeakKey --> Other{"Another strong reference to WeakKey?"}
+  Other -->|"Yes"| Live["WeakKey remains reachable"]
+  Other -->|"No"| Collect["WeakKey and its weak entry may be collected"]
+```
+
+That non-observable collection behavior is why `WeakMap` and `WeakSet` are not enumerable and accept only garbage-collectable values as weakly held entries.
+
 ## `Map`/`Set` vs `WeakMap`/`WeakSet`
 
 The key differences between `Map`/`Set` and `WeakMap`/`WeakSet` in JavaScript are:

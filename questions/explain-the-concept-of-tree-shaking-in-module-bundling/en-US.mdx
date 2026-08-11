@@ -8,6 +8,29 @@ Tree shaking is a bundler optimization that uses static module structure plus si
 
 ---
 
+## Reachability through the module graph
+
+Tree shaking starts from used entry exports and traces static references to decide which declarations must remain.
+
+```mermaid
+---
+title: Tree-shaking reachability analysis
+---
+flowchart TD
+  Modules["Static ES module graph"] --> Roots["Mark entry points and used exports"]
+  Roots --> Trace["Trace reachable imports and declarations"]
+  Trace --> Used["Keep reachable code"]
+  Trace --> Unused["Identify unreachable exports"]
+  Unused --> Effects{"Can removal preserve side effects?"}
+  Effects -->|"Yes"| Drop["Remove unused code"]
+  Effects -->|"No or unknown"| Keep["Keep potentially effectful code"]
+  Used --> Bundle["Generate optimized bundle"]
+  Drop --> Bundle
+  Keep --> Bundle
+```
+
+Static syntax makes analysis possible, but package side effects and dynamic patterns can force a bundler to retain otherwise unused-looking code.
+
 ## The concept of tree shaking in module bundling
 
 Tree shaking is a term commonly used in the context of JavaScript module bundlers like Webpack and Rollup. It refers to the process of eliminating dead code from the final bundle, which helps in reducing the bundle size and improving the performance of the application.

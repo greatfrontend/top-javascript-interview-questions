@@ -16,6 +16,26 @@ In this example, `process.nextTick()` will execute first, followed by either `se
 
 ---
 
+## Where each callback runs in Node.js
+
+This simplified Node.js view shows the queues or phases associated with each API; it is not a universal ordering guarantee between a zero-delay timer and `setImmediate()`.
+
+```mermaid
+---
+title: Node.js scheduling checkpoints and phases
+---
+flowchart TD
+  Callback["Current JavaScript operation completes"] --> NextTick["Drain process.nextTick queue"]
+  NextTick --> PromiseJobs["Drain promise microtasks"]
+  PromiseJobs --> Loop["Continue the event loop"]
+  Loop --> Timers["Timers phase: eligible setTimeout callbacks"]
+  Timers --> Poll["Poll phase: I/O callbacks and waiting"]
+  Poll --> Check["Check phase: setImmediate callbacks"]
+  Check --> Loop
+```
+
+The relative order of `setTimeout(fn, 0)` and `setImmediate(fn)` depends on the surrounding phase and timing, while `process.nextTick()` runs before the event loop advances.
+
 ## Difference between `setTimeout()`, `setImmediate()`, and `process.nextTick()`
 
 ### `setTimeout()`

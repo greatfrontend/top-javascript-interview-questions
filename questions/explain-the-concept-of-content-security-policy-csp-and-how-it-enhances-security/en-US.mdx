@@ -12,6 +12,26 @@ Content-Security-Policy: default-src 'self'; script-src 'nonce-r4nd0m'; object-s
 
 ---
 
+## Browser-enforced resource policy
+
+The server sends a policy with the document, and the browser checks relevant loads and execution against its directives.
+
+```mermaid
+---
+title: Content Security Policy enforcement
+---
+flowchart TD
+  Server["Server response"] --> Header["Content-Security-Policy header"]
+  Header --> Browser["Browser installs policy for the document"]
+  Browser --> Attempt["Script, style, frame, image, or connection attempt"]
+  Attempt --> Match{"Allowed by the applicable directive?"}
+  Match -->|"Yes"| Allow["Load or execute"]
+  Match -->|"No"| Block["Block the attempt"]
+  Block --> Report["Optionally send a violation report"]
+```
+
+Use nonces or hashes for controlled scripts and start with a report-only rollout when appropriate; CSP limits exploit impact but does not repair the underlying injection bug.
+
 ## What is Content Security Policy (CSP)?
 
 Content Security Policy (CSP) lets a site constrain browser behavior with an allowlist and other directives. It can reduce the impact of an injection flaw, report violations, prevent framing, and restrict outbound connections. It complements rather than replaces safe output handling.

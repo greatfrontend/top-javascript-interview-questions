@@ -20,6 +20,28 @@ Here's a table summarizing the 4 ways of loading `<script>`s in an HTML document
 
 ---
 
+## Loading and execution timing
+
+Both attributes allow fetching alongside HTML parsing, but `async` executes as soon as it is ready while `defer` waits for parsing and preserves document order.
+
+```mermaid
+---
+title: async and defer script timing
+---
+flowchart LR
+  Parse["HTML parser starts"] --> Discover["Discover script elements"]
+  Discover --> AsyncFetch["Fetch async scripts in parallel"]
+  Discover --> DeferFetch["Fetch defer scripts in parallel"]
+  Parse --> Complete["HTML parsing completes"]
+  AsyncFetch --> AsyncReady["Each async script executes when ready"]
+  AsyncReady --> AsyncOrder["Execution order is not guaranteed"]
+  Complete --> DeferRun["Execute defer scripts in document order"]
+  DeferFetch --> DeferRun
+  DeferRun --> DCL["DOMContentLoaded"]
+```
+
+An `async` script can execute before or after parsing completes and does not delay `DOMContentLoaded` once that event is otherwise ready.
+
 ## What `<script>` tags are for
 
 `<script>` tags are used to include JavaScript on a web page. The `async` and `defer` attributes are used to change how/when the loading and execution of the script happens.
@@ -49,8 +71,6 @@ Use `<script>` for critical scripts that the page relies on to render properly.
   </body>
 </html>
 ```
-
-{/* TODO: Add CSB examples for blocking scripts */}
 
 ## `<script async>`
 
@@ -159,8 +179,6 @@ It also helps to know what the tools you use actually generate.
 - `defer` has no effect on inline scripts, and `async` has no effect on inline classic scripts. `async` can affect an inline module script because its dependency graph still has to be fetched.
 - `<script>`s with `defer` or `async` that contain `document.write()` will be ignored with a message like "A call to `document.write()` from an asynchronously-loaded external script was ignored".
 - Even though `async` and `defer` help to make script downloading asynchronous, the scripts are still eventually executed on the main thread. If these scripts are computationally intensive, it can result in laggy/frozen UI. [Partytown](https://partytown.qwik.dev/) is a library that helps relocate script executions into a [web worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) and off the [main thread](https://developer.mozilla.org/en-US/docs/Glossary/Main_thread), which is great for third-party scripts where you do not have control over the code.
-
-{/* TODO: Add image https://media.licdn.com/dms/image/D5612AQEYCnsZ1f9GFQ/article-cover_image-shrink_600_2000/0/1699370054733?e=2147483647&v=beta&t=MeKuUXk5QMblVoausf5p3swTkBCICOHoRsijQqMfxZE */}
 
 ## Further reading
 

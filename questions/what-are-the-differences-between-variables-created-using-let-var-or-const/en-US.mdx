@@ -16,6 +16,27 @@ In JavaScript, `let`, `var`, and `const` are all keywords used to declare variab
 
 ---
 
+## Scope and initialization at a glance
+
+The important difference is not whether a declaration is “moved”, but when its binding is created, initialized, and allowed to change.
+
+```mermaid
+---
+title: var, let, and const binding lifecycle
+---
+flowchart TD
+  Enter["Enter the declaration's scope"] --> Var["var binding is initialized to undefined"]
+  Enter --> Lexical["let and const bindings are uninitialized"]
+  Var --> VarDeclaration["Declaration executes and assigns an initializer, if present"]
+  Lexical --> TDZ["Read before declaration throws ReferenceError"]
+  TDZ --> LexicalDeclaration["Declaration executes and initializes the binding"]
+  LexicalDeclaration --> Reassign{"Reassignment attempted?"}
+  Reassign -->|"let"| Allowed["Binding can be reassigned"]
+  Reassign -->|"const"| Error["Reassignment throws TypeError"]
+```
+
+`const` prevents rebinding; it does not make an object value immutable.
+
 ## Differences in behavior
 
 Let's look at the difference in behavior between `var`, `let`, and `const`.
@@ -62,7 +83,7 @@ console.log(qux); // ReferenceError: qux is not defined
 
 `var` and `let` variables can be initialized without a value but `const` declarations must be initialized.
 
-```js live
+```js
 var foo; // Ok
 let bar; // Ok
 const baz; // SyntaxError: Missing initializer in const declaration
@@ -72,7 +93,7 @@ const baz; // SyntaxError: Missing initializer in const declaration
 
 Redeclaring a variable with `var` will not throw an error, but `let` and `const` will.
 
-```js live
+```js
 var foo = 1;
 var foo = 2; // Ok
 console.log(foo); // Should print 2, but SyntaxError from baz prevents the code executing.

@@ -12,7 +12,7 @@ Property flags are used to specify the behavior of a property on an object. Here
 
 - `writable`: Specifies whether the property can be written to.
 - `enumerable`: Specifies whether the property is enumerable.
-- `configurable`: Specifies whether the property can be deleted or its attributes changed.
+- `configurable`: Controls whether the property can be deleted and whether most parts of its descriptor can be reconfigured.
 
 **Property descriptors**
 
@@ -22,10 +22,29 @@ The use cases of property descriptors are as follows:
 
 - Making a property non-writable by setting `writable: false` to ensure data consistency.
 - Hiding a property from enumeration by setting `enumerable: false`.
-- Preventing property deletion and modification by setting `configurable: false`.
-- Freezing or sealing objects to prevent modifications globally.
+- Preventing property deletion and most descriptor changes by setting `configurable: false`. A writable data property's value can still change, and `writable` can still change from `true` to `false`.
+- Applying descriptor restrictions to every existing own property with `Object.seal()` or `Object.freeze()`. Both are shallow, and sealing still permits writes to writable data properties.
 
 ---
+
+## Descriptor families
+
+Every own property has a descriptor, but a descriptor is either data-oriented or accessor-oriented; it cannot be both.
+
+```mermaid
+---
+title: JavaScript property descriptor fields
+---
+flowchart TD
+  Descriptor["Property descriptor"] --> Common["Common flags"]
+  Common --> Enumerable["enumerable"]
+  Common --> Configurable["configurable"]
+  Descriptor --> Kind{"Descriptor kind"}
+  Kind -->|"Data"| Data["value and writable"]
+  Kind -->|"Accessor"| Accessor["get and set"]
+```
+
+`configurable: false` sharply limits later redefinition, while `enumerable` controls visibility in operations such as `Object.keys()` and object spread.
 
 ## JavaScript object property flags and descriptors
 
@@ -37,7 +56,7 @@ Property flags are used to specify the behavior of a property. They are set usin
 
 - `writable`: Specifies whether the property can be written to.
 - `enumerable`: Specifies whether the property is enumerable.
-- `configurable`: Specifies whether the property can be deleted or its attributes changed.
+- `configurable`: Controls whether the property can be deleted and whether most parts of its descriptor can be reconfigured.
 
 For properties created through normal assignment (e.g. `obj.name = 'John'`), all three flags default to `true`. However, when a property is created via `Object.defineProperty()`, any flag you omit defaults to `false`.
 
@@ -101,7 +120,7 @@ for (const prop in obj1) {
 
 ### `configurable` flag
 
-The `configurable` flag specifies whether a property can be deleted or its attributes changed. When `configurable` is `false`, trying to delete or change the property fails silently in non-strict mode, and it throws a `TypeError` in strict mode.
+The `configurable` flag controls deletion and descriptor reconfiguration. When it is `false`, deletion and forbidden reconfiguration fail silently in non-strict mode or throw `TypeError` in strict mode. For a data property, `configurable: false` does not by itself prevent assignment while `writable` is `true`, and `writable` may still be changed once from `true` to `false`.
 
 ```js live
 const obj = {};
@@ -117,7 +136,7 @@ console.log(obj.name); // Output: John Doe (not deleted)
 
 ## `Object.seal()`
 
-The `Object.seal()` method in JavaScript effectively prevents the addition or removal of properties from the object, while still allowing the modification of existing property values. It also makes all properties non-configurable, meaning their descriptors (like `writable`, `enumerable`, and `configurable`) cannot be changed.
+The `Object.seal()` method prevents properties from being added or removed and makes every existing own property non-configurable. Existing data-property values can still change while `writable` is `true`, and a writable property may still be made non-writable. Other descriptor reconfiguration, such as changing `enumerable` or converting between data and accessor properties, is not allowed.
 
 ## Further reading
 

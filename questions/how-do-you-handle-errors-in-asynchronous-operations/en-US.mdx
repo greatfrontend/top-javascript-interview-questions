@@ -36,6 +36,27 @@ fetch('https://api.example.com/data') // This request will fail (example domain)
 
 ---
 
+## Match the error channel
+
+Error handling must follow the abstraction that reports completion: promise rejections and callback error arguments travel through different channels.
+
+```mermaid
+---
+title: Asynchronous error channels
+---
+flowchart TD
+  Failure["Asynchronous operation fails"] --> Contract{"Completion contract"}
+  Contract -->|"Promise"| Rejection["Reject the promise"]
+  Rejection --> Await["Catch around await"]
+  Rejection --> Catch["Attach a catch rejection handler"]
+  Contract -->|"Error-first callback"| ErrorArg["Invoke callback with an error"]
+  ErrorArg --> Branch["Check the error argument before using the result"]
+  Rejection --> Missing["No rejection handler"]
+  Missing --> Unhandled["Unhandled rejection reporting"]
+```
+
+A `try...catch` around code that merely starts callback-based work cannot catch an error thrown later by that callback.
+
 ## Using `try...catch` with `async/await`
 
 ### Basic usage

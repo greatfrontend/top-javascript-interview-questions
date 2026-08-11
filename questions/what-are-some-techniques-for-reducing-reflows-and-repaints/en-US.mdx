@@ -8,6 +8,25 @@ Measure rendering work first. Keep the DOM and affected layout area small, batch
 
 ---
 
+## Browser rendering work
+
+Different changes enter the rendering pipeline at different stages, so avoiding layout-triggering work can save more than merely reducing paint.
+
+```mermaid
+---
+title: Simplified browser rendering pipeline
+---
+flowchart LR
+  Change["DOM, style, or animation change"] --> Style["Recalculate styles"]
+  Style --> Layout["Layout or reflow"]
+  Layout --> Paint["Paint pixels into layers"]
+  Paint --> Composite["Composite layers"]
+  Transform["Composite-only transform or opacity change"] --> Composite
+  Color["Paint-only visual change"] --> Paint
+```
+
+The exact stages depend on the property and browser; measure with performance tools instead of assuming every DOM change causes a full pipeline.
+
 ## Techniques for reducing reflows and repaints
 
 ### Minimize DOM manipulations

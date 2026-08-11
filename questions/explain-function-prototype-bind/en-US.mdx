@@ -14,6 +14,25 @@ The `bind` method is particularly useful in scenarios where you need to ensure t
 
 ---
 
+## What `bind()` creates
+
+`bind()` returns a wrapper that stores a target function, a bound receiver, and any leading arguments.
+
+```mermaid
+---
+title: Bound function invocation
+---
+flowchart LR
+  Target["Original function"] --> Bind["bind(boundThis, arg1)"]
+  Receiver["Bound this value"] --> Bind
+  Preset["Preset arguments"] --> Bind
+  Bind --> Bound["New bound function"]
+  Later["Later call arguments"] --> Bound
+  Bound --> Invoke["Invoke target with bound receiver and concatenated arguments"]
+```
+
+Calling `bind()` does not run the target. If the bound function is later used with `new`, constructor semantics ignore the stored receiver but retain preset arguments.
+
 ## `Function.prototype.bind`
 
 `Function.prototype.bind` allows you to create a new function with a specific `this` context and, optionally, preset arguments. `bind()` is most useful for preserving the value of `this` in methods of classes that you want to pass into other functions.

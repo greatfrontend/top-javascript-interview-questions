@@ -40,6 +40,33 @@ fetch('https://jsonplaceholder.typicode.com/posts', {
 
 ---
 
+## Fetch completion model
+
+`fetch()` has two asynchronous stages: obtaining a response and, usually, consuming its body.
+
+```mermaid
+---
+title: Fetch request and response handling
+---
+sequenceDiagram
+  participant App
+  participant Fetch as Fetch API
+  participant Server
+  App->>Fetch: fetch(url, options)
+  Fetch->>Server: HTTP request
+  alt Network or CORS failure
+    Fetch-->>App: Reject promise
+  else HTTP response, including 4xx or 5xx
+    Server-->>Fetch: Status, headers, and body stream
+    Fetch-->>App: Fulfill with Response
+    App->>App: Check response.ok or status
+    App->>Fetch: Read json(), text(), or stream
+    Fetch-->>App: Fulfill or reject body-read promise
+  end
+```
+
+`fetch()` does not reject merely because the server returns an HTTP error status, so status handling must be explicit.
+
 ## Making an HTTP request using the Fetch API
 
 ### Basic GET request

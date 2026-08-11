@@ -22,6 +22,25 @@ console.log(factorial(4)); // Output: 24
 
 ---
 
+## Recursive calls and returns
+
+Each recursive call adds a stack frame until a base case stops the descent; results then return through the frames in reverse order.
+
+```mermaid
+---
+title: Recursive factorial call stack
+---
+flowchart TD
+  A["factorial(3)"] --> B["factorial(2)"]
+  B --> C["factorial(1)"]
+  C --> Base["Base case returns 1"]
+  Base --> CReturn["factorial(1) returns 1"]
+  CReturn --> BReturn["factorial(2) returns 2 × 1"]
+  BReturn --> AReturn["factorial(3) returns 3 × 2"]
+```
+
+A missing or unreachable base case keeps adding frames until the runtime throws a stack-overflow error.
+
 ## What is recursion and how is it used in JavaScript?
 
 ### Definition of recursion

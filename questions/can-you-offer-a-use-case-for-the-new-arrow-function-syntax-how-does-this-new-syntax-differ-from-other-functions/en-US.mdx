@@ -5,7 +5,7 @@ subtitle: How does this new syntax differ from other functions?
 
 ## TL;DR
 
-Arrow functions provide a concise syntax for writing functions in JavaScript. They are particularly useful for maintaining the `this` context within methods and callbacks. For example, in an event handler or array method like `map`, arrow functions can simplify the code and avoid issues with `this` binding.
+Arrow functions provide concise syntax and capture `this` and `arguments` from their surrounding scope. They work well for array transformations and for callbacks created inside a method or constructor that need the surrounding receiver. An arrow used directly as an object method does **not** receive the object as `this`; use a regular method when the caller's receiver should determine `this`. Arrow functions also cannot be called with `new`, do not have a `prototype`, and cannot be generators.
 
 ```js live
 const numbers = [1, 2, 3];
@@ -14,6 +14,27 @@ console.log(doubled); // [2, 4, 6]
 ```
 
 ---
+
+## How `this` is selected
+
+The key semantic distinction is that an arrow function closes over `this`, while an ordinary function receives `this` from how it is invoked.
+
+```mermaid
+---
+title: this binding in arrow and ordinary functions
+---
+flowchart TD
+  Define["Create a function"] --> Kind{"Arrow function?"}
+  Kind -->|"Yes"| Lexical["No own this binding"]
+  Lexical --> Outer["Resolve this from the enclosing scope"]
+  Kind -->|"No"| Call["Determine the call form"]
+  Call --> Method["Method call uses the receiver"]
+  Call --> Explicit["call, apply, or bind supplies this"]
+  Call --> Constructor["new supplies the new instance"]
+  Call --> Plain["Plain call uses default or undefined in strict mode"]
+```
+
+That lexical behavior makes arrows useful for callbacks that should retain an enclosing method's receiver, but unsuitable as constructors or dynamically bound methods.
 
 ## Use case for the new arrow => function syntax
 
@@ -36,7 +57,7 @@ console.log(anotherAdd(2, 3)); // Output: 5
 
 ### Lexical `this` binding
 
-Arrow functions do not have their own `this` context. Instead, they inherit `this` from the surrounding scope. This is particularly useful in methods and callbacks where the `this` context can be tricky.
+Arrow functions do not have their own `this` context. Instead, they capture `this` from the surrounding scope. This is particularly useful for a callback created inside a regular method or constructor. It is not a general replacement for method syntax: an arrow assigned directly as an object property does not receive that object as its receiver.
 
 ```js live
 function Timer() {
@@ -75,7 +96,7 @@ console.log(doubled); // [2, 4, 6, 8, 10]
 
 ### Event handlers
 
-Arrow functions can be used in event handlers to maintain the `this` context of the class or object.
+An arrow callback created inside a class constructor or method can retain that surrounding instance's `this` value.
 
 ```js live
 class Button {
@@ -83,18 +104,29 @@ class Button {
     this.count = 0;
     this.button = document.createElement('button');
     this.button.innerText = 'Click me';
-    this.button.addEventListener('click', () => {
-      this.count++;
-      console.log('count:', this.count);
-    });
+    this.button.addEventListener(
+      'click',
+      () => {
+        this.count++;
+        console.log('count:', this.count);
+      },
+      { once: true },
+    );
     document.body.appendChild(this.button);
   }
 }
 
 const myButton = new Button();
 myButton.button.click(); // count: 1
-myButton.button.click(); // count: 2
+myButton.button.remove();
 ```
+
+### Other differences from regular functions
+
+- Arrow functions capture `arguments`, `super`, and `new.target` from an enclosing non-arrow function instead of defining their own bindings.
+- They are not constructors, so `new arrowFunction()` throws `TypeError`, and they do not have a `prototype` property.
+- They cannot be generators and therefore cannot use `yield` in their bodies.
+- A single expression can be returned implicitly; an object-literal result must be wrapped in parentheses, as in `items.map((item) => ({ id: item.id }))`.
 
 ## Further reading
 

@@ -24,6 +24,26 @@ In this example, `innerFunction` can access `outerVariable` because of lexical s
 
 ---
 
+## Name lookup follows source nesting
+
+Lexical scope is determined where functions and blocks are written, so lookup walks outward through those enclosing environments.
+
+```mermaid
+---
+title: Lexical environment lookup
+---
+flowchart TD
+  Use["Inner function reads name"] --> Inner{"Binding in inner scope?"}
+  Inner -->|"Yes"| InnerValue["Use inner binding"]
+  Inner -->|"No"| Outer{"Binding in enclosing function?"}
+  Outer -->|"Yes"| OuterValue["Use enclosing binding"]
+  Outer -->|"No"| Global{"Binding in global scope?"}
+  Global -->|"Yes"| GlobalValue["Use global binding"]
+  Global -->|"No"| Error["Throw ReferenceError"]
+```
+
+The call site's scope is not searched, which is why passing a function elsewhere does not change which outer variables it captures.
+
 ## Lexical scoping
 
 Lexical scoping is a fundamental concept in JavaScript and many other programming languages. It determines how variable names are resolved in nested functions. The scope of a variable is defined by its position in the source code, and nested functions have access to variables declared in their outer scope.

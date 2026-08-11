@@ -8,6 +8,29 @@ In a browser, events go through three phases: capturing, target, and bubbling. D
 
 ---
 
+## Propagation path
+
+An event travels down the ancestor path during capture, reaches the target, and—when the event bubbles—travels back up that path.
+
+```mermaid
+---
+title: Browser event propagation phases
+---
+sequenceDiagram
+  participant W as Window
+  participant D as Document
+  participant P as Parent element
+  participant T as Target element
+  W->>D: Capturing phase
+  D->>P: Capturing phase
+  P->>T: Reach target
+  T-->>P: Bubbling phase
+  P-->>D: Bubbling phase
+  D-->>W: Bubbling phase
+```
+
+Capture listeners run on the downward path and ordinary listeners run on the upward path; listeners registered on the target run at the target phase.
+
 ## Event phases in a browser
 
 ### Capturing phase

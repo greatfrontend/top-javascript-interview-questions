@@ -63,6 +63,27 @@ Generators are useful for creating iterators on demand, especially for infinite 
 
 ---
 
+## Generator-backed iteration lifecycle
+
+A generator implements the iterator protocol by pausing at each `yield` and resuming only when its consumer asks for another result.
+
+```mermaid
+---
+title: Generator and iterator lifecycle
+---
+stateDiagram-v2
+  [*] --> SuspendedStart
+  SuspendedStart --> Executing: next()
+  Executing --> SuspendedYield: yield value
+  SuspendedYield --> Executing: next(input)
+  Executing --> Completed: return or reach the end
+  SuspendedStart --> Completed: return()
+  SuspendedYield --> Completed: return()
+  Completed --> Completed: next() returns done true
+```
+
+Every `next()` call returns an iterator result with `value` and `done`; once completed, the iterator cannot resume normal execution.
+
 ## Iterators
 
 Iterators are objects that define a sequence and provide a `next()` method to access the next value in the sequence. They are used to iterate over data structures like `arrays`, `strings`, and custom `objects`. The key use cases of iterators include:

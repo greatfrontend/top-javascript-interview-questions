@@ -42,6 +42,30 @@ lightOnCommand.undo(); // Light is off
 
 ---
 
+## Encapsulating a request as an object
+
+A command separates the code that requests an action from the receiver that knows how to perform it.
+
+```mermaid
+---
+title: Command pattern execution and undo
+---
+sequenceDiagram
+  participant Client
+  participant Invoker
+  participant Command
+  participant Receiver
+  Client->>Command: Create with receiver and arguments
+  Client->>Invoker: Submit command
+  Invoker->>Command: execute()
+  Command->>Receiver: Perform action
+  Invoker->>Invoker: Store command in history
+  Invoker->>Command: undo()
+  Command->>Receiver: Reverse action when supported
+```
+
+Because the request is a value, an invoker can queue, log, retry, compose, or undo commands without understanding receiver details.
+
 ## What is the Command pattern and how is it used?
 
 ### Definition

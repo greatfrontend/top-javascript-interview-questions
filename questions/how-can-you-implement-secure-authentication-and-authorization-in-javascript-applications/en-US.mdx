@@ -8,6 +8,28 @@ Use a proven identity provider or framework rather than inventing an authenticat
 
 ---
 
+## Authenticate identity, then authorize every action
+
+Authentication establishes a principal; authorization separately evaluates whether that principal may perform this action on this resource.
+
+```mermaid
+---
+title: Authentication and authorization request flow
+---
+flowchart TD
+  Request["HTTPS request"] --> Credential["Validate session or access token"]
+  Credential --> Valid{"Credential valid?"}
+  Valid -->|"No"| Unauthenticated["Reject or require authentication"]
+  Valid -->|"Yes"| Principal["Establish trusted principal"]
+  Principal --> Policy["Evaluate action, resource, ownership, and context"]
+  Policy --> Allowed{"Explicitly authorized?"}
+  Allowed -->|"No"| Forbidden["Deny by default"]
+  Allowed -->|"Yes"| Handler["Perform the requested operation"]
+  Handler --> Audit["Record security-relevant outcome"]
+```
+
+Client-side route guards are user-interface behavior, not enforcement; the trusted server must validate authorization for every protected request.
+
 ## How can you implement secure authentication and authorization in JavaScript applications?
 
 ### Use HTTPS

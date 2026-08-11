@@ -23,6 +23,26 @@ Garbage collection does not prevent memory leaks: a listener, timer, closure, DO
 
 ---
 
+## Reachability from roots
+
+Modern JavaScript garbage collectors determine liveness from roots rather than by counting references, so unreachable cycles can be reclaimed.
+
+```mermaid
+---
+title: Reachability-based garbage collection
+---
+flowchart TD
+  Roots["Roots such as active stacks and globals"] --> Mark["Trace strong references"]
+  Mark --> Reachable["Mark reachable objects as live"]
+  Heap["Other heap objects"] --> Reachability{"Reachable from a root?"}
+  Reachability -->|"Yes"| Keep["Retain object"]
+  Reachability -->|"No"| Collect["Reclaim object eventually"]
+  Cycle["Unreachable object cycle"] --> Collect
+  Reachable --> Keep
+```
+
+Collection timing is intentionally nondeterministic, so resource cleanup should use explicit APIs rather than waiting for garbage collection.
+
 ## Garbage collection in JavaScript
 
 Garbage collection in JavaScript is an automatic process managed by the JavaScript engine, designed to reclaim memory occupied by objects that are no longer needed. This helps prevent memory leaks and optimizes the use of available memory. Here's an overview of how garbage collection works in JavaScript:

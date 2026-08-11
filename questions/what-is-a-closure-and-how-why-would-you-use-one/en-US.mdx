@@ -35,6 +35,25 @@ Key points to remember:
 
 ---
 
+## How a closure retains state
+
+The function object keeps a reference to the lexical environment where it was created, even after the outer call returns.
+
+```mermaid
+---
+title: Closure retaining a lexical environment
+---
+flowchart LR
+  Outer["Call outer function"] --> Environment["Create lexical environment with count"]
+  Environment --> Inner["Create inner function"]
+  Inner -->|"captures"| Environment
+  Outer --> Return["Return inner function"]
+  Return --> Closure["Caller retains returned closure"]
+  Closure -->|"later call reads and updates"| Environment
+```
+
+The retained environment, not a snapshot of each value, lets multiple calls observe updated private state.
+
 ## Understanding JavaScript closures
 
 In JavaScript, a closure is a function that captures the lexical scope in which it was declared, allowing it to access and manipulate variables from an outer scope even after that scope has been closed.

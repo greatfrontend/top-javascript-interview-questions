@@ -34,6 +34,24 @@ dog.speak(); // Rex barks.
 
 ---
 
+## The two chains created by `extends`
+
+ES2015 class inheritance links both instance methods and static members through separate prototype relationships.
+
+```mermaid
+---
+title: Instance and constructor inheritance with extends
+---
+flowchart LR
+  DogInstance["new Dog()"] -->|"[[Prototype]]"| DogProto["Dog.prototype"]
+  DogProto -->|"[[Prototype]]"| AnimalProto["Animal.prototype"]
+  AnimalProto -->|"[[Prototype]]"| ObjectProto["Object.prototype"]
+  DogCtor["Dog constructor"] -->|"[[Prototype]]"| AnimalCtor["Animal constructor"]
+  AnimalCtor -->|"[[Prototype]]"| FunctionProto["Function.prototype"]
+```
+
+Instance method lookup uses the lower prototype chain, while inherited static methods use the constructor chain.
+
 ## Inheritance in ES2015 classes
 
 ### Basic concept

@@ -8,6 +8,25 @@ A **stub** supplies controlled behavior, such as making a payment client return 
 
 ---
 
+## Test doubles at a dependency boundary
+
+Both replace a real collaborator, but a stub primarily supplies controlled answers while a mock also asserts how the collaborator was used.
+
+```mermaid
+---
+title: Stubs and mocks around a system under test
+---
+flowchart LR
+  Test["Test"] --> SUT["System under test"]
+  SUT --> Port["Dependency boundary"]
+  Port --> Double{"Test double"}
+  Double -->|"Stub"| Canned["Return configured values or errors"]
+  Double -->|"Mock"| Record["Record calls and verify expectations"]
+  Real["Real dependency"] -. "replaced during the test" .-> Port
+```
+
+Terminology varies among libraries, so the valuable distinction is whether the double controls indirect input, verifies interaction, or does both.
+
 ## Stubs control indirect input
 
 This service depends on a payment client. A stub makes the failure path deterministic without charging a card:

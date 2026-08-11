@@ -8,6 +8,24 @@ Closures are not inherently leaks or performance problems. The main risk is acci
 
 ---
 
+## Accidental retention
+
+A closure can keep much more data alive than expected when a long-lived listener, timer, or cache retains the closure.
+
+```mermaid
+---
+title: Closure-related memory retention
+---
+flowchart LR
+  Root["Long-lived event target or cache"] --> Callback["Registered callback"]
+  Callback --> Closure["Closure environment"]
+  Closure --> Large["Large object captured from outer scope"]
+  Cleanup["Remove listener or cache entry"] -. "breaks root reference" .-> Callback
+  Large --> Collectible["Collectible only after no reachable path remains"]
+```
+
+The closure itself is not a leak; the leak is an unintended reachable path that outlives the useful work.
+
 ## Potential pitfalls of using closures
 
 ### Memory leaks

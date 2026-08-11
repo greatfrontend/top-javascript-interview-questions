@@ -38,6 +38,25 @@ context.executeStrategy('someData'); // Output: Algorithm A was run on someData
 
 ---
 
+## Swappable behavior behind one contract
+
+The context delegates one varying part of its work to a strategy selected by configuration or runtime conditions.
+
+```mermaid
+---
+title: Strategy pattern structure
+---
+flowchart LR
+  Client["Client"] --> Context["Context"]
+  Context --> Contract["Strategy contract"]
+  Contract --> A["Concrete strategy A"]
+  Contract --> B["Concrete strategy B"]
+  Contract --> C["Concrete strategy C"]
+  Selection["Runtime selection or dependency injection"] --> Context
+```
+
+The pattern is useful when the algorithms share a stable contract and should vary independently from the code that orchestrates them.
+
 ## The Strategy pattern
 
 ### Definition

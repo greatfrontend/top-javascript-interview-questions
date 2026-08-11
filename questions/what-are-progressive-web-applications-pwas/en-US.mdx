@@ -8,6 +8,30 @@ Progressive Web Applications (PWAs) are web applications enhanced with capabilit
 
 ---
 
+## PWA request path
+
+A service worker can mediate requests for a controlled page and combine cache and network responses according to an explicit strategy.
+
+```mermaid
+---
+title: Progressive Web App request handling
+---
+flowchart TD
+  Page["Installed or browser-hosted web app"] --> Request["Request a document or asset"]
+  Request --> Controlled{"Controlled by an active service worker?"}
+  Controlled -->|"No"| Network["Use the network normally"]
+  Controlled -->|"Yes"| Worker["Service worker fetch handler"]
+  Worker --> Strategy{"Chosen caching strategy"}
+  Strategy --> Cache["Read or update Cache Storage"]
+  Strategy --> Network
+  Cache --> Response["Return a response to the page"]
+  Network --> Response
+  Manifest["Web app manifest"] --> Install["Provides install metadata"]
+  HTTPS["Secure context"] --> Worker
+```
+
+Offline behavior is not automatic: it depends on what the service worker caches and how it handles misses, updates, and failures.
+
 ## What are Progressive Web Applications (PWAs)?
 
 ### Definition

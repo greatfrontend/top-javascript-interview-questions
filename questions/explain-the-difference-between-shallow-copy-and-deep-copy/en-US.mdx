@@ -22,6 +22,24 @@ console.log(obj2.b.c); // 2 — original unchanged
 
 ---
 
+## Object identity after copying
+
+The visible top-level properties can look identical while nested references reveal whether a copy is shallow or deep.
+
+```mermaid
+---
+title: Nested identity in shallow and deep copies
+---
+flowchart TD
+  Source["Source object"] -->|"shallow copy"| Shallow["Shallow copy"]
+  Source -->|"deep copy"| Deep["Deep copy"]
+  Source --> OriginalNested["Original nested object"]
+  Shallow --> OriginalNested
+  Deep --> CopiedNested["Distinct nested object"]
+```
+
+Mutating the shared nested object is observable through both the source and shallow copy; a true deep copy owns a separate nested graph.
+
 ## Difference between shallow copy and deep copy
 
 ### Shallow copy

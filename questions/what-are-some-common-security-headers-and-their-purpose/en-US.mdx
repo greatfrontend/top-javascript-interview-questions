@@ -6,7 +6,7 @@ title: What are some common security headers and their purpose?
 
 Security headers are HTTP response headers that help protect web applications from various attacks. Some common security headers include:
 
-- `Content-Security-Policy (CSP)`: Prevents cross-site scripting (XSS) and other code injection attacks by specifying allowed content sources.
+- `Content-Security-Policy (CSP)`: Helps mitigate cross-site scripting (XSS) and other code injection attacks by restricting allowed content sources. It is a defense-in-depth control, not a replacement for safe output handling.
 - `X-Content-Type-Options`: Prevents MIME type sniffing by instructing the browser to follow the declared `Content-Type`.
 - `Strict-Transport-Security (HSTS)`: Enforces secure (HTTPS) connections to the server.
 - `Content-Security-Policy: frame-ancestors ...`: Controls which sites may embed the page, helping prevent clickjacking. `X-Frame-Options` is a narrower legacy fallback.

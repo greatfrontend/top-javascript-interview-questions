@@ -8,6 +8,26 @@ The same-origin policy limits how code from one origin can interact with resourc
 
 ---
 
+## Comparing origins before a scripted read
+
+For ordinary web URLs, an origin is the tuple of scheme, host, and port; path differences do not create different origins.
+
+```mermaid
+---
+title: Same-origin policy decision for scripted reads
+---
+flowchart TD
+  Script["Script from origin A requests a resource from origin B"] --> Compare{"Same scheme, host, and port?"}
+  Compare -->|"Yes"| Same["Same-origin read is permitted"]
+  Compare -->|"No"| Cross["Cross-origin interaction"]
+  Cross --> CORS{"Response grants this origin access with CORS?"}
+  CORS -->|"Yes"| Read["Browser exposes the response to the script"]
+  CORS -->|"No"| Block["Browser blocks the script from reading the response"]
+  Cross --> Other["Some writes and embeddings follow separate rules"]
+```
+
+CORS relaxes selected cross-origin reads; it is not an authentication mechanism and does not disable the same-origin policy globally.
+
 ## What is the same-origin policy?
 
 The same-origin policy is a critical browser security boundary. It prevents a malicious site from reading sensitive data from another site using the victim's ambient credentials. It is not an XSS or CSRF defense by itself: XSS runs as the vulnerable site's origin, and cross-origin writes such as form submissions are one reason separate CSRF defenses are needed.

@@ -10,6 +10,26 @@ For indexable routes, return meaningful HTML and correct status codes, canonical
 
 ---
 
+## Search-friendly SPA delivery
+
+A crawler-friendly architecture gives each route a stable URL and meaningful HTML and metadata before relying on client-side navigation.
+
+```mermaid
+---
+title: SEO-friendly single-page application delivery
+---
+flowchart TD
+  URL["Request a route URL"] --> Render["Server render or serve pre-rendered route HTML"]
+  Render --> HTML["Return meaningful content, title, metadata, and links"]
+  HTML --> Consumer{"Consumer"}
+  Consumer -->|"Crawler"| Index["Discover and index route content"]
+  Consumer -->|"Browser"| Hydrate["Hydrate interactive application"]
+  Hydrate --> Navigate["Client-side navigation"]
+  Navigate --> Update["Update URL, content, title, and metadata per route"]
+```
+
+Client rendering can still enhance the page, but route discoverability should not depend on a crawler executing an empty application shell perfectly.
+
 ## What is a single page app?
 
 A SPA performs navigation and content updates on the client after the initial document load. That initial document can be a minimal client-rendered shell or fully rendered HTML that is later hydrated; the defining characteristic is client-side navigation, not an empty initial response.

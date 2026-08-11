@@ -10,6 +10,25 @@ Use a shared instance for genuinely process- or application-scoped infrastructur
 
 ---
 
+## One instance within an ownership boundary
+
+A singleton centralizes instance creation so every consumer in the same module or container receives the same object.
+
+```mermaid
+---
+title: Singleton instance ownership
+---
+flowchart TD
+  Owner["Module registry or dependency container"] --> Create{"Instance already created?"}
+  Create -->|"No"| Instance["Create and retain one instance"]
+  Create -->|"Yes"| Instance
+  Instance --> ConsumerA["Consumer A"]
+  Instance --> ConsumerB["Consumer B"]
+  Instance --> ConsumerC["Consumer C"]
+```
+
+“One” is scoped to the owner: separate realms, processes, module copies, or containers can each have their own instance.
+
 ## A module-scoped instance
 
 ```js
@@ -29,7 +48,8 @@ class MetricsRegistry {
 export const metrics = new MetricsRegistry();
 ```
 
-```js live
+```js
+// app.js
 import { metrics } from './metrics.js';
 
 metrics.increment('checkout.started');

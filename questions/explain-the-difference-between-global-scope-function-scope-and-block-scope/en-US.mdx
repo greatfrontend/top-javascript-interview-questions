@@ -23,6 +23,27 @@ myFunction();
 
 ---
 
+## Nested scope boundaries
+
+Inner scopes can read bindings from their enclosing scopes, but outer scopes cannot read bindings declared only inside an inner function or block.
+
+```mermaid
+---
+title: Global, function, and block scope nesting
+---
+flowchart TD
+  Global["Global scope"] --> Function["Function scope"]
+  Function --> Block["Block scope"]
+  Global --> GlobalBinding["global binding"]
+  Function --> FunctionBinding["var and function-local bindings"]
+  Block --> BlockBinding["let, const, and class bindings"]
+  Block -. "can resolve outward" .-> FunctionBinding
+  Block -. "can resolve outward" .-> GlobalBinding
+  Global -. "cannot resolve inward" .-> BlockBinding
+```
+
+`var` ignores ordinary block boundaries but remains scoped to its containing function; `let`, `const`, and class declarations are block-scoped.
+
 ## Global scope, function scope, and block scope
 
 ### Global scope

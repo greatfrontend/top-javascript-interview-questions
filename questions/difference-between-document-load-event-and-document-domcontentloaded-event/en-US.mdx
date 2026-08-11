@@ -6,7 +6,7 @@ title: Difference between document `load` event and document `DOMContentLoaded` 
 
 `DOMContentLoaded` fires after the HTML has been parsed and deferred and module scripts have executed. It does not directly wait for images, subframes, or stylesheets, although a blocking stylesheet can delay a script and therefore indirectly delay `DOMContentLoaded`. The window `load` event waits for the document and its dependent resources, apart from resources loaded lazily.
 
-```javascript
+```js
 document.addEventListener('DOMContentLoaded', function () {
   console.log('DOM fully loaded and parsed');
 });
@@ -18,13 +18,33 @@ window.addEventListener('load', function () {
 
 ---
 
+## Document readiness timeline
+
+`DOMContentLoaded` marks completion of DOM construction and deferred script execution; `load` waits longer for dependent resources such as images and stylesheets.
+
+```mermaid
+---
+title: DOMContentLoaded and load timing
+---
+flowchart LR
+  Response["HTML response"] --> Parse["Parse document"]
+  Parse --> Deferred["Run deferred and module scripts"]
+  Parse --> Resources["Load dependent resources"]
+  Deferred --> DOMReady["Fire DOMContentLoaded"]
+  DOMReady --> WindowReady["Document is ready for the load event"]
+  Resources --> WindowReady
+  WindowReady --> Load["Fire window load"]
+```
+
+A slow image can delay `load` without delaying `DOMContentLoaded`; asynchronous scripts have separate timing rules.
+
 ## Difference between document `load` event and document `DOMContentLoaded` event
 
 ### `DOMContentLoaded` event
 
 The `DOMContentLoaded` event fires after the initial HTML has been parsed and deferred and module scripts have run. It does not directly wait for images, subframes, or stylesheets. However, deferred scripts wait for blocking stylesheets, and `DOMContentLoaded` waits for those scripts, so stylesheets can delay it indirectly.
 
-```javascript
+```js
 document.addEventListener('DOMContentLoaded', function () {
   console.log('DOM fully loaded and parsed');
 });
@@ -34,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 The window `load` event fires when the document and its dependent resources, such as stylesheets, eagerly loaded images, scripts, and subframes, have finished loading. Lazily loaded resources do not hold it up. Use it only for work that actually requires those resources, such as reading intrinsic image dimensions.
 
-```javascript
+```js
 window.addEventListener('load', function () {
   console.log('Page fully loaded');
 });

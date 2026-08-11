@@ -21,6 +21,26 @@ window.addEventListener('message', (event) => {
 
 ---
 
+## Choose communication by origin
+
+Direct DOM access is available only when both documents satisfy the same-origin policy; `postMessage()` is the explicit cross-origin channel.
+
+```mermaid
+---
+title: iframe communication by origin
+---
+flowchart TD
+  Parent["Parent window and iframe"] --> Origin{"Same origin?"}
+  Origin -->|"Yes"| Direct["Direct window and DOM access is allowed"]
+  Origin -->|"No"| Message["Send a structured message with postMessage"]
+  Message --> Receive["Receiver handles the message event"]
+  Receive --> Validate{"Expected origin and source?"}
+  Validate -->|"Yes"| Use["Validate payload and process it"]
+  Validate -->|"No"| Ignore["Ignore the message"]
+```
+
+Always use a specific `targetOrigin` when sending sensitive data and verify both `event.origin` and, when possible, `event.source` when receiving.
+
 ## How do `<iframe>` on a page communicate?
 
 ### Using the `postMessage` API

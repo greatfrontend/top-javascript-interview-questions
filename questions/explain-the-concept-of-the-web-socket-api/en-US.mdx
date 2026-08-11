@@ -6,11 +6,10 @@ title: Explain the concept of the Web Socket API
 
 The WebSocket API provides a way to open a persistent connection between a client and a server, allowing for real-time, two-way communication. Unlike HTTP, which is request-response based, WebSocket enables full-duplex communication, meaning both the client and server can send and receive messages independently. This is particularly useful for applications like chat apps, live updates, and online gaming.
 
-The following example uses Postman's WebSocket echo service to demonstrate how web sockets work.
+The following non-live example uses a placeholder URL; replace it with a WebSocket endpoint you control.
 
-```js live
-// Postman's echo server that will echo back messages you send
-const socket = new WebSocket('wss://ws.postman-echo.com/raw');
+```js
+const socket = new WebSocket('wss://example.com/socket');
 
 // Event listener for when the connection is open
 socket.addEventListener('open', function (event) {
@@ -20,10 +19,32 @@ socket.addEventListener('open', function (event) {
 // Event listener for when a message is received from the server
 socket.addEventListener('message', function (event) {
   console.log('Message from server ', event.data);
+  socket.close(1000, 'Example complete');
 });
 ```
 
 ---
+
+## WebSocket connection lifecycle
+
+A WebSocket is stateful: messages can flow only after the opening handshake succeeds and before either peer finishes closing the connection.
+
+```mermaid
+---
+title: WebSocket ready-state lifecycle
+---
+stateDiagram-v2
+  [*] --> Connecting: new WebSocket(url)
+  Connecting --> Open: opening handshake succeeds
+  Connecting --> Closed: handshake fails
+  Open --> Open: send and receive messages
+  Open --> Closing: close initiated
+  Closing --> Closed: closing handshake or timeout
+  Open --> Closed: transport failure
+  Closed --> [*]
+```
+
+A closed WebSocket instance cannot reconnect; retry logic creates a new instance and should usually apply backoff.
 
 ## What is the WebSocket API?
 
@@ -44,11 +65,10 @@ The WebSocket API establishes a persistent, full-duplex communication channel be
 
 ### Example usage
 
-Here is a basic example of how to use the WebSocket API in JavaScript, using Postman's WebSocket Echo Service.
+Here is a basic non-live example. The endpoint is a placeholder because an executable example should not depend on an external service or leave a persistent connection open.
 
-```js live
-// Postman's echo server that will echo back messages you send
-const socket = new WebSocket('wss://ws.postman-echo.com/raw');
+```js
+const socket = new WebSocket('wss://example.com/socket');
 
 // Event listener for when the connection is open
 socket.addEventListener('open', function (event) {
@@ -59,6 +79,7 @@ socket.addEventListener('open', function (event) {
 // Event listener for when a message is received from the server
 socket.addEventListener('message', function (event) {
   console.log('Message from server ', event.data);
+  socket.close(1000, 'Example complete');
 });
 
 // Event listener for when the connection is closed

@@ -8,6 +8,27 @@ A module bundler builds a dependency graph and transforms application modules in
 
 ---
 
+## From entry point to deployable assets
+
+A bundler follows imports from one or more entry points, transforms the graph, and emits files shaped for the target runtime.
+
+```mermaid
+---
+title: Module bundling pipeline
+---
+flowchart LR
+  Entry["Application entry points"] --> Resolve["Resolve imported modules and assets"]
+  Resolve --> Graph["Build dependency graph"]
+  Graph --> Transform["Transform syntax and asset types"]
+  Transform --> Optimize["Tree-shake, split, and optimize"]
+  Optimize --> Chunks["Emit JavaScript chunks"]
+  Optimize --> Assets["Emit CSS and other assets"]
+  Chunks --> Browser["Deploy to target runtime"]
+  Assets --> Browser
+```
+
+The tradeoff is additional configuration and build complexity in exchange for compatibility, optimization, and coordinated asset output.
+
 ## Benefits of using a module bundler
 
 ### Dependency management

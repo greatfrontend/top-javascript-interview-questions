@@ -8,6 +8,29 @@ The History API lets an application add or replace same-origin session-history e
 
 ---
 
+## Updating and traversing session history
+
+`pushState()` and `replaceState()` change history without loading a new document, while user traversal notifies the application through `popstate`.
+
+```mermaid
+---
+title: History API navigation flow
+---
+sequenceDiagram
+  participant App
+  participant History as Session history
+  participant User
+  App->>History: pushState(stateB, "", "/b")
+  History->>History: Add entry B and make it current
+  App->>History: replaceState(stateB2, "", "/b?tab=2")
+  History->>History: Replace current entry without adding one
+  User->>History: Back or forward
+  History-->>App: popstate with activated entry state
+  App->>App: Render UI for the current URL and state
+```
+
+Calling `pushState()` or `replaceState()` does not itself fire `popstate`; traversal does.
+
 ## Using the `window.history` API
 
 The `window.history` API provides methods to interact with the browser's history stack. This can be useful for single-page applications (SPAs) where you want to manage the URL and browser history without causing a full page reload.

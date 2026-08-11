@@ -8,6 +8,25 @@ Attributes are defined in the HTML and provide initial values for properties. Pr
 
 ---
 
+## Markup state and live object state
+
+Attributes belong to serialized markup, while properties belong to the live DOM object. Some named pairs reflect changes, but reflection is defined per property.
+
+```mermaid
+---
+title: HTML attributes and DOM properties
+---
+flowchart LR
+  Markup["HTML markup attribute"] --> Parser["HTML parser"]
+  Parser --> Attribute["Element attribute value, usually a string"]
+  Parser --> Property["Initial DOM property state"]
+  Attribute <-->|"only for reflected pairs"| Property
+  Script["JavaScript interaction"] --> Property
+  Property --> Live["Current element behavior or state"]
+```
+
+For example, an input's `value` attribute can remain the default value while its `value` property tracks current user-edited state.
+
 ## Difference between an "attribute" and a "property" in the DOM
 
 ### Attributes
@@ -28,7 +47,7 @@ Properties are part of the DOM and represent the current state of an element. Th
 
 #### Example
 
-```javascript
+```js
 const inputElement = document.querySelector('input');
 console.log(inputElement.value); // Logs the current value of the input element
 inputElement.value = 'new value'; // Changes the current value of the input element
@@ -48,7 +67,7 @@ In this example, `value` is a property of the `inputElement` object.
 <input id="myInput" type="text" value="initial value" />
 ```
 
-```javascript
+```js
 const inputElement = document.getElementById('myInput');
 
 // Accessing attribute

@@ -33,6 +33,27 @@ console.log(counter.count); // undefined
 
 ---
 
+## Shared private state
+
+A factory can return methods that share access to one lexical binding without exposing that binding as an object property.
+
+```mermaid
+---
+title: Private state shared by closure methods
+---
+flowchart LR
+  Factory["Call createCounter()"] --> Private["Lexical binding: count"]
+  Factory --> Increment["Return increment method"]
+  Factory --> Read["Return value method"]
+  Increment -->|"captures and updates"| Private
+  Read -->|"captures and reads"| Private
+  Consumer["Consumer code"] --> Increment
+  Consumer --> Read
+  Consumer -. "cannot access directly" .-> Private
+```
+
+Privacy comes from reachability: consumers receive the methods, but no direct reference to the lexical environment or its `count` binding.
+
 ## How can closures be used to create private variables?
 
 ### Understanding closures

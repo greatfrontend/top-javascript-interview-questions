@@ -8,6 +8,27 @@ The DOM, or Document Object Model, is a programming interface for web documents.
 
 ---
 
+## A document as a node tree
+
+The DOM represents a parsed document as connected node objects; elements, text, and comments are node types within that tree.
+
+```mermaid
+---
+title: Simplified DOM tree
+---
+flowchart TD
+  Document["Document"] --> Html["html element"]
+  Html --> Head["head element"]
+  Html --> Body["body element"]
+  Head --> Title["title element"]
+  Title --> TitleText["text node"]
+  Body --> Main["main element"]
+  Main --> Heading["h1 element"]
+  Heading --> HeadingText["text node"]
+```
+
+DOM APIs navigate and mutate these node relationships; the tree is an in-memory object model, not the original HTML source text.
+
 ## What is the DOM and how is it structured?
 
 ### Definition

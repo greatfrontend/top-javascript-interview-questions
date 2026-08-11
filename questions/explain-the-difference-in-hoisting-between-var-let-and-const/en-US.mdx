@@ -4,15 +4,37 @@ title: Explain the difference in hoisting between `var`, `let`, and `const`
 
 ## TL;DR
 
-`var` declarations are hoisted to the top of their scope and initialized with `undefined`, allowing them to be used before their declaration. `let` and `const` declarations are also hoisted but are not initialized, resulting in a `ReferenceError` if accessed before their declaration. `const` additionally requires an initial value at the time of declaration.
+Before a scope's statements run, JavaScript creates its `var`, `let`, and `const` bindings; it does not move source text. A `var` binding is initialized to `undefined`, so it can be read before its declaration appears. A `let` or `const` binding remains uninitialized in the temporal dead zone (TDZ), so reading it before evaluation reaches the declaration throws `ReferenceError`. `const` also requires an initializer and cannot be reassigned.
 
 ---
+
+## Early access across declaration kinds
+
+All three declarations create bindings before their declaration statement runs, but their scope and initialization rules differ.
+
+```mermaid
+---
+title: Early access to var, let, and const
+---
+flowchart LR
+  Start["Enter scope"] --> Var["var: function or global scope"]
+  Start --> Let["let: block scope"]
+  Start --> Const["const: block scope"]
+  Var --> VarReady["Initialized to undefined"]
+  Let --> LetTDZ["Uninitialized until declaration"]
+  Const --> ConstTDZ["Uninitialized until declaration"]
+  VarReady --> VarRead["Early read returns undefined"]
+  LetTDZ --> LetRead["Early read throws ReferenceError"]
+  ConstTDZ --> ConstRead["Early read throws ReferenceError"]
+```
+
+The temporal dead zone is the interval between entering the block and executing the lexical declaration, not evidence that the binding is absent.
 
 ## Hoisting differences between `var`, `let`, and `const`
 
 ### `var` hoisting
 
-`var` declarations are hoisted to the top of their containing function or global scope. This means the variable is available throughout the entire function or script, even before the line where it is declared. However, the variable is initialized with `undefined` until the actual declaration is encountered.
+When a function or script scope is instantiated, its `var` bindings are created and initialized to `undefined`. The initializer still runs where it appears in source, so an earlier read returns `undefined`.
 
 ```js live
 console.log(a); // Output: undefined
@@ -22,7 +44,7 @@ console.log(a); // Output: 10
 
 ### `let` hoisting
 
-`let` declarations are also hoisted to the top of their block scope, but they are not initialized. This creates a "temporal dead zone" (TDZ) from the start of the block until the declaration is encountered. Accessing the variable in the TDZ results in a `ReferenceError`.
+When a block scope is instantiated, its `let` bindings are created but not initialized. This creates a temporal dead zone (TDZ) from the start of the block until evaluation reaches the declaration. Accessing the variable in the TDZ results in a `ReferenceError`.
 
 ```js live
 console.log(b); // ReferenceError: Cannot access 'b' before initialization
@@ -32,7 +54,7 @@ console.log(b); // Output: 20
 
 ### `const` hoisting
 
-`const` declarations behave similarly to `let` in terms of hoisting. They are hoisted to the top of their block scope but are not initialized, resulting in a TDZ. Additionally, `const` requires an initial value at the time of declaration and cannot be reassigned.
+`const` bindings are created and left uninitialized during block-scope instantiation, just like `let`, so they also have a TDZ. Additionally, `const` requires an initial value at the declaration and cannot be reassigned.
 
 ```js live
 console.log(c); // ReferenceError: Cannot access 'c' before initialization

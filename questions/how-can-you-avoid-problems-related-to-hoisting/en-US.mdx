@@ -32,12 +32,12 @@ myFunction(); // Output: 'Hello, world!'
 `let` and `const` are block-scoped. Their bindings are hoisted to the start of the block but stay uninitialized in the temporal dead zone, so an early access throws instead of silently producing `undefined`.
 
 ```js live
-console.log(x); // undefined. (Hoisted but uninitialized, risk of unexpected behavior)
+console.log(x); // undefined. (Binding initialized before statements run)
 console.log(y); // ReferenceError: Cannot access 'y' before initialization. (TDZ)
 console.log(z); // ReferenceError: Cannot access 'z' before initialization. (TDZ)
 
 // Avoid using var
-var x = 10; // Hoisted to the top of the function or global scope
+var x = 10; // Function- or script-scoped; assignment happens here
 
 // Use let or const
 let y = 20; // Block-scoped; initialized here

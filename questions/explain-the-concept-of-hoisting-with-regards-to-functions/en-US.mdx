@@ -28,7 +28,7 @@ Hoisting is informal terminology for the way JavaScript creates bindings while i
 
 ### Function declarations
 
-Function declarations are fully hoisted. This means you can call a function before its declaration in the code.
+Function-declaration bindings are initialized with their functions during scope setup. This means you can call a function before its declaration appears in source order.
 
 ```js live
 hoistedFunction(); // Works fine

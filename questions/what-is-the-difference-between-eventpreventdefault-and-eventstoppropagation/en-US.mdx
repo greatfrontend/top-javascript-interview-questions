@@ -8,6 +8,25 @@ title: What is the difference between `event.preventDefault()` and `event.stopPr
 
 ---
 
+## Two independent effects
+
+Event dispatch and the browser's default action are separate concerns, so stopping one does not automatically stop the other.
+
+```mermaid
+---
+title: Event propagation and default action controls
+---
+flowchart TD
+  Event["Event reaches a listener"] --> Propagation["Propagation path"]
+  Event --> Default["Default browser action"]
+  Stop["stopPropagation()"] --> BlockPath["Prevents travel to later nodes"]
+  Stop -. "does not cancel" .-> Default
+  Prevent["preventDefault()"] --> BlockDefault["Cancels a cancelable default action"]
+  Prevent -. "does not stop" .-> Propagation
+```
+
+`stopImmediatePropagation()` additionally blocks later listeners on the current node; `preventDefault()` has an effect only when the event is cancelable.
+
 ## What is the difference between `event.preventDefault()` and `event.stopPropagation()`?
 
 ### `event.preventDefault()`

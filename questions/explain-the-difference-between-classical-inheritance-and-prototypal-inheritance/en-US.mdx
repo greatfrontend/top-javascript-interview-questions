@@ -8,6 +8,27 @@ Classical inheritance is a model where classes inherit from other classes, typic
 
 ---
 
+## Two inheritance models
+
+Classical inheritance is usually described through classes and instances, while prototypal inheritance delegates directly between objects.
+
+```mermaid
+---
+title: Classical and prototypal inheritance models
+---
+flowchart LR
+  subgraph Classical["Class-oriented model"]
+    Superclass["Superclass"] -->|"extended by"| Subclass["Subclass"]
+    Subclass -->|"instantiates"| Instance["Instance"]
+  end
+  subgraph Prototypal["Prototype-oriented model"]
+    Child["Child object"] -->|"[[Prototype]] delegation"| Parent["Prototype object"]
+    Parent -->|"[[Prototype]] delegation"| Root["Another prototype or null"]
+  end
+```
+
+JavaScript `class` syntax presents a class-oriented API, but method lookup still uses the prototype-oriented mechanism on the right.
+
 ## Difference between classical inheritance and prototypal inheritance
 
 ### Classical inheritance

@@ -24,6 +24,29 @@ try {
 
 ---
 
+## Stack unwinding
+
+A synchronous throw exits the current function and unwinds callers until it finds a matching `catch` or reaches the host.
+
+```mermaid
+---
+title: Synchronous error propagation
+---
+sequenceDiagram
+  participant Outer
+  participant Middle
+  participant Inner
+  Outer->>Middle: call()
+  Middle->>Inner: call()
+  Inner-->>Middle: throw error
+  Note over Middle: No local catch, so the frame unwinds
+  Middle-->>Outer: propagate same error
+  Outer->>Outer: catch(error)
+  Outer->>Outer: finally runs during completion
+```
+
+Promise rejections propagate through promise chains rather than the synchronous call stack, but the same principle applies: handle the error at the layer that can recover or add useful context.
+
 ## Error propagation in JavaScript
 
 Error propagation in JavaScript is a mechanism that allows errors to be passed up the call stack until they are caught and handled. This is crucial for debugging and ensuring that errors do not cause the entire application to crash unexpectedly.

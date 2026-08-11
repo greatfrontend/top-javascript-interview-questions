@@ -128,6 +128,7 @@ The TL;DR is extracted into the repository README, so it must stand on its own o
 
 - Answer the question directly before adding nuance.
 - Keep it concise and useful as an interview response.
+- Aim for roughly 100–180 prose words. Treat more than 200 prose words as a prompt for editorial review rather than an automatic failure, and keep code only when it materially improves the standalone answer.
 - Do not use headings or callouts within the TL;DR.
 - Do not depend on definitions, examples, or links that appear only later in the article.
 - Keep the terminating `---` delimiter in place so README generation can find the section.
@@ -166,11 +167,14 @@ Use `## Further reading` only for meaningful references. Prefer primary sources,
 
 - Keep examples minimal, internally consistent, and directly relevant to the claim they support.
 - Use `js` or `ts` fences as appropriate. Use `js live` only when the example is intentionally runnable in the GreatFrontEnd playground.
+- The quiz runner evaluates `js live` snippets as classic browser scripts through `eval()` in an iframe. Keep them self-contained; static imports, top-level module syntax, and implied multi-file setups are unsupported.
+- Use a plain `js` fence for intentional syntax errors. A live example may demonstrate an expected runtime error only when the error is clearly stated and the snippet remains contained.
 - State the expected result, observable output, or thrown error when it is not obvious.
 - Identify runtime, module, or strict-mode assumptions when they affect the result.
 - Include imports when readers need them to identify where an API comes from.
 - Do not introduce imaginary APIs, pseudocode that appears runnable, or correctness bugs merely to shorten an example. Label pseudocode explicitly when it is useful.
-- Avoid live examples that hang, make unintended network requests, or depend on unavailable runtime globals.
+- Make live examples terminate deterministically. Clear timers, close sockets and streams, abort outstanding requests, and remove long-lived listeners before the example finishes.
+- Avoid live examples that hang, make unintended network requests, depend on third-party availability, or use unavailable runtime globals. Prefer deterministic in-memory mocks for request examples.
 - Do not add a large example when a smaller snippet or precise prose makes the point more clearly.
 
 ### Callouts and admonitions
@@ -202,6 +206,38 @@ Example:
 > A snippet using `window`, `process`, or module-only syntax behaves differently across environments. Name the target runtime and module mode before drawing conclusions.
 ```
 
+### Mermaid diagrams
+
+Use an inline Mermaid diagram when relationships, state changes, timing, ownership, or trust boundaries are materially easier to understand visually than through prose or code alone. Good candidates include event-loop scheduling, promise state transitions, prototype chains, event propagation, browser loading timelines, module graphs, and security request flows.
+
+- Put diagrams in the detailed answer after the TL;DR delimiter. The generated README intentionally remains text-first.
+- Introduce each diagram with framing prose and follow it with the key conclusion. The surrounding prose must make the answer understandable when Mermaid is unavailable.
+- Keep one main concept per diagram and normally use no more than one diagram per question. Use a second only when it explains a distinct model, such as both a lifecycle and a timing sequence.
+- Add Mermaid frontmatter with a concise, descriptive `title` so the GreatFrontEnd renderer can expose useful context.
+- Prefer `flowchart` for decisions and data flow, `sequenceDiagram` for interactions over time, and `stateDiagram-v2` for lifecycles.
+- Quote node labels that contain spaces or punctuation. Keep labels short, use stable semantic IDs, and split dense diagrams instead of shrinking a large graph.
+- Avoid decorative diagrams, duplicated prose, hard-coded colors, theme-dependent styling, and implementation detail that is unrelated to the interview answer.
+- Treat the Mermaid source as the canonical visual. Use a checked-in SVG only when exact geometry is essential and the consuming asset pipeline has an explicit location and ownership model.
+- Compile new diagrams through the GreatFrontEnd MDX pipeline when the consuming checkout contains the same question revision. Repository-only checks can enforce placement and metadata but cannot prove that Mermaid renders successfully.
+
+Example:
+
+````markdown
+The state diagram separates a promise's initial state from its two terminal outcomes.
+
+```mermaid
+---
+title: Promise state transitions
+---
+stateDiagram-v2
+  [*] --> Pending
+  Pending --> Fulfilled: resolve with a value
+  Pending --> Rejected: reject with a reason
+```
+
+A settled promise is fulfilled or rejected and cannot transition again.
+````
+
 ### Content quality rules
 
 - No `TODO`, `Work-in-progress`, placeholder text, commented-out draft notes, or unfinished examples in ready-quality content.
@@ -214,6 +250,13 @@ Example:
 - Verify internal links, code behavior, API status, runtime assumptions, and version-sensitive claims before finishing.
 - Preserve good existing structure whenever possible.
 
+### Generated README safety
+
+- Treat TL;DR content as arbitrary authored text. It may legitimately contain replacement-looking tokens such as `$1`, `$&`, and other `$`-prefixed replacement tokens.
+- Never interpolate authored content into the replacement-string argument of `String.prototype.replace()`. Use a replacement callback or explicit string slicing so authored `$` sequences remain literal.
+- When changing generation code, include regression coverage for replacement tokens, multiple relative links, and missing section markers.
+- After generation, verify every generated question block matches its source TL;DR after the documented link normalization. A clean formatter or type check is not evidence that generated prose is synchronized.
+
 ### Validation
 
 Run these checks for substantive question changes:
@@ -221,10 +264,11 @@ Run these checks for substantive question changes:
 ```bash
 vp run gen
 vp check
+vp test run
 git diff --check
 ```
 
 - Review the generated `README.md` diff after `vp run gen`, especially the extracted TL;DR and question ordering.
-- Run `vp test` when test files exist or are added. The repository currently has no test files, so the command otherwise exits with `No test files found`.
+- The corpus tests enforce source/catalog consistency, TL;DR extraction, placeholder and callout rules, live-snippet syntax and bounded intervals, canonical JavaScript fences, and source-to-README synchronization.
 - Run the translation workflow only when localized content is intentionally in scope.
 - When editing this repository inside a GreatFrontEnd submodule checkout, also follow the parent repository's question-generation checks so the MDX is compiled through the consuming web app.

@@ -24,6 +24,29 @@ fetchData();
 
 ---
 
+## Suspension and resumption
+
+`await` pauses only the current async function; it does not block the JavaScript thread or make the surrounding caller wait synchronously.
+
+```mermaid
+---
+title: Async function suspension at await
+---
+sequenceDiagram
+  participant Caller
+  participant AsyncFn as Async function
+  participant Awaited as Awaited promise
+  participant Queue as Microtask queue
+  Caller->>AsyncFn: Call function
+  AsyncFn->>Awaited: Evaluate await expression
+  AsyncFn-->>Caller: Return outer promise and suspend
+  Awaited->>Queue: Queue continuation when settled
+  Queue->>AsyncFn: Resume with value or throw reason
+  AsyncFn-->>Caller: Settle outer promise
+```
+
+The resumed code runs as a promise reaction, so it follows microtask ordering.
+
 ## What is async/await and how does it simplify asynchronous code?
 
 ### Introduction to async/await

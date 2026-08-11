@@ -4,14 +4,14 @@ title: Explain the concept of "hoisting" in JavaScript
 
 ## TL;DR
 
-Hoisting is a JavaScript mechanism where variable and function declarations are moved ("hoisted") to the top of their containing scope during the compile phase.
+"Hoisting" is informal shorthand for how JavaScript creates and initializes bindings while it instantiates a scope, before evaluating that scope's statements. The engine does not move source text.
 
-- **Variable declarations (`var`)**: Declarations are hoisted, but not initializations. The value of the variable is `undefined` if accessed before initialization.
-- **Variable declarations (`let` and `const`)**: Declarations are hoisted, but not initialized. Accessing them results in `ReferenceError` until the actual declaration is encountered.
-- **Function expressions (`var`)**: Declarations are hoisted, but not initializations. The value of the variable is `undefined` if accessed before initialization.
-- **Function declarations (`function`)**: Both declaration and definition are fully hoisted.
-- **Class declarations (`class`)**: Declarations are hoisted, but not initialized. Accessing them results in `ReferenceError` until the actual declaration is encountered.
-- **Import declarations (`import`)**: Declarations are hoisted, and side effects of importing the module are executed before the rest of the code.
+- **Variable declarations (`var`)**: The binding is created and initialized to `undefined` before statements run. Its assignment still happens at the declaration's source location.
+- **Variable declarations (`let` and `const`)**: The binding is created but remains uninitialized in the temporal dead zone (TDZ) until evaluation reaches the declaration. Accessing it earlier throws `ReferenceError`.
+- **Function expressions (`var`)**: The `var` binding initially contains `undefined`; the function is created only when the expression is evaluated.
+- **Function declarations (`function`)**: The binding is initialized with the function during scope setup, so it can be called before its declaration appears in source order.
+- **Class declarations (`class`)**: The binding exists during scope setup but remains in the TDZ until the class declaration is evaluated.
+- **Import declarations (`import`)**: Imported bindings are linked before module evaluation. Dependencies normally evaluate before the importing module's body, although cycles can expose an uninitialized binding.
 
 The following behavior summarizes the result of accessing the variables before they are declared.
 
@@ -23,17 +23,37 @@ The following behavior summarizes the result of accessing the variables before t
 | `class Foo`                    | `ReferenceError`             |
 | `var foo = function() { ... }` | `undefined`                  |
 | `function foo() { ... }`       | Normal                       |
-| `import`                       | Normal                       |
+| `import`                       | Normal, except some cycles   |
 
 ---
+
+## Declaration setup and execution
+
+“Hoisting” describes the observable result of declaration instantiation before statements execute; the source text is not rearranged.
+
+```mermaid
+---
+title: Declaration instantiation before execution
+---
+flowchart TD
+  Enter["Enter a script, module, or function"] --> Create["Create bindings for declarations"]
+  Create --> Function["Function declarations are initialized with functions"]
+  Create --> Var["var bindings are initialized to undefined"]
+  Create --> Lexical["let, const, and class bindings remain uninitialized"]
+  Function --> Execute["Execute statements in source order"]
+  Var --> Execute
+  Lexical --> TDZ["Reads remain in the temporal dead zone"]
+  TDZ --> Declaration["Declaration executes and initializes the binding"]
+  Declaration --> Execute
+```
+
+This model explains why different declarations are all commonly called “hoisted” even though early access produces different results.
 
 ## Hoisting
 
 Hoisting is a term used to explain the behavior of declarations in JavaScript code.
 
-Variables declared with the `var` keyword have their declaration "moved" up to the top of their containing scope during compilation, which we refer to as hoisting.
-
-Only the declaration is hoisted; the initialization/assignment (if there is one) will stay where it is. Note that the declaration is not actually moved – the JavaScript engine parses the declarations during compilation and becomes aware of variables and their scopes, but it is easier to understand this behavior by visualizing the declarations as being "hoisted" to the top of their scope.
+Before evaluating statements in a scope, JavaScript instantiates its declarations and creates their bindings. A `var` binding is initialized to `undefined` at that point; an initializer or later assignment still runs at its original source location. No declaration is physically moved.
 
 Let's explain with a few code samples. Note that the code for these examples should be executed within a module scope instead of being entered line by line into a REPL like the browser console.
 
@@ -58,7 +78,7 @@ console.log(foo); // 1
 
 ### Hoisting of variables declared using `let`, `const`, and `class`
 
-Variables declared via `let`, `const`, and `class` are hoisted as well. However, unlike `var` and `function`, they are not initialized and accessing them before the declaration will result in a `ReferenceError` exception. The variable is in a "temporal dead zone" from the start of the block until the declaration is processed.
+Bindings declared via `let`, `const`, and `class` are also created during scope instantiation. Unlike `var` and function declarations, they remain uninitialized, and accessing them before evaluation reaches the declaration throws `ReferenceError`. This interval is the temporal dead zone.
 
 ```js live
 y; // ReferenceError: Cannot access 'y' before initialization
@@ -80,7 +100,7 @@ class Foo {
 
 ### Hoisting of function expressions
 
-A function expression is a function assigned to a variable binding. When the binding uses `var`, only the variable declaration is hoisted — the function body is not.
+A function expression is a function assigned to a variable binding. When the binding uses `var`, scope setup initializes it to `undefined`; the function object is not created until evaluation reaches the expression.
 
 ```js live
 console.log(bar); // undefined
@@ -101,7 +121,7 @@ console.log(baz()); // 'arrow'
 
 ### Hoisting of function declarations
 
-Function declarations use the `function` keyword. Unlike function expressions, function declarations have both the declaration and definition hoisted, thus they can be called even before they are declared.
+Function declarations use the `function` keyword. Unlike function expressions, their bindings are initialized with the function during scope setup, so they can be called before their declarations appear in source order.
 
 ```js live
 console.log(foo); // [Function: foo]
@@ -171,8 +191,8 @@ var expressed = function () {
 };
 ```
 
-- `declared()` returns `'function declaration'`. Function declarations are fully hoisted — both the identifier binding and the function body are available from the top of the scope.
-- `expressed()` throws `TypeError: expressed is not a function`. The `var expressed` binding is hoisted and initialized to `undefined`, but the assignment of the function expression happens at its source location. Calling `undefined()` produces the `TypeError`.
+- `declared()` returns `'function declaration'`. The `declared` binding is initialized with the function before statement evaluation begins.
+- `expressed()` throws `TypeError: expressed is not a function`. Scope setup initializes the `var expressed` binding to `undefined`, but the assignment of the function expression happens at its source location. Calling `undefined()` produces the `TypeError`.
 
 ### `var` in a `for` loop with `setTimeout`
 
@@ -201,7 +221,7 @@ console.log(a); // 1
 console.log(b); // ReferenceError: b is not defined
 ```
 
-`var` is scoped to the nearest function or script, not to the enclosing block. The declaration is hoisted past `if`, `for`, `while`, and plain block statements to the containing function or module scope, which is why `a` is still visible after the `if`. `let` and `const` are block-scoped, so `b` only exists inside the block.
+`var` is scoped to the nearest function or script, not to the enclosing block. Its binding therefore belongs to the containing function or script scope, which is why `a` is still visible after the `if`. `let` and `const` are block-scoped, so `b` only exists inside the block.
 
 ### Redeclaration
 
@@ -225,7 +245,7 @@ class Foo {}
 
 This throws `ReferenceError: Cannot access 'Foo' before initialization`.
 
-Class declarations are hoisted — the binding is created at the top of the enclosing block — but they remain in the Temporal Dead Zone until the `class` declaration is evaluated. Any access before that point throws, including `typeof`.
+The `Foo` binding is created when the enclosing block is instantiated, but it remains in the Temporal Dead Zone until the `class` declaration is evaluated. Any access before that point throws, including `typeof`.
 
 This behavior can be confused with "classes are not hoisted". The two statements are observably different:
 
@@ -268,7 +288,7 @@ outer();
 
 Two behaviors combine here:
 
-1. Both `var inner` and the `function inner` declaration are hoisted to the top of `outer`.
+1. Scope instantiation processes both `var inner` and the `function inner` declaration before `outer`'s statements run.
 2. When a `var` declaration and a function declaration share a name in the same scope, the function declaration takes precedence during initialization. `inner` is initialized with the function object rather than `undefined`.
 
 The `var inner = 'overwritten'` assignment takes effect only after the two `console.log` calls, so those calls observe the function. A `console.log(inner)` after the assignment would print `'overwritten'`.
@@ -279,10 +299,10 @@ A `let` or `const` declaration in the same scope as a `var` of the same name pro
 
 The following statements appear frequently in explanations of hoisting, including in material generated by large language models, but are incorrect or imprecise:
 
-1. **Classes are not hoisted.** Class declarations are hoisted. They remain in the Temporal Dead Zone until the declaration is evaluated, which is observably different from not being hoisted at all — most notably, `typeof` throws on a class in the TDZ but returns `'undefined'` for a truly undeclared identifier.
-2. **`var` is hoisted; `let` and `const` are not.** All three are hoisted. They differ in initialization: `var` is initialized to `undefined` at hoist time, while `let` and `const` remain uninitialized in the TDZ until their declaration is evaluated.
+1. **Classes are not hoisted.** Class bindings are created during scope instantiation but remain in the Temporal Dead Zone until the declaration is evaluated. That is observably different from having no binding — most notably, `typeof` throws on a class in the TDZ but returns `'undefined'` for a truly undeclared identifier.
+2. **`var` is hoisted; `let` and `const` are not.** All three bindings are created before statement evaluation. They differ in initialization: `var` is initialized to `undefined` immediately, while `let` and `const` remain uninitialized in the TDZ until their declarations are evaluated.
 3. **`typeof` never throws on undeclared variables.** `typeof` is safe for identifiers that have no declaration anywhere in scope, but it throws in the TDZ. The `typeof x === 'undefined'` guard is only safe if `x` is not declared anywhere in the enclosing scope.
-4. **Function declarations are hoisted; function expressions are not.** Both are hoisted, but only the binding. In `var fn = function () {}`, the `var fn` declaration is hoisted and initialized to `undefined`. In `let fn = function () {}`, the binding is hoisted but remains in the TDZ. The function body is never hoisted for expressions.
+4. **Function declarations are hoisted; function expressions are not.** A declaration's binding is initialized with its function during scope setup. An expression creates its function only when that expression is evaluated: a `var` binding contains `undefined` before then, while a `let` or `const` binding remains in the TDZ.
 
 ## Further reading
 

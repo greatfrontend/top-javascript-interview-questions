@@ -24,6 +24,29 @@ Here's a table summarizing the 3 client storage mechanisms.
 
 ---
 
+## Scope and data flow
+
+The mechanisms differ most in who can access the data, how long it lasts, and whether it travels with HTTP requests.
+
+```mermaid
+---
+title: Cookie and Web Storage data flow
+---
+flowchart TD
+  Browser["Browser storage context"] --> Cookie["Cookie scoped by domain, path, and attributes"]
+  Browser --> Local["localStorage scoped by origin"]
+  Browser --> Session["sessionStorage scoped by origin and tab"]
+  Cookie --> Request["Eligible cookies accompany HTTP requests"]
+  Request --> Server["Server"]
+  Local --> Persistent["Persists until cleared or evicted"]
+  Session --> Tab["Scoped to one top-level tab session"]
+  Script["Same-origin JavaScript"] --> Local
+  Script --> Session
+  Script -. "unless HttpOnly" .-> Cookie
+```
+
+Web Storage is never attached automatically to requests; an `HttpOnly` cookie is intentionally unavailable to JavaScript.
+
 ## Storage on the web
 
 Cookies, `localStorage`, and `sessionStorage` are browser storage mechanisms. Client storage is useful for state such as themes, personalized layouts, draft form data, and identifiers needed by a server session. Sensitive authentication credentials require a threat-model-specific design; they should not be placed in Web Storage by default.

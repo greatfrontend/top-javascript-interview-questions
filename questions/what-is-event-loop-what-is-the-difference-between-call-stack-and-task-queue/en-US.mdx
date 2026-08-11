@@ -5,23 +5,40 @@ subtitle: What is the difference between call stack and task queue?
 
 ## TL;DR
 
-The event loop is a concept within the JavaScript runtime environment regarding how asynchronous operations are executed within JavaScript engines. It works as such:
+The event loop is the host runtime's scheduling mechanism for coordinating JavaScript jobs, asynchronous operations, and—in browsers—rendering. A simplified browser turn works like this:
 
-1. The JavaScript engine starts executing scripts, placing synchronous operations on the call stack.
-2. When an asynchronous operation is encountered (e.g., `setTimeout()`, HTTP request), it is offloaded to the respective Web API or Node.js API to handle the operation in the background.
-3. Once the asynchronous operation completes, its callback function is placed in the respective queues – task queues (also known as macrotask queues / callback queues) or microtask queues. We will refer to "task queue" as "macrotask queue" from here on to better differentiate from the microtask queue.
-4. The event loop continuously monitors the call stack and executes items on the call stack. If/when the call stack is empty:
-   1. Microtask queue is processed. Microtasks include promise callbacks (`then`, `catch`, `finally`), `await` continuations, `MutationObserver` callbacks, and calls to `queueMicrotask()`. The event loop takes the first callback from the microtask queue and pushes it to the call stack for execution. This repeats until the microtask queue is empty.
-   2. A task is selected from a host-defined task queue. Tasks include running timer callbacks and dispatching user interface events. APIs such as `setTimeout()` and networking APIs are not themselves tasks; they arrange for tasks or promise reactions to be queued when appropriate. After a task completes, the runtime performs a microtask checkpoint before selecting another task. This is an ordering rule rather than a general-purpose priority system, and continuously queuing microtasks can delay later tasks and rendering.
-      1. If the microtask queue is non-empty, process them as per the previous step.
-      2. If the microtask queue is empty, the next macrotask queue callback is processed. This repeats until the macrotask queue is empty.
-5. This process continues indefinitely, allowing the JavaScript engine to handle both synchronous and asynchronous operations efficiently without blocking the call stack.
+1. The host runs one task, such as initial script evaluation, a timer callback, or an input-event callback. Function calls made by that task use the JavaScript agent's call stack.
+2. Timers, networking, and other host APIs continue outside the currently executing JavaScript stack. When work becomes ready, the host queues a task or settles a promise, which queues its reactions as microtasks.
+3. After the current task finishes and its stack is empty, the runtime performs a microtask checkpoint. It drains promise reactions, `queueMicrotask()` callbacks, and other microtasks, including microtasks added while the checkpoint is running.
+4. The browser may update rendering, then the host selects one eligible task and runs it. After that task, it performs another microtask checkpoint; it does not drain every task queue in one pass.
+5. These turns continue for the lifetime of the event loop. An unbounded microtask chain can delay later tasks and rendering.
 
 ---
 
+## One browser event-loop turn
+
+The event loop repeatedly runs one task, empties the resulting microtasks, and then gives the browser an opportunity to render before choosing another task.
+
+```mermaid
+---
+title: Simplified browser event-loop turn
+---
+flowchart LR
+  Select["Select one eligible task"] --> Stack["Run JavaScript on the call stack"]
+  Stack --> Empty["Task finishes and stack is empty"]
+  Empty --> Checkpoint["Perform a microtask checkpoint"]
+  Checkpoint --> Microtask{"Microtask queued?"}
+  Microtask -->|"Yes"| RunMicrotask["Run one microtask"]
+  RunMicrotask --> Microtask
+  Microtask -->|"No"| Render["Browser may update rendering"]
+  Render --> Select
+```
+
+Timers and I/O do not interrupt the active stack; their completion makes later tasks or promise reactions eligible to run.
+
 ## Event loop in JavaScript
 
-The event loop is the mechanism that lets JavaScript handle asynchronous operations without blocking its single-threaded execution.
+The event loop lets a JavaScript agent coordinate asynchronous operations without blocking its currently executing stack. Each agent runs one JavaScript job at a time; workers use separate agents and event loops.
 
 ### Parts of the event loop
 
@@ -45,15 +62,12 @@ The microtask queue holds promise reactions, `queueMicrotask()` callbacks, and o
 
 ### Event loop order
 
-1. The JavaScript engine starts executing scripts, placing synchronous operations on the call stack.
-2. When an asynchronous operation is encountered (e.g., `setTimeout()`, HTTP request), it is offloaded to the respective Web API or Node.js API to handle the operation in the background.
-3. Once the asynchronous operation completes, its callback function is placed in the respective queues – task queues (also known as macrotask queues / callback queues) or microtask queues. We will refer to "task queue" as "macrotask queue" from here on to better differentiate from the microtask queue.
-4. The event loop continuously monitors the call stack and executes items on the call stack. If/when the call stack is empty:
-   1. Microtask queue is processed. The event loop takes the first callback from the microtask queue and pushes it to the call stack for execution. This repeats until the microtask queue is empty.
-   2. The host selects an eligible task and runs it. After that task completes, the runtime performs another microtask checkpoint before selecting the next task. A task can therefore enqueue microtasks that run before a later task.
-      1. If the microtask queue is non-empty, process them as per the previous step.
-      2. If the microtask queue is empty, the next macrotask queue callback is processed. This repeats until the macrotask queue is empty.
-5. This process continues indefinitely, allowing the JavaScript engine to handle both synchronous and asynchronous operations efficiently without blocking the call stack.
+1. The host selects and runs one task. Synchronous function calls made by that task are pushed onto and popped from the call stack.
+2. Host facilities handle timers, networking, and I/O outside the active JavaScript stack. When their results become ready, they arrange for tasks or promise reactions to be queued.
+3. When the task finishes, the runtime performs a microtask checkpoint and drains the microtask queue, including microtasks queued by other microtasks.
+4. In a browser, the host may then update rendering. It selects another eligible task according to host-defined scheduling rules and repeats the cycle.
+
+This model is deliberately simplified: browsers can have multiple task queues, and Node.js divides work into event-loop phases. The key ordering rule is that each completed task is followed by a microtask checkpoint before another task runs.
 
 ### Example
 
@@ -222,7 +236,11 @@ Between every chunk, the browser can paint a frame, dispatch input events, and r
 function yieldToMain() {
   return new Promise((resolve) => {
     const channel = new MessageChannel();
-    channel.port1.onmessage = () => resolve();
+    channel.port1.onmessage = () => {
+      channel.port1.close();
+      channel.port2.close();
+      resolve();
+    };
     channel.port2.postMessage(null);
   });
 }
@@ -365,7 +383,7 @@ Several statements about the event loop appear frequently in explanations and in
 
 1. **"`setTimeout(fn, 0)` runs immediately after the current synchronous code."** Microtasks drain first. A `Promise.resolve().then(fn)` scheduled after a `setTimeout(fn, 0)` still runs before the timer callback.
 2. **"`await` blocks the event loop."** The `await` expression pauses the containing async function and returns control to the caller. The continuation is scheduled as a microtask and does not block other tasks.
-3. **"Microtasks run on a separate thread."** JavaScript execution is single-threaded. Microtasks run on the main thread, interleaved with macrotasks under the event loop's scheduling rules.
+3. **"Microtasks run on a separate thread."** A microtask runs on the same JavaScript agent and call stack as that agent's tasks. Workers are separate agents; microtasks are not automatically delegated to them.
 4. **"`Promise.resolve()` is synchronous when the promise is already resolved."** The resolution is synchronous, but `.then` callbacks are always scheduled asynchronously as microtasks. This is a Promises/A+ requirement intended to guarantee consistent execution ordering.
 5. **"`process.nextTick` is a microtask."** In Node.js, `nextTick` has its own queue that drains before the promise microtask queue.
 6. **"`setTimeout(fn, 0)` fires after 0 milliseconds."** Both the HTML specification and Node.js clamp the minimum to a small non-zero value (4 ms for nested timers in browsers; 1 ms in Node). A delay of `0` is a lower bound, not a guarantee.

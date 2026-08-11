@@ -8,6 +8,29 @@ Cross-Site Scripting (XSS) occurs when untrusted data reaches an executable brow
 
 ---
 
+## Untrusted data reaching a browser sink
+
+XSS occurs when attacker-controlled data reaches a context that makes the browser interpret it as executable content instead of data.
+
+```mermaid
+---
+title: XSS source-to-sink defenses
+---
+flowchart TD
+  Source["Untrusted data source"] --> Need{"Required output context"}
+  Need -->|"Plain text"| SafeSink["Use a safe text sink or context-appropriate encoding"]
+  SafeSink --> Data["Browser treats the value as data"]
+  Need -->|"User-authored HTML"| Sanitize["Sanitize with a maintained HTML sanitizer"]
+  Sanitize --> ReviewedSink["Insert only the sanitized HTML"]
+  ReviewedSink --> Data
+  Source --> Unsafe["Unsafe sink such as raw innerHTML or eval"]
+  Unsafe --> Execute["Browser may interpret attacker content as code"]
+  Execute --> XSS["XSS impact in the site's origin"]
+  CSP["Strict CSP or Trusted Types"] -. "reduces impact or unsafe sink use" .-> Execute
+```
+
+The correct defense depends on the output context; Content Security Policy is a valuable additional layer, not a substitute for safe sinks, encoding, or sanitization.
+
 ## What is Cross-Site Scripting (XSS) and how can you prevent it?
 
 ### What is Cross-Site Scripting (XSS)?

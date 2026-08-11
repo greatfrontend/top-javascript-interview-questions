@@ -30,6 +30,34 @@ promise
 
 ---
 
+## Promise reactions and chaining
+
+A promise separates starting an operation from observing its eventual result; each reaction creates another promise for the handler's outcome.
+
+```mermaid
+---
+title: Promise settlement and reaction chaining
+---
+sequenceDiagram
+  participant Operation
+  participant P1 as Original promise
+  participant Queue as Microtask queue
+  participant Handler
+  participant P2 as Chained promise
+  Operation->>P1: Fulfill with a value or reject with a reason
+  P1->>Queue: Enqueue registered reaction
+  Queue->>Handler: Run then or catch handler
+  alt Handler returns a value
+    Handler->>P2: Fulfill with returned value
+  else Handler throws
+    Handler->>P2: Reject with thrown error
+  else Handler returns a promise
+    Handler->>P2: Adopt that promise's eventual state
+  end
+```
+
+This is why a `.then()` chain composes transformations and errors instead of mutating the original promise.
+
 ## What are Promises and how do they work?
 
 ### Definition

@@ -14,6 +14,28 @@ The `this` keyword in JavaScript can be bound in several ways:
 
 ---
 
+## Binding precedence
+
+For an ordinary function, stronger invocation forms take precedence over weaker defaults; arrows bypass this decision and capture `this` lexically.
+
+```mermaid
+---
+title: this binding precedence
+---
+flowchart TD
+  Function["Resolve this"] --> Arrow{"Arrow function?"}
+  Arrow -->|"Yes"| Lexical["Lexical this"]
+  Arrow -->|"No"| Constructor{"new invocation?"}
+  Constructor -->|"Yes"| NewBinding["New instance binding"]
+  Constructor -->|"No"| Bound{"Bound function or call/apply?"}
+  Bound -->|"Yes"| Explicit["Explicit binding"]
+  Bound -->|"No"| Method{"Method invocation?"}
+  Method -->|"Yes"| Implicit["Receiver binding"]
+  Method -->|"No"| Default["Default binding"]
+```
+
+A bound function is a special case: later `call()` or `apply()` calls cannot replace its stored receiver, although construction still takes precedence.
+
 ## Default binding
 
 In non-strict mode, if a function is called without any context, `this` refers to the global object (`window` in browsers). In strict mode, `this` is `undefined`.

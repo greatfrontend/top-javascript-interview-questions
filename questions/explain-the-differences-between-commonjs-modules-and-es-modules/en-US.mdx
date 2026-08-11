@@ -44,6 +44,27 @@ console.log(value); // 42
 
 ---
 
+## Loading model at a glance
+
+CommonJS discovers dependencies while code executes, whereas ES modules expose a static graph that hosts can link before evaluation.
+
+```mermaid
+---
+title: CommonJS and ES module loading models
+---
+flowchart TD
+  Source["Module source"] --> System{"Module system"}
+  System -->|"CommonJS"| Require["Execute require() at runtime"]
+  Require --> LoadCJS["Load and evaluate the requested module"]
+  LoadCJS --> Exports["Return module.exports"]
+  System -->|"ES modules"| Parse["Parse static import and export declarations"]
+  Parse --> Graph["Build and link the module graph"]
+  Graph --> Evaluate["Evaluate modules in dependency order"]
+  Evaluate --> Bindings["Expose live imported bindings"]
+```
+
+This static structure enables native asynchronous loading and build-time analysis such as tree shaking, while CommonJS remains convenient in legacy Node.js code.
+
 ## Modules in JavaScript
 
 Modules in JavaScript are a way to organize and encapsulate code into reusable and maintainable units. They allow developers to break down their codebase into smaller, self-contained pieces, promoting code reuse, separation of concerns, and better organization. There are two main module systems in JavaScript: CommonJS and ES modules.

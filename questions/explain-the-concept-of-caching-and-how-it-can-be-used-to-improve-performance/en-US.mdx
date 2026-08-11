@@ -8,6 +8,29 @@ Caching reuses a previously computed or fetched result to reduce latency, bandwi
 
 ---
 
+## Cache lookup and revalidation
+
+A cache improves repeat access only when its freshness and invalidation rules let it answer safely.
+
+```mermaid
+---
+title: Cache lookup decision flow
+---
+flowchart TD
+  Request["Request data or an asset"] --> Lookup["Look up cache entry"]
+  Lookup --> Found{"Entry found?"}
+  Found -->|"No"| Origin["Fetch or compute from origin"]
+  Found -->|"Yes"| Fresh{"Entry still fresh?"}
+  Fresh -->|"Yes"| Hit["Return cached value"]
+  Fresh -->|"No"| Revalidate["Revalidate or refresh"]
+  Revalidate -->|"Not modified"| Hit
+  Revalidate -->|"New value"| Origin
+  Origin --> Store["Store with expiry or validation metadata"]
+  Store --> Return["Return value"]
+```
+
+Caching trades freshness and invalidation complexity for lower latency, network use, or computation, so the policy matters as much as the storage layer.
+
 ## The concept of caching and how it can be used to improve performance
 
 ### What is caching?

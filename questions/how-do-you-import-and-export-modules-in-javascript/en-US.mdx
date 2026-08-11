@@ -9,15 +9,19 @@ ECMAScript modules use `export` to define a module's public bindings and `import
 Resolution depends on the host. Browsers need module scripts and URL-like specifiers (unless an import map is used); Node.js uses its ESM and package-resolution rules; bundlers may support additional aliases. An import working in one environment does not guarantee it resolves in another.
 
 ```js
-// Exporting a module
+// my-module.js
 export const myFunction = () => {
   /* ... */
 };
 export default myFunction;
+```
 
-// Importing a module
-import { myFunction } from './myModule';
-import myFunction from './myModule';
+```js
+// app.js
+import defaultFunction, { myFunction } from './my-module.js';
+
+myFunction();
+defaultFunction();
 ```
 
 ---

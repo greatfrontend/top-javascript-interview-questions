@@ -21,6 +21,26 @@ console.log(obj); // { name: 'Jane' } (age was not added, name was not deleted)
 
 ---
 
+## The object-integrity constraint ladder
+
+`Object.seal()` is the middle of three increasingly restrictive integrity levels.
+
+```mermaid
+---
+title: Object integrity levels
+---
+flowchart LR
+  Extensible["Extensible object"] --> Prevent["preventExtensions"]
+  Prevent --> Seal["seal"]
+  Seal --> Freeze["freeze"]
+  Prevent --> NoAdd["Cannot add own properties"]
+  Seal --> FixedShape["Cannot add, delete, or reconfigure own properties"]
+  Seal --> Writable["Can still update writable data values"]
+  Freeze --> ReadOnly["Also makes own data properties non-writable"]
+```
+
+The arrows represent stronger guarantees, not a requirement to call each method in sequence.
+
 ## What is `Object.seal()` for?
 
 `Object.seal()` is a method in JavaScript that seals an object, preventing new properties from being added to it and marking all existing properties as non-configurable. This means that while you can still modify the values of existing properties, you cannot delete them or add new properties.
@@ -36,7 +56,7 @@ Object.seal(obj);
 ### Behavior
 
 1. **Preventing new properties**: Once an object is sealed, you cannot add new properties to it.
-2. **Non-configurable properties**: All existing properties become non-configurable, meaning you cannot delete them or change their property descriptors (e.g., making them non-writable).
+2. **Non-configurable properties**: All existing properties become non-configurable, so they cannot be deleted or have most descriptor attributes changed. One permitted transition remains: a data property with `writable: true` can be changed to `writable: false`.
 3. **Modifiable values**: You can still change the values of existing properties as long as they are writable.
 
 ### Example

@@ -8,6 +8,25 @@ title: How is `Promise.all()` different from `Promise.allSettled()`?
 
 ---
 
+## Choosing an aggregation outcome
+
+The methods start from the same set of inputs but differ in when and how the aggregate promise settles.
+
+```mermaid
+---
+title: Promise.all compared with Promise.allSettled
+---
+flowchart TD
+  Inputs["Receive an iterable of values and promises"] --> Method{"Aggregation method"}
+  Method -->|"Promise.all"| All{"Does any input reject?"}
+  All -->|"Yes"| FailFast["Reject as soon as that rejection is observed"]
+  All -->|"No"| OrderedValues["Fulfill with ordered values"]
+  Method -->|"Promise.allSettled"| Settle["Wait for every input to settle"]
+  Settle --> Records["Fulfill with ordered status records"]
+```
+
+Use `all()` when every result is required for success; use `allSettled()` when every outcome must be inspected independently.
+
 ## How is `Promise.all()` different from `Promise.allSettled()`?
 
 ### `Promise.all()`
@@ -127,7 +146,9 @@ Do not treat `Promise.all()` as a transaction. If several bookings or writes sta
 | Non-iterable input (e.g., `undefined`) | Returned promise rejects with `TypeError` | Returned promise rejects with `TypeError` |
 | Result order vs resolution order | Results array preserves **input** order, not the order they resolved | Results array preserves **input** order |
 
-> [!NOTE] Two behaviors are commonly misremembered: `Promise.all([])` does not reject or hang. Its returned Promise is already fulfilled with an empty array, but an attached `.then()` callback still runs asynchronously as a microtask. The result array always preserves input order, even when `promise[2]` resolves before `promise[0]`.
+> [!NOTE] Empty input and result ordering
+>
+> `Promise.all([])` does not reject or hang. Its returned Promise is already fulfilled with an empty array, but an attached `.then()` callback still runs asynchronously as a microtask. The result array always preserves input order, even when `promise[2]` resolves before `promise[0]`.
 
 ## Predict the output
 

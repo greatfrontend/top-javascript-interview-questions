@@ -4,7 +4,7 @@ title: Explain the concept of Cross-Site Request Forgery (CSRF) and its mitigati
 
 ## TL;DR
 
-Cross-Site Request Forgery (CSRF) is an attack where a malicious website tricks a user's browser into making an unwanted request to another site where the user is authenticated. This can lead to unauthorized actions being performed on behalf of the user. Mitigation techniques include using anti-CSRF tokens, SameSite cookies, and ensuring proper CORS configurations.
+Cross-Site Request Forgery (CSRF) tricks a browser into sending an unwanted state-changing request with ambient credentials such as cookies. Defend with `SameSite` cookies, an unpredictable CSRF token or custom-header pattern for relevant requests, and server-side `Origin`/`Referer` or Fetch Metadata checks as additional layers. CORS alone is not a CSRF defense because simple cross-origin requests and HTML forms can still be sent.
 
 ---
 
@@ -46,15 +46,19 @@ Set-Cookie: sessionId=abc123; SameSite=Strict
 
 - `Strict`: Cookies are only sent in a first-party context and not with requests initiated by third-party websites.
 - `Lax`: Cookies are not sent on normal cross-site subrequests (e.g., loading images), but are sent when a user navigates to the URL from an external site (e.g., following a link).
-- `None`: Cookies are sent in all contexts, including cross-origin requests.
+- `None`: Cookies are sent in cross-site contexts and must also use `Secure`.
 
-#### CORS (Cross-Origin Resource Sharing)
+#### Origin and Fetch Metadata checks
 
-Properly configuring CORS can help prevent CSRF attacks by ensuring that only trusted origins can make requests to your server. This involves setting appropriate headers on the server to specify which origins are allowed to access resources.
+For state-changing requests, a server can reject unexpected `Origin` or `Referer` values and use Fetch Metadata headers such as `Sec-Fetch-Site` as defense in depth. These checks should complement, not replace, tokens or an appropriate `SameSite` policy.
 
 ```http
-Access-Control-Allow-Origin: https://trustedwebsite.com
+if (req.get('Origin') !== 'https://app.example.com') {
+  return res.sendStatus(403);
+}
 ```
+
+CORS controls whether JavaScript can read a cross-origin response and whether non-simple requests pass preflight. It does not prevent a browser from sending all cross-origin requests, so an allowlist is not sufficient CSRF protection.
 
 ### Further reading
 

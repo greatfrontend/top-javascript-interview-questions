@@ -98,18 +98,21 @@ In modern browsers, AJAX is done using the `fetch()` API instead of `XMLHttpRequ
    ```
 
 2. **Return a promise**: The `fetch()` function returns a `Promise` that resolves to a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) object representing the response from the server. This `Promise` needs to be handled using `.then()` or `async/await`.
-3. **Handling the response**: The `Response` object provides methods to define how the body content should be handled, such as `.json()` for parsing JSON data, `.text()` for plain text, `.blob()` for binary data, etc.
+3. **Handling the response**: The `Response` object exposes the HTTP status and methods such as `.json()`, `.text()`, and `.blob()` for consuming its body. Check `response.ok` or `response.status` before treating the request as successful.
 
    ```js live
    fetch('https://jsonplaceholder.typicode.com/todos/1')
-     .then((response) => response.json())
+     .then((response) => {
+       if (!response.ok) throw new Error(`HTTP ${response.status}`);
+       return response.json();
+     })
      .then((data) => console.log(data))
      .catch((error) => console.error('Error:', error));
    ```
 
 4. **Asynchronous nature**: The `fetch` API is asynchronous, allowing the browser to continue executing other tasks while waiting for the server response. This prevents blocking the main thread and provides a better user experience. The `then()` and `catch()` callbacks are put onto the microtask queue when executed as part of the [event loop](/questions/quiz/what-is-event-loop-what-is-the-difference-between-call-stack-and-task-queue).
 5. **Request options**: The optional second argument to `fetch()` allows configuring various aspects of the request, such as the HTTP method, headers, body, credentials, caching behavior, and more.
-6. **Error handling**: Errors during the request, such as network failures or invalid responses, are caught and propagated through the Promise chain using the `.catch()` method or try/catch blocks with `async/await`.
+6. **Error handling**: Network, CORS, abort, and body-parsing failures reject a promise and can be handled with `.catch()` or `try...catch`. HTTP error statuses still produce a fulfilled `Response`, so application code must check the status explicitly.
 
 The `fetch()` API provides a modern, Promise-based approach to making HTTP requests in JavaScript, replacing the older `XMLHttpRequest` API. It offers a simpler and more flexible way to interact with APIs and fetch resources from servers, while integrating advanced HTTP concepts like CORS and other extensions.
 

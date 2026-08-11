@@ -4,7 +4,7 @@ title: How does hoisting affect function declarations and expressions?
 
 ## TL;DR
 
-Hoisting in JavaScript means that function declarations are moved to the top of their containing scope during the compile phase, making them available throughout the entire scope. This allows you to call a function before it is defined in the code. However, function expressions are not hoisted in the same way. If you try to call a function expression before it is defined, you will get an error because the variable holding the function is hoisted but not its assignment.
+Function declarations are initialized when JavaScript instantiates their scope, so they can be called before their source declaration. Function expressions are created only when evaluation reaches the expression. Before then, a `var` binding contains `undefined` and calling it throws `TypeError`; a `let` or `const` binding is in the temporal dead zone and accessing it throws `ReferenceError`. "Hoisting" describes these binding rules; the engine does not move source text.
 
 ```js live
 // Function declaration
@@ -26,7 +26,7 @@ var bar = function () {
 
 ### Function declarations
 
-Function declarations are hoisted to the top of their containing scope. This means you can call the function before it is defined in the code.
+Function declarations are created and initialized when their containing scope is instantiated. This means you can call the function before its declaration appears in source order.
 
 ```js live
 console.log(foo()); // Works fine
@@ -35,11 +35,11 @@ function foo() {
 }
 ```
 
-In the example above, the function `foo` is hoisted to the top of its scope, so calling `foo()` before its definition works without any issues.
+In the example above, the binding for `foo` already contains the function before statement evaluation begins, so the earlier call works.
 
 ### Function expressions
 
-Function expressions, on the other hand, are not hoisted in the same way. The variable that holds the function is hoisted, but its assignment is not. This means that if you try to call a function expression before it is defined, you will get an error.
+Function expressions, on the other hand, are evaluated where they appear. The variable binding may already exist, but it does not contain the function until the assignment or declaration initializer runs.
 
 ```js live
 console.log(bar()); // Throws TypeError: bar is not a function

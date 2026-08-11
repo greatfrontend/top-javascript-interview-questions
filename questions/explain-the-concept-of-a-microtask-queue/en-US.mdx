@@ -4,7 +4,7 @@ title: Explain the concept of a microtask queue
 
 ## TL;DR
 
-The microtask queue is a queue of tasks that need to be executed after the currently executing script and before any other task. Microtasks are typically used for tasks that need to be executed immediately after the current operation, such as promise callbacks. The microtask queue is processed before the macrotask queue, ensuring that microtasks are executed as soon as possible.
+The microtask queue holds callbacks such as promise reactions, `queueMicrotask()` callbacks, and `MutationObserver` notifications. At a microtask checkpoint—normally after the current task or callback finishes and the JavaScript stack is empty—the runtime drains the queue before it may render and select another task. Microtasks queued by other microtasks are drained in the same checkpoint, so recursively adding them can starve rendering and other work.
 
 ---
 
@@ -12,12 +12,12 @@ The microtask queue is a queue of tasks that need to be executed after the curre
 
 ### What is a microtask queue?
 
-The microtask queue is a part of the JavaScript event loop mechanism. It is a queue that holds tasks that need to be executed immediately after the currently executing script and before any other task in the macrotask queue. Microtasks are typically used for operations that need to be executed as soon as possible, such as promise callbacks and `MutationObserver` callbacks.
+The microtask queue is part of the host's event-loop machinery. It holds work such as promise reactions, `queueMicrotask()` callbacks, and `MutationObserver` notifications. Browsers perform a microtask checkpoint after a task or callback finishes when the JavaScript stack is empty, and at other points defined by the HTML standard.
 
 ### How does the microtask queue work?
 
-1. **Execution order**: The microtask queue is processed after the currently executing script and before the macrotask queue. This means that microtasks are given higher priority than macrotasks.
-2. **Event loop**: During each iteration of the event loop, the JavaScript engine first processes all the microtasks in the microtask queue before moving on to the macrotask queue.
+1. **Execution order**: After the current task finishes, the runtime drains pending microtasks before it selects another task and normally before the browser gets an opportunity to render.
+2. **Queue draining**: If a microtask queues another microtask, the new one runs in the same checkpoint. An unbounded chain can therefore delay timers, input, and rendering.
 3. **Adding microtasks**: Microtasks can be added to the microtask queue using methods like `Promise.resolve().then()` and `queueMicrotask()`.
 
 ### Example
@@ -56,7 +56,7 @@ In this example:
 
 - The synchronous code (`console.log('Script start')` and `console.log('Script end')`) is executed first.
 - The promise callbacks (`Promise 1` and `Promise 2`) are added to the microtask queue and executed next.
-- The `setTimeout` callback is added to the macrotask queue and executed last.
+- The timer schedules a task, which can run only after the current task and its microtask checkpoint have completed.
 
 ### Use cases
 

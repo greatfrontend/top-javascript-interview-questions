@@ -4,7 +4,7 @@ title: How can you optimize DOM manipulation for better performance?
 
 ## TL;DR
 
-To optimize DOM manipulation for better performance, minimize direct DOM access and updates. Use techniques like batching DOM changes, using `DocumentFragment` for multiple elements, and using virtual DOM libraries like React. Also, consider using `requestAnimationFrame` for animations and avoid layout thrashing by reading and writing DOM properties separately.
+Measure with browser performance tools, then reduce unnecessary DOM work, batch related mutations, keep DOM trees manageable, and avoid forced synchronous layout by grouping reads before writes. Build detached subtrees before inserting them, and use `requestAnimationFrame()` for visual updates. A framework or virtual DOM changes the programming model and may batch work, but it is not an automatic performance optimization.
 
 ---
 
@@ -12,7 +12,7 @@ To optimize DOM manipulation for better performance, minimize direct DOM access 
 
 ### Minimize direct DOM access
 
-Accessing the DOM is relatively slow, so try to minimize the number of times you read from or write to the DOM. Instead, store references to elements in variables and work with those.
+DOM access is not inherently a problem, but repeated queries and mutations can become costly when they trigger style, layout, paint, or large tree updates. Reuse stable references where that improves clarity and avoids repeated work.
 
 ```js live
 // Creating an element for the example below
@@ -60,9 +60,9 @@ document.body.appendChild(fragment);
 console.log(document.body); // Notice that the divs have been added
 ```
 
-### Use virtual DOM libraries
+### Frameworks and virtual DOMs
 
-Libraries like React use a virtual DOM to batch updates and minimize direct DOM manipulation, which can significantly improve performance.
+Libraries such as React provide declarative rendering and can batch updates. Their reconciliation also adds JavaScript and memory overhead, so use a framework for application architecture and measure hot paths rather than assuming its virtual representation is faster than focused DOM code.
 
 ```jsx
 import React from 'react';

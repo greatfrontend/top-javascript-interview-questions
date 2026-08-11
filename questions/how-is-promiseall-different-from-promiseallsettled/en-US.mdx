@@ -103,7 +103,7 @@ The choice comes down to a single question: if one of these operations fails, is
 ### Use `Promise.all()` when partial success is invalid
 
 - **Prefetching everything a page needs before render**: if any required call fails (auth, feature flags, current user), you want to render an error state, not a half-broken UI.
-- **Transactional sequences**: booking a flight, hotel, and rental car in parallel. If the flight fails, the other reservations should not silently succeed.
+- **Required independent reads**: loading the current user, permissions, and feature configuration before rendering a page that needs all three.
 - **Gating UI on multiple checks**: show the dashboard only if `getUser()` AND `getPermissions()` both succeed. Fail-fast is the desired behavior.
 
 ### Use `Promise.allSettled()` when partial success is acceptable
@@ -114,18 +114,20 @@ The choice comes down to a single question: if one of these operations fails, is
 
 If you would `try/catch` each call individually anyway, `Promise.allSettled()` is what you actually want.
 
+Do not treat `Promise.all()` as a transaction. If several bookings or writes start together, one rejection does not cancel or roll back the others. Use a real transactional boundary where available, or design idempotency and compensating actions explicitly.
+
 ## Failure-mode reference
 
 | Input scenario | `Promise.all()` | `Promise.allSettled()` |
 | --- | --- | --- |
-| Empty iterable `[]` | Resolves with `[]` synchronously | Resolves with `[]` synchronously |
+| Empty iterable `[]` | Returns an already-fulfilled promise containing `[]` | Returns an already-fulfilled promise containing `[]` |
 | Mix of promises and non-promise values | Wraps non-promises with `Promise.resolve` | Wraps non-promises with `Promise.resolve` |
 | One rejection, others pending | Rejects immediately with first reason; others keep running but their results are ignored | Waits for all; returns one `{status:'rejected'}` entry |
 | Synchronous `throw` inside the iterable iterator | Returned promise rejects | Returned promise rejects |
 | Non-iterable input (e.g., `undefined`) | Returned promise rejects with `TypeError` | Returned promise rejects with `TypeError` |
 | Result order vs resolution order | Results array preserves **input** order, not the order they resolved | Results array preserves **input** order |
 
-> [!NOTE] Two behaviors are commonly misremembered: `Promise.all([])` does not reject or hang. It resolves with an empty array (synchronously, when the iterable is empty; asynchronously otherwise). And the result array always preserves input order, even when `promise[2]` resolves before `promise[0]`.
+> [!NOTE] Two behaviors are commonly misremembered: `Promise.all([])` does not reject or hang. Its returned Promise is already fulfilled with an empty array, but an attached `.then()` callback still runs asynchronously as a microtask. The result array always preserves input order, even when `promise[2]` resolves before `promise[0]`.
 
 ## Predict the output
 

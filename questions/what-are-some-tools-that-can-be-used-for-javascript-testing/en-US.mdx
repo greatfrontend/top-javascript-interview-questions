@@ -4,7 +4,7 @@ title: What are some tools that can be used for JavaScript testing?
 
 ## TL;DR
 
-For JavaScript testing, you can use tools like Jest, Mocha, Jasmine, and Cypress. Jest is popular for its ease of use and built-in features. Mocha is flexible and can be paired with other libraries. Jasmine is known for its simplicity and behavior-driven development (BDD) style. Cypress is great for end-to-end testing with a focus on real browser interactions.
+Common choices include Jest, Vitest, Mocha, Jasmine, and Node's built-in test runner for unit or integration tests, plus Playwright and Cypress for browser and end-to-end tests. Testing Library provides user-focused query helpers on top of a runner. The right stack depends on runtime, browser coverage, framework integration, isolation needs, and CI constraints.
 
 ---
 
@@ -89,9 +89,20 @@ describe('My First Test', () => {
 });
 ```
 
+### Vitest
+
+Vitest is a Vite-native test framework with a Jest-compatible API, TypeScript support, mocking, coverage, and watch mode. It is especially convenient for projects already using Vite.
+
+### Playwright
+
+Playwright runs end-to-end tests against Chromium, Firefox, and WebKit. It provides isolated browser contexts, automatic waiting, tracing, and APIs for pages, networks, downloads, and permissions.
+
 ## Further reading
 
 - [Jest documentation](https://jestjs.io/docs/getting-started)
 - [Mocha documentation](https://mochajs.org/)
 - [Jasmine documentation](https://jasmine.github.io/)
 - [Cypress documentation](https://docs.cypress.io/guides/overview/why-cypress)
+- [Vitest documentation](https://vitest.dev/guide/)
+- [Playwright documentation](https://playwright.dev/docs/intro)
+- [Node.js test runner](https://nodejs.org/api/test.html)

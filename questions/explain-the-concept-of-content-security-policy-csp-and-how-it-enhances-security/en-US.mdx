@@ -4,17 +4,17 @@ title: Explain the concept of Content Security Policy (CSP) and how it enhances 
 
 ## TL;DR
 
-Content Security Policy (CSP) is a security feature that helps prevent various types of attacks, such as Cross-Site Scripting (XSS) and data injection attacks, by specifying which content sources are trusted. It works by allowing developers to define a whitelist of trusted sources for content like scripts, styles, and images. This is done through HTTP headers or meta tags. For example, you can use the `Content-Security-Policy` header to specify that only scripts from your own domain should be executed:
+Content Security Policy (CSP) is a browser-enforced defense-in-depth policy for controlling script execution, resource loading, framing, and other capabilities. A modern XSS-resistant policy typically authorizes scripts with a fresh per-response nonce or hashes rather than trusting every script at an origin. Prefer an HTTP response header; a `<meta>` policy supports only a subset of CSP and cannot provide directives such as `frame-ancestors`.
 
 ```http
-Content-Security-Policy: script-src 'self'
+Content-Security-Policy: default-src 'self'; script-src 'nonce-r4nd0m'; object-src 'none'; base-uri 'none'
 ```
 
 ---
 
 ## What is Content Security Policy (CSP)?
 
-Content Security Policy (CSP) is a security standard introduced to mitigate a range of attacks, including Cross-Site Scripting (XSS) and data injection attacks. CSP allows web developers to control the resources that a user agent is allowed to load for a given page. By specifying a whitelist of trusted content sources, CSP helps to prevent the execution of malicious content.
+Content Security Policy (CSP) lets a site constrain browser behavior with an allowlist and other directives. It can reduce the impact of an injection flaw, report violations, prevent framing, and restrict outbound connections. It complements rather than replaces safe output handling.
 
 ### How CSP works
 
@@ -22,13 +22,13 @@ CSP works by allowing developers to define a set of rules that specify which sou
 
 ### Example of a CSP header
 
-Here is an example of a simple CSP header that only allows scripts from the same origin:
+Here is a minimal nonce-based example. Generate an unpredictable nonce for each response and apply the same value to authorized `<script nonce="...">` elements:
 
 ```http
-Content-Security-Policy: script-src 'self'
+Content-Security-Policy: default-src 'self'; script-src 'nonce-r4nd0m'; object-src 'none'; base-uri 'none'
 ```
 
-This policy tells the browser to only execute scripts that are loaded from the same origin as the page itself.
+This policy allows scripts carrying the matching nonce, blocks plugin content, and prevents injected `<base>` elements. A production policy should also cover framing, connections, styles, images, reporting, and any application-specific sources.
 
 ### Common directives
 
@@ -48,7 +48,7 @@ This policy tells the browser to only execute scripts that are loaded from the s
 
 ### Implementing CSP
 
-CSP can be implemented using HTTP headers or meta tags. The HTTP header approach is generally preferred because it is more secure and cannot be easily overridden by attackers.
+CSP can be delivered in an HTTP header or, with limitations, a meta tag. The HTTP header applies before the document is processed and supports the full directive set. A meta policy starts only where the tag appears and cannot express every directive.
 
 #### Using HTTP headers
 

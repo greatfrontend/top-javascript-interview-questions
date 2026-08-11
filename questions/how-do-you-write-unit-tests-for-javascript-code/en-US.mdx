@@ -4,136 +4,98 @@ title: How do you write unit tests for JavaScript code?
 
 ## TL;DR
 
-To write unit tests for JavaScript code, you typically use a testing framework like Jest or Mocha. First, you set up your testing environment by installing the necessary libraries. Then, you write test cases using functions like `describe`, `it`, or `test` to define your tests. Each test case should focus on a small, isolated piece of functionality. You use assertions to check if the output of your code matches the expected result.
+Choose a small behavioral unit, provide controlled inputs and dependencies, execute it, and assert its observable result or side effect. Cover representative success, boundary, and failure cases. Keep tests deterministic and independent, but do not mock every collaborator merely to make a test “unit sized”—an integration test may give more confidence when several modules form one behavior.
 
-Example using Jest:
-
-```js
-// sum.js
-function sum(a, b) {
-  return a + b;
-}
-module.exports = sum;
-
-// sum.test.js
-const sum = require('./sum');
-
-test('adds 1 + 2 to equal 3', () => {
-  expect(sum(1, 2)).toBe(3);
-});
-```
+Vitest, Jest, Mocha with an assertion library, and Node.js's built-in test runner are current options. The runner matters less than tests that explain the contract and fail for meaningful regressions.
 
 ---
 
-## Setting up the testing environment
+## Start from a behavior
 
-### Installing Jest
+Consider a shipping-price rule rather than a trivial implementation detail:
 
-To get started with Jest, you need to install it via npm:
-
-```bash
-npm install --save-dev jest
-```
-
-### Configuring Jest
-
-Add a script to your `package.json` to run Jest:
-
-```json
-{
-  "scripts": {
-    "test": "jest"
+```js
+// shipping.js
+export function calculateShipping({ subtotal, isMember }) {
+  if (!Number.isFinite(subtotal) || subtotal < 0) {
+    throw new RangeError('subtotal must be a non-negative number');
   }
+  if (isMember || subtotal >= 50) return 0;
+  return 5;
 }
 ```
 
-## Writing test cases
-
-### Basic structure
-
-A test file typically contains one or more `describe` blocks, which group related tests, and `it` or `test` blocks, which define individual test cases.
-
-Example:
+Using Vitest:
 
 ```js
-// sum.js
-function sum(a, b) {
-  return a + b;
-}
-module.exports = sum;
+import { describe, expect, test } from 'vitest';
+import { calculateShipping } from './shipping.js';
 
-// sum.test.js
-const sum = require('./sum');
-
-describe('sum function', () => {
-  test('adds 1 + 2 to equal 3', () => {
-    expect(sum(1, 2)).toBe(3);
+describe('calculateShipping', () => {
+  test.each([
+    [{ subtotal: 49, isMember: false }, 5],
+    [{ subtotal: 50, isMember: false }, 0],
+    [{ subtotal: 10, isMember: true }, 0],
+  ])('returns the expected price for %o', (input, expected) => {
+    expect(calculateShipping(input)).toBe(expected);
   });
 
-  test('adds -1 + 1 to equal 0', () => {
-    expect(sum(-1, 1)).toBe(0);
+  test('rejects a negative subtotal', () => {
+    expect(() => calculateShipping({ subtotal: -1, isMember: false })).toThrow(
+      RangeError,
+    );
   });
 });
 ```
 
-### Using assertions
+The cases document a normal price, the exact free-shipping boundary, the member rule, and invalid input. If the implementation changes from `if` statements to a lookup table, the tests still describe the same contract.
 
-Assertions are used to check if the output of your code matches the expected result. Jest provides various assertion methods like `toBe`, `toEqual`, `toBeNull`, etc.
+## Isolate unstable boundaries deliberately
 
-Example:
-
-```js
-test('object assignment', () => {
-  const data = { one: 1 };
-  data['two'] = 2;
-  expect(data).toEqual({ one: 1, two: 2 });
-});
-```
-
-## Mocking dependencies
-
-Sometimes, you need to mock dependencies to isolate the unit of code you are testing. Jest provides functions like `jest.fn()` and `jest.mock()` for this purpose.
-
-Example:
+For a unit that sends email or charges a card, inject a controlled adapter instead of making a real remote request:
 
 ```js
-// fetchData.js
-const fetch = require('node-fetch');
-
-async function fetchData(url) {
-  const response = await fetch(url);
-  return response.json();
+export function createWelcomeService({ emailClient }) {
+  return async function welcome(user) {
+    await emailClient.send({ to: user.email, template: 'welcome' });
+    return { welcomed: true };
+  };
 }
-module.exports = fetchData;
+```
 
-// fetchData.test.js
-const fetchData = require('./fetchData');
-const fetch = require('node-fetch');
+```js
+import { expect, test, vi } from 'vitest';
+import { createWelcomeService } from './welcome-service.js';
 
-jest.mock('node-fetch');
+test('sends the welcome template to the new user', async () => {
+  const emailClient = { send: vi.fn().mockResolvedValue(undefined) };
+  const welcome = createWelcomeService({ emailClient });
 
-test('fetches data from API', async () => {
-  const mockResponse = { data: '12345' };
-  fetch.mockResolvedValueOnce({
-    json: async () => mockResponse,
+  await expect(welcome({ email: 'avery@example.com' })).resolves.toEqual({
+    welcomed: true,
   });
-
-  const data = await fetchData('https://api.example.com/data');
-  expect(data).toEqual(mockResponse);
+  expect(emailClient.send).toHaveBeenCalledWith({
+    to: 'avery@example.com',
+    template: 'welcome',
+  });
 });
 ```
 
-## Running the tests
+This verifies an externally meaningful side effect without sending an email. It does not assert private helper calls or internal variable values.
 
-To run your tests, use the following command:
+## Practical checklist
 
-```bash
-npm test
-```
+- Name the behavior and expected outcome, not the implementation method.
+- Use explicit expected values; avoid recomputing the expected result with the same logic as the production code.
+- Include important boundaries and error behavior, not every possible input.
+- Reset mutated globals, fake timers, DOM state, and mocks after each test.
+- Avoid real clocks, random values, networks, and shared databases in unit tests unless controlled.
+- Prefer an integration or end-to-end test when the risk lies in wiring, rendering, serialization, or a real platform boundary.
+- Treat coverage as a map of unexecuted code, not proof that assertions are useful.
 
 ## Further reading
 
+- [Vitest guide](https://vitest.dev/guide/)
 - [Jest documentation](https://jestjs.io/docs/getting-started)
 - [Mocha documentation](https://mochajs.org/)
-- [Chai documentation](https://www.chaijs.com/)
-- [Sinon documentation](https://sinonjs.org/)
+- [Node.js test runner](https://nodejs.org/api/test.html)

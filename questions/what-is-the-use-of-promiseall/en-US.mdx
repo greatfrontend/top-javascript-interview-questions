@@ -4,7 +4,7 @@ title: What is the use of `Promise.all()`
 
 ## TL;DR
 
-`Promise.all()` is a method in JavaScript that takes an array of promises and returns a single promise. This returned promise resolves when all the input promises have resolved, or it rejects if any of the input promises reject. It is useful for running multiple asynchronous operations in parallel and waiting for all of them to complete.
+`Promise.all()` accepts an iterable of promises or values and returns a promise fulfilled with results in input order once every input fulfills. It rejects as soon as an input rejects. It does not start the operations or cancel the remaining work; create the promises first, and use `AbortController` or an operation-specific mechanism when cancellation is required.
 
 ```js live
 const promise1 = Promise.resolve(3);
@@ -39,7 +39,7 @@ Promise.all(iterable);
 When you pass an array of promises to `Promise.all()`, it returns a new promise. This new promise:
 
 - Resolves when all the promises in the array have resolved. The resolved value is an array of the resolved values of the input promises, in the same order as the input promises.
-- Rejects as soon as any of the input promises reject. The rejection reason is the reason of the first promise that rejects.
+- Rejects as soon as any input promise rejects. The rejection reason comes from the first rejection observed, which is not necessarily the first item in input order. Other operations continue running unless they are canceled separately.
 
 ### Example
 
@@ -91,8 +91,8 @@ In this example, `promise2` rejects after 200 milliseconds, causing the `Promise
 
 ### Use cases
 
-- **Parallel API requests**: When you need to make multiple API requests and wait for all of them to complete before proceeding.
-- **Batch processing**: When you have multiple asynchronous tasks that can be executed in parallel and you need to wait for all of them to finish.
+- **Concurrent API requests**: When independent requests have already been started and you need all of their results before proceeding.
+- **Batch processing**: When multiple asynchronous tasks can overlap and all must fulfill.
 - **Data aggregation**: When you need to gather data from multiple sources and combine the results.
 
 ## Further reading

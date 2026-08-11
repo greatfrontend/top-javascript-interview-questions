@@ -4,7 +4,7 @@ title: What are the different methods for iterating over an array?
 
 ## TL;DR
 
-There are several methods to iterate over an array in JavaScript. The most common ones include `for` loops, `forEach`, `map`, `filter`, `reduce`, and `for...of`. Each method has its own use case. For example, `for` loops are versatile and can be used for any kind of iteration, while `forEach` is specifically for executing a function on each array element. `map` is used for transforming arrays, `filter` for filtering elements, `reduce` for accumulating values, and `for...of` for iterating over iterable objects.
+Choose an iteration construct by the result and control flow you need: `map()` transforms into a new array, `filter()` selects, `reduce()` combines, `some()` / `every()` answer conditions, and `find()` locates one item. Use `for...of` or an indexed `for` loop when you need `break`, `continue`, sequential `await`, or precise index control. Use `forEach()` for synchronous side effects only; it ignores returned Promises and cannot be stopped early.
 
 ---
 
@@ -42,6 +42,23 @@ array.forEach((element) => {
   console.log(element);
 });
 ```
+
+Avoid this asynchronous trap:
+
+```js
+// Does not wait for the async callbacks.
+await files.forEach(async (file) => saveFile(file));
+
+// Sequential, useful when order or rate limiting matters.
+for (const file of files) {
+  await saveFile(file);
+}
+
+// Concurrent, useful when operations are independent and concurrency is safe.
+await Promise.all(files.map((file) => saveFile(file)));
+```
+
+For a large collection, unbounded `Promise.all()` can overload a service or exhaust resources; use a concurrency limit when necessary.
 
 ### Map method
 

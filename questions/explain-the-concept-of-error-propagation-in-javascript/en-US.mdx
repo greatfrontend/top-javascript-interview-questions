@@ -4,7 +4,7 @@ title: Explain the concept of error propagation in JavaScript
 
 ## TL;DR
 
-Error propagation in JavaScript refers to how errors are passed through the call stack. When an error occurs in a function, it can be caught and handled using `try...catch` blocks. If not caught, the error propagates up the call stack until it is either caught or causes the program to terminate. For example:
+Synchronous exceptions propagate up the current call stack until a matching `catch` handles them. Promise rejections propagate through the returned Promise chain until a rejection handler handles them. A `try...catch` around code that merely schedules a timer or callback cannot catch an exception thrown later on a different stack; the asynchronous API must report the failure through a Promise, error-first callback, or its own error event.
 
 ```js live
 function a() {
@@ -92,11 +92,39 @@ async function b() {
 })();
 ```
 
+The `await` is important because it connects the rejection to the surrounding `try...catch`. Compare that with a later timer callback:
+
+```js
+try {
+  setTimeout(() => {
+    throw new Error('Runs on a later call stack');
+  }, 0);
+} catch (error) {
+  // This never runs.
+}
+```
+
+Design the asynchronous operation so the error has an explicit channel:
+
+```js live
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function runJob() {
+  await delay(0);
+  throw new Error('Job failed');
+}
+
+runJob().catch((error) => console.error(error.message)); // Job failed
+```
+
 ### Best practices
 
-- Always handle errors at the appropriate level to prevent them from propagating unnecessarily.
-- Use `try...catch` blocks for synchronous code and `.catch()` or `try...catch` with `async/await` for asynchronous code.
-- Log errors to help with debugging and provide meaningful error messages to users.
+- Handle an error where you can recover, retry, translate it into a domain result, or add useful context. Otherwise let it propagate.
+- Return or `await` Promises. Starting a Promise and discarding it disconnects its rejection from the caller.
+- When wrapping an error, preserve it with `new Error(message, { cause: error })`.
+- Add a final error boundary at request, job, or process edges for logging and cleanup. Do not expose stacks or sensitive internal details to users.
 
 ## Further reading
 

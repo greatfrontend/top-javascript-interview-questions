@@ -4,129 +4,76 @@ title: Why might you want to create static class members in JavaScript?
 
 ## TL;DR
 
-Static class members (properties/methods) have a `static` keyword prepended. Such members cannot be directly accessed on instances of the class. Instead, they're accessed on the class itself.
+Static fields and methods belong to the class constructor rather than to each instance. Use them for behavior or data conceptually associated with the type as a whole: named factories, validation helpers, registries, constants, or counters. Access them as `ClassName.member` (or through `this` inside a static method), not through an instance.
 
-```js live
-class Car {
-  static noOfWheels = 4;
-  static compare() {
-    return 'Static method has been called.';
-  }
-}
-
-console.log(Car.noOfWheels); // 4
-```
-
-Static members are useful under the following scenarios:
-
-- **Namespace organization**: Static properties can be used to define constants or configuration values that are specific to a class. This helps organize related data within the class namespace and prevents naming conflicts with other variables. Examples include `Math.PI`, `Math.SQRT2`.
-- **Helper functions**: Static methods can be used as helper functions that operate on the class itself or its instances. This can improve code readability and maintainability by separating utility logic from the core functionality of the class. Examples of frequently used static methods include `Object.assign()`, `Math.max()`.
-- **Singleton pattern**: In some rare cases, static properties and methods can be used to implement a singleton pattern, where only one instance of a class ever exists. However, this pattern can be tricky to manage and is generally discouraged in favor of more modern dependency injection techniques.
+Do not use static mutable state for request/user data or browser secrets. It is shared within that constructor's runtime scope, complicates isolation and concurrency, and is duplicated across processes, workers, realms, or separate module copies. A module-level function or dependency-injected object is often simpler when no class abstraction is needed.
 
 ---
 
-## Static class members
-
-Static class members (properties/methods) are not tied to a specific instance of a class and have the same value regardless of which instance is referring to it. Static properties are typically configuration variables and static methods are usually pure utility functions which do not depend on the state of the instance. Such properties have a `static` keyword prepended.
+## Static versus instance members
 
 ```js live
-class Car {
-  static noOfWheels = 4;
-  static compare() {
-    return 'static method has been called.';
+class Temperature {
+  static ABSOLUTE_ZERO_C = -273.15;
+
+  constructor(celsius) {
+    this.celsius = celsius;
+  }
+
+  static fromFahrenheit(fahrenheit) {
+    return new Temperature(((fahrenheit - 32) * 5) / 9);
+  }
+
+  isPhysicallyPossible() {
+    return this.celsius >= Temperature.ABSOLUTE_ZERO_C;
   }
 }
 
-console.log(Car.noOfWheels); // Output: 4
-console.log(Car.compare()); // Output: static method has been called.
+const freezing = Temperature.fromFahrenheit(32);
+console.log(freezing.celsius); // 0
+console.log(freezing.isPhysicallyPossible()); // true
+console.log(freezing.fromFahrenheit); // undefined
 ```
 
-Static members are not accessible by a specific instance of a class.
+The factory belongs to the type because it creates an instance from another representation. `isPhysicallyPossible()` belongs to an instance because it reads that instance's `celsius` value.
+
+## Common uses
+
+### Named factories and parsing
+
+Static methods can make construction intent explicit, such as `Date.fromTimestamp()` in an application class or `UserId.parse(value)`. They can validate input before returning an instance and may return a subclass when called through `this` if designed that way.
+
+### Type-wide registries or counters
 
 ```js live
-class Car {
-  static noOfWheels = 4;
-  static compare() {
-    return 'static method has been called.';
+class Job {
+  static #nextId = 1;
+
+  constructor() {
+    this.id = Job.#nextId;
+    Job.#nextId += 1;
   }
 }
 
-const car = new Car();
-console.log(car.noOfWheels); // Output: undefined
-console.log(car.compare()); // TypeError: car.compare is not a function
+console.log(new Job().id); // 1
+console.log(new Job().id); // 2
 ```
 
-The `Math` class in JavaScript is a good example of a common library that uses static members. The `Math` class in JavaScript is a built-in object that provides a collection of mathematical constants and functions. It is a static class, meaning that all of its properties and methods are static. Here's an example of how the `Math` class uses static members:
+This is suitable for a local diagnostic identifier, not a globally unique database ID. Multiple tabs, workers, processes, or restarts each have their own counter.
 
-```js live
-console.log(Math.PI); // Output: 3.141592653589793
-console.log(Math.abs(-5)); // Output: 5
-console.log(Math.max(1, 2, 3)); // Output: 3
-```
+### Constants associated with a type
 
-In this example, `Math.PI`, `Math.abs()`, and `Math.max()` are all static members of the `Math` class. They can be accessed directly on the `Math` object without the need to create an instance of the class.
+A static field can keep a domain constant near the related class. Freeze objects when callers must not mutate the shared object, and remember that `static` itself does not make a field immutable.
 
-## Reasons to use static class members
+## Tradeoffs
 
-### Utility functions
-
-Static class members can be useful for defining utility functions that don't require any instance-specific (don't use `this`) data or behavior. For example, you might have an `Arithmetic` class with static methods for common mathematical operations.
-
-```js live
-class Arithmetic {
-  static add(a, b) {
-    return a + b;
-  }
-  static subtract(a, b) {
-    return a - b;
-  }
-}
-
-console.log(Arithmetic.add(2, 3)); // Output: 5
-console.log(Arithmetic.subtract(5, 2)); // Output: 3
-```
-
-### Singletons
-
-Static class members can be used to implement the Singleton pattern, where you want to ensure that only one instance of a class exists throughout your application.
-
-```js live
-class Singleton {
-  static instance;
-
-  static getInstance() {
-    if (!this.instance) {
-      this.instance = new Singleton();
-    }
-    return this.instance;
-  }
-}
-
-const singleton1 = Singleton.getInstance();
-const singleton2 = Singleton.getInstance();
-
-console.log(singleton1 === singleton2); // Output: true
-```
-
-### Configurations
-
-Static class members can be used to store configuration or settings that are shared across all instances of a class. This can be useful for things like API keys, feature flags, or other global settings.
-
-```js live
-class Config {
-  static API_KEY = 'your-api-key';
-  static FEATURE_FLAG = true;
-}
-
-console.log(Config.API_KEY); // Output: 'your-api-key'
-console.log(Config.FEATURE_FLAG); // Output: true
-```
-
-### Performance
-
-In some cases, using static class members can improve performance by reducing the amount of memory used by your application. This is because static class members are shared across all instances of a class, rather than being duplicated for each instance.
+- Static mutable state persists between calls and tests unless reset.
+- Static methods can be harder to substitute than an injected dependency.
+- Inheritance of static members and use of `this` can be useful but surprising; document whether subclasses share or shadow state.
+- Instance prototype methods are already shared rather than copied per object, so converting a method to `static` is not a general performance optimization.
+- API keys in browser code are visible regardless of whether they are stored in a static field, module constant, or minified bundle.
 
 ## Further reading
 
-- [Static methods and properties | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/static)
-- [Static properties and methods | JavaScript.info](https://javascript.info/static-properties-methods)
+- [MDN: `static`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/static)
+- [ECMAScript specification: Class definitions](https://tc39.es/ecma262/multipage/ecmascript-language-functions-and-classes.html#sec-class-definitions)

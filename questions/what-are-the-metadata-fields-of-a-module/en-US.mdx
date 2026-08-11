@@ -4,159 +4,78 @@ title: What are the metadata fields of a module?
 
 ## TL;DR
 
-Metadata fields of a module typically include information such as the module's name, version, description, author, license, and dependencies. These fields are often found in a `package.json` file in JavaScript projects. For example:
+For an npm package, `package.json` metadata describes identity (`name`, `version`), discovery and ownership (`description`, `keywords`, `repository`, `bugs`, `license`, `author`), runtime contract (`type`, `main`, `exports`, `imports`, `types`, `files`, `bin`, `engines`), dependencies, and scripts. Not every field is standardized by JavaScript itself, and package managers, Node.js, TypeScript, and bundlers consume different fields.
 
-```json
-{
-  "name": "my-module",
-  "version": "1.0.0",
-  "description": "A sample module",
-  "author": "John Doe",
-  "license": "MIT",
-  "dependencies": {
-    "express": "^4.17.1"
-  }
-}
-```
+The most consequential fields are often `exports`, `type`, dependency categories, and `files`: mistakes there can break consumers or publish unintended files. Validate the packed artifact in both ESM/CommonJS environments that the package claims to support.
 
 ---
 
-## Metadata fields of a module
-
-### Name
-
-The `name` field specifies the name of the module. It is used to identify the module in the package registry and when it is installed as a dependency.
+## Example package contract
 
 ```json
 {
-  "name": "my-module"
-}
-```
-
-### Version
-
-The `version` field indicates the current version of the module. It follows semantic versioning (semver) guidelines.
-
-```json
-{
-  "version": "1.0.0"
-}
-```
-
-### Description
-
-The `description` field provides a brief summary of what the module does. This is useful for users browsing the package registry.
-
-```json
-{
-  "description": "A sample module"
-}
-```
-
-### Author
-
-The `author` field specifies the name and contact information of the module's author.
-
-```json
-{
-  "author": "John Doe"
-}
-```
-
-### License
-
-The `license` field indicates the licensing terms under which the module can be used. Common licenses include MIT, Apache-2.0, and GPL-3.0.
-
-```json
-{
-  "license": "MIT"
-}
-```
-
-### Dependencies
-
-The `dependencies` field lists other modules that the current module depends on to work correctly. Each dependency is specified with its name and version range.
-
-```json
-{
-  "dependencies": {
-    "express": "^4.17.1"
-  }
-}
-```
-
-### DevDependencies
-
-The `devDependencies` field lists modules that are only needed for development and testing, not for production.
-
-```json
-{
-  "devDependencies": {
-    "jest": "^26.6.3"
-  }
-}
-```
-
-### Scripts
-
-The `scripts` field allows you to define script commands that can be run using `npm run <script-name>`.
-
-```json
-{
+  "name": "@example/slugify",
+  "version": "2.1.0",
+  "description": "Create URL-safe slugs",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "README.md", "LICENSE"],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "start": "node index.js",
-    "test": "jest"
-  }
-}
-```
-
-### Keywords
-
-The `keywords` field is an array of strings that help users find the module when searching in the package registry.
-
-```json
-{
-  "keywords": ["sample", "module", "example"]
-}
-```
-
-### Repository
-
-The `repository` field provides information about the source code repository for the module.
-
-```json
-{
+    "build": "build-command",
+    "test": "test-command"
+  },
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/username/my-module.git"
+    "url": "https://github.com/example/slugify.git"
   }
 }
 ```
 
-### Bugs
+## Identity and publishing
 
-The `bugs` field provides information on where to report issues with the module.
+- `name` identifies the package in a registry and in import specifiers. Scoped names use forms such as `@example/slugify`.
+- `version` is the published package version. Registries commonly require a valid semantic version, but a dependency range such as `^2.1.0` has different meaning from the package's own exact version.
+- `private: true` prevents accidental publication in package managers that honor it; use it for application/workspace-only packages.
+- `files` is an allowlist for packed content, subject to package-manager inclusion and ignore rules. Inspect the actual package tarball before publishing.
 
-```json
-{
-  "bugs": {
-    "url": "https://github.com/username/my-module/issues"
-  }
-}
-```
+## Module entry points
 
-### Homepage
+- `type` controls how Node.js interprets `.js` files in that package scope: `"module"` for ESM or `"commonjs"` for CommonJS.
+- `exports` defines public entry points and can provide conditional targets. When present, it also encapsulates undeclared subpaths.
+- `main` is the legacy primary CommonJS-style entry field and remains relevant to older tools.
+- `imports` defines package-internal aliases beginning with `#` under Node.js package rules.
+- `types` points TypeScript-compatible tooling to the package's declaration entry.
+- `bin` exposes executable commands.
 
-The `homepage` field specifies the URL of the module's homepage.
+Supporting both ESM and CommonJS requires deliberate conditional exports and tests. Simply adding a `module` field is not a cross-runtime guarantee; that field is a bundler convention rather than the Node.js package contract.
 
-```json
-{
-  "homepage": "https://github.com/username/my-module#readme"
-}
-```
+## Dependency fields
+
+- `dependencies` are required when consumers run the package.
+- `devDependencies` support development, build, and tests and are not runtime requirements of the published library.
+- `peerDependencies` declare a compatible host dependency that the consuming application should provide, commonly used for plugins.
+- `optionalDependencies` may fail to install without making the whole installation fail; runtime code must handle their absence.
+
+Misclassifying a runtime import as a development dependency can make the packed library work in its repository but fail for consumers. Conversely, putting build tools in runtime dependencies increases consumer installation cost.
+
+## Descriptive and operational metadata
+
+`description`, `keywords`, `homepage`, `repository`, `bugs`, `author` or `contributors`, `funding`, and `license` help users evaluate and maintain the package. `scripts` defines lifecycle and project commands; install lifecycle scripts execute code and therefore deserve supply-chain review. `engines` communicates supported runtimes, but enforcement depends on the package manager and its configuration.
+
+## Validation before publishing
+
+Pack the package locally, inspect the file list, install that tarball into a clean fixture, and test every documented import path. Check that source maps do not reveal unintended source, secrets, or internal paths, and that README examples use only exported entry points.
 
 ## Further reading
 
-- [npm package.json documentation](https://docs.npmjs.com/cli/v7/configuring-npm/package-json)
+- [npm: `package.json`](https://docs.npmjs.com/cli/configuring-npm/package-json)
+- [Node.js: Packages](https://nodejs.org/api/packages.html)
 - [Semantic Versioning](https://semver.org/)
-- [CommonJS Modules](https://nodejs.org/docs/latest/api/modules.html)
+- [TypeScript: Publishing declaration files](https://www.typescriptlang.org/docs/handbook/declaration-files/publishing.html)

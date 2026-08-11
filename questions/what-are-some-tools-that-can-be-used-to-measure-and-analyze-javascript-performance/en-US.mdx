@@ -4,54 +4,70 @@ title: What are some tools that can be used to measure and analyze JavaScript pe
 
 ## TL;DR
 
-To measure and analyze JavaScript performance, you can use tools like Chrome DevTools, Lighthouse, WebPageTest, and JSBench. Chrome DevTools provides a Performance panel for profiling, Lighthouse offers audits for performance metrics, WebPageTest allows for detailed performance testing, and JSBench helps in comparing the performance of different JavaScript snippets.
+Start with a reproducible user-visible problem, then choose the tool that measures that layer:
+
+- **Slow or janky interaction**: Record the interaction in the browser's Performance panel and inspect long tasks, rendering work, and call stacks.
+- **Slow page load**: Use the Network panel, Lighthouse, or WebPageTest. Compare lab results with real-user data when available.
+- **Growing memory use**: Use heap snapshots and allocation profiles in the Memory panel.
+- **Slow Node.js code**: Capture a CPU or heap profile with the Node.js inspector.
+- **One suspected hot function**: Add `performance.mark()` / `performance.measure()` instrumentation or run a carefully designed benchmark.
+
+Measure before and after the same scenario. A microbenchmark can compare isolated snippets, but it cannot tell you whether that snippet matters to users.
 
 ---
 
-## Tools to measure and analyze JavaScript performance
+## Match the tool to the symptom
 
-### Chrome DevTools
+### Chrome DevTools Performance, Network, and Memory panels
 
-Chrome DevTools is a set of web developer tools built directly into the Google Chrome browser. It provides a Performance panel that allows you to record and analyze the runtime performance of your web application.
+The Performance panel records browser work over time: JavaScript tasks, rendering, frames, network activity, and user interactions. It is the main tool for a page that freezes when opening a menu or typing into a large form.
 
-- Open Chrome DevTools by pressing `F12` or `Ctrl+Shift+I`
-- Navigate to the Performance panel
-- Click the "Record" button to start profiling
-- Interact with your web application to capture performance data
-- Click the "Stop" button to end profiling and analyze the results
+1. Reproduce the issue once without profiling.
+2. Start a recording, perform only the problematic interaction, and stop.
+3. Find the delayed interaction or long task and expand its call stack.
+4. Change the suspected code and repeat under the same CPU and network settings.
 
-### Lighthouse
+Use the Network panel instead when the delay is primarily waiting for requests. Use the Memory panel when usage grows after repeatedly opening and closing the same UI.
 
-Lighthouse is an open-source, automated tool for improving the quality of web pages. It provides audits for performance, accessibility, progressive web apps, SEO, and more.
+### Lighthouse and field data
 
-- Open Chrome DevTools
-- Navigate to the Lighthouse panel
-- Select the categories you want to audit (e.g., Performance)
-- Click the "Generate report" button
-- Review the generated report for performance insights and recommendations
+Lighthouse runs a repeatable lab audit of a page and points to likely loading and main-thread opportunities. It is useful for catching regressions in development or CI, but a single score is not production truth: lab conditions may not represent users' devices, networks, caches, or interactions.
+
+Use field data, such as your own real-user monitoring, to confirm which problems affect real users. In particular, a navigation-only Lighthouse run cannot reproduce every interaction problem.
 
 ### WebPageTest
 
-WebPageTest is a free online tool that provides detailed performance testing of web pages. It allows you to run tests from multiple locations around the world using real browsers.
+WebPageTest records page loads in real browsers from configurable locations and network profiles. Its waterfall and filmstrip are useful for diagnosing request dependencies, caching, rendering progress, and differences between the first and repeat view. Test the same URL several times and compare medians rather than treating one run as conclusive.
 
-- Go to [WebPageTest](https://www.webpagetest.org/)
-- Enter the URL of the web page you want to test
-- Select the test location and browser
-- Click the "Start Test" button
-- Review the detailed performance report, including metrics like load time, time to first byte, and more
+### User Timing API
 
-### JSBench
+For an application-specific operation, add marks around the work you care about:
 
-JSBench is a tool for comparing the performance of different JavaScript snippets. It allows you to create and run benchmarks to see which code performs better.
+```js
+performance.mark('filter-start');
+const visibleRows = filterRows(rows, query);
+performance.mark('filter-end');
+performance.measure('filter-rows', 'filter-start', 'filter-end');
 
-- Go to [JSBench](https://jsbench.me/)
-- Create a new test case by entering different JavaScript snippets
-- Run the benchmark to compare the performance of the snippets
-- Review the results to see which snippet performs better
+console.table(performance.getEntriesByName('filter-rows'));
+```
+
+This measures the operation inside the real application. Clear old marks and measures in long-lived pages if you generate many of them.
+
+### Node.js inspector
+
+For a CPU-bound Node.js endpoint, capture a CPU profile under a representative workload and inspect the hottest call stacks. For increasing memory, compare heap snapshots and inspect the retaining paths. Profiling adds overhead, so be deliberate about collecting profiles in production and treat them as potentially sensitive artifacts.
+
+### Microbenchmarks
+
+Tools such as JSBench can compare two small implementations after you have identified a real hot path. Warm up the code, consume the result so the engine cannot discard work, test representative inputs, and run enough samples. Engine optimizations and benchmark setup can otherwise make tiny differences misleading.
 
 ## Further reading
 
-- [Chrome DevTools Performance Panel](https://developer.chrome.com/docs/devtools/evaluate-performance/)
+- [Chrome DevTools Performance panel](https://developer.chrome.com/docs/devtools/performance)
+- [Chrome DevTools Memory panel](https://developer.chrome.com/docs/devtools/memory)
 - [Lighthouse](https://developer.chrome.com/docs/lighthouse/overview)
 - [WebPageTest](https://www.webpagetest.org/)
+- [User Timing API](https://developer.mozilla.org/en-US/docs/Web/API/Performance_API/User_timing)
+- [Node.js inspector](https://nodejs.org/api/inspector.html)
 - [JSBench](https://jsbench.me/)

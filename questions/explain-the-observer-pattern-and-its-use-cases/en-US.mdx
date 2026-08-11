@@ -4,81 +4,62 @@ title: Explain the Observer pattern and its use cases
 
 ## TL;DR
 
-The Observer pattern is a design pattern where an object, known as the subject, maintains a list of its dependents, called observers, and notifies them of any state changes. This pattern is useful for implementing distributed event-handling systems, such as updating the user interface in response to data changes or implementing event-driven architectures.
+The Observer pattern lets a subject publish changes to subscribed observers without knowing their concrete implementations. It fits UI events, state stores, and in-process notifications where multiple consumers react to one source. A practical subscription API should return an unsubscribe function and define whether delivery is synchronous, how listener errors are handled, and what happens when listeners subscribe or unsubscribe during notification.
+
+Use it when one-to-many notifications reduce coupling. Prefer a direct function call when there is only one known consumer or when the operation needs an immediate result; hidden event chains can make ordering and failures difficult to trace.
 
 ---
 
-## What is the Observer pattern?
-
-The Observer pattern is a behavioral design pattern that defines a one-to-many dependency between objects. When the state of the subject (the one) changes, all its observers (the many) are notified and updated automatically. This pattern is particularly useful for scenarios where changes in one object need to be reflected in multiple other objects without tightly coupling them.
-
-### Key components
-
-1. **Subject**: The object that holds the state and sends notifications to observers.
-2. **Observer**: The objects that need to be notified of changes in the subject.
-3. **ConcreteSubject**: A specific implementation of the subject.
-4. **ConcreteObserver**: A specific implementation of the observer.
-
-### Example
-
-Here is a simple example in JavaScript:
+## A practical implementation
 
 ```js live
-class Subject {
-  constructor() {
-    this.observers = [];
-  }
+function createSubject() {
+  const listeners = new Set();
 
-  addObserver(observer) {
-    this.observers.push(observer);
-  }
+  return {
+    subscribe(listener) {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
 
-  removeObserver(observer) {
-    this.observers = this.observers.filter((obs) => obs !== observer);
-  }
-
-  notifyObservers() {
-    this.observers.forEach((observer) => observer.update());
-  }
+    publish(value) {
+      // Snapshot so subscription changes do not alter this delivery pass.
+      for (const listener of [...listeners]) {
+        listener(value);
+      }
+    },
+  };
 }
 
-class Observer {
-  update() {
-    console.log('Observer updated');
-  }
-}
+const connection = createSubject();
+const unsubscribe = connection.subscribe((status) => {
+  console.log(`Connection: ${status}`);
+});
 
-// Usage
-const subject = new Subject();
-const observer1 = new Observer();
-const observer2 = new Observer();
-
-subject.addObserver(observer1);
-subject.addObserver(observer2);
-
-subject.notifyObservers(); // Both observers will be updated
+connection.publish('online'); // Connection: online
+unsubscribe();
+connection.publish('offline'); // No output
 ```
 
-## Use cases
+Using a `Set` avoids accidental duplicate subscriptions. Returning cleanup from `subscribe()` makes ownership explicit and prevents a long-lived subject from retaining disposed UI and its closed-over data.
 
-### User interface updates
+## Delivery choices
 
-In front end development, the Observer pattern is commonly used to update the user interface in response to changes in data. For example, in a Model-View-Controller (MVC) architecture, the view can observe the model and update itself whenever the model's state changes.
+This example notifies synchronously. Therefore a slow observer delays the publisher, and a thrown exception stops later observers. Depending on the application, the subject can isolate listener errors, queue notifications, or use an asynchronous event system—but those choices change ordering and error propagation and should be documented.
 
-### Event handling
+For streams with backpressure, cancellation, completion, and error channels, an async iterator or a stream abstraction may fit better than a minimal Observer.
 
-The Observer pattern is useful for implementing event-driven systems. For instance, in JavaScript, the `addEventListener` method allows you to register multiple event handlers (observers) for a single event (subject).
+## Common use cases
 
-### Real-time data feeds
+- DOM event targets notify registered event listeners.
+- A state store notifies views that selected state changed.
+- A connection manager notifies status indicators, retry controls, and telemetry.
+- A domain-event publisher notifies independent in-process handlers.
 
-Applications that require real-time updates, such as stock tickers or chat applications, can benefit from the Observer pattern. Observers can subscribe to data feeds and get notified whenever new data is available.
-
-### Dependency management
-
-In complex applications, managing dependencies between different modules can be challenging. The Observer pattern helps decouple these modules, making the system more modular and easier to maintain.
+For cross-process messaging, a broker adds durability, delivery, ordering, and retry concerns beyond the in-memory Observer pattern.
 
 ## Further reading
 
-- [Observer pattern on Wikipedia](https://en.wikipedia.org/wiki/Observer_pattern)
-- [Observer pattern in JavaScript](https://www.dofactory.com/javascript/observer-design-pattern)
-- [Design Patterns: Elements of Reusable Object-Oriented Software](https://www.amazon.com/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612) by Erich Gamma, Richard Helm, Ralph Johnson, and John Vlissides
+- [Observer pattern](https://en.wikipedia.org/wiki/Observer_pattern)
+- [MDN: `EventTarget`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget)
+- [MDN: Async iterator and async iterable protocols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_async_iterator_and_async_iterable_protocols)

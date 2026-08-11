@@ -19,7 +19,7 @@ mutableObject.name = 'Jane';
 console.log(mutableObject); // Output: { name: 'Jane', age: 30 }
 ```
 
-**Immutable objects** cannot be directly modified after creation. Their contents cannot be changed without creating an entirely new value.
+**Immutable values** cannot be changed after creation. JavaScript objects and arrays are mutable by default; an application can enforce shallow immutability with `Object.freeze()` or follow an immutable-update convention that creates a new object instead of mutating the existing one.
 
 ```js live
 const immutableObject = Object.freeze({
@@ -34,7 +34,7 @@ immutableObject.name = 'Jane';
 console.log(immutableObject); // Output: { name: 'John', age: 30 }
 ```
 
-The key difference between mutable and immutable objects is modifiability. Immutable objects cannot be modified after they are created, while mutable objects can be.
+`Object.freeze()` is shallow, so nested objects remain mutable unless they are frozen separately. Failed writes throw in strict mode and otherwise usually fail silently.
 
 ---
 
@@ -88,7 +88,7 @@ name = name.toUpperCase();
 console.log(name); // Now prints "ALICE"
 ```
 
-Some built-in immutable JavaScript objects are `Math`, `Date`, but custom objects are generally mutable.
+Some built-in values are immutable primitives, but common built-in objects such as `Date`, `Map`, and `Set` expose mutating methods. Custom objects and arrays are mutable unless the application constrains them.
 
 ### `const` vs immutable objects
 
@@ -99,25 +99,25 @@ A common confusion / misunderstanding is that declaring a variable using `const`
 - For primitive values (numbers, strings, booleans), `const` makes the value immutable since primitives are immutable by nature.
 - For non-primitive values like objects and arrays, `const` only prevents reassigning a new object/array to the variable, but the properties/elements of the existing object/array can still be modified.
 
-On the other hand, an immutable object is an object whose state (properties and values) cannot be modified after it is created. This is achieved by using methods like `Object.freeze()` which makes the object immutable by preventing any changes to its properties.
+`Object.freeze()` prevents changes to an object's own property descriptors and makes it non-extensible. It does not recursively freeze referenced objects, and it cannot prevent state changes that are not represented by ordinary own properties—for example, calling a mutating method on a frozen `Map` still changes the map's internal data.
 
 ```js live
 // Using const
 const person = { name: 'John' };
-person = { name: 'Jane' }; // Error: Assignment to constant variable
 person.name = 'Jane'; // Allowed, person.name is now 'Jane'
+// person = { name: 'Jane' }; // If uncommented: assignment to a constant
 
-// Using Object.freeze() to create an immutable object
+// Using Object.freeze() to protect this object's own properties
 const frozenPerson = Object.freeze({ name: 'John' });
-frozenPerson.name = 'Jane'; // Fails silently (no error, but no change)
-frozenPerson = { name: 'Jane' }; // Error: Assignment to constant variable
+console.log(Reflect.set(frozenPerson, 'name', 'Jane')); // false; no change
+// frozenPerson = { name: 'Jane' }; // If uncommented: assignment to a constant
 ```
 
-In the first example with `const`, reassigning a new object to `person` is not allowed, but modifying the `name` property is permitted. In the second example, `Object.freeze()` makes the `frozenPerson` object immutable, preventing any changes to its properties.
+In the first example with `const`, reassigning a new object to `person` is not allowed, but modifying the `name` property is permitted. In the second example, `Object.freeze()` prevents changes to `frozenPerson`'s own properties.
 
-`Object.freeze()` creates a shallow immutable object. If the object contains nested objects or arrays, those nested data structures are still mutable unless frozen separately.
+`Object.freeze()` creates a shallow frozen object. If it contains nested objects or arrays, those nested data structures remain mutable unless frozen separately.
 
-Therefore, while `const` provides immutability for primitive values, creating truly immutable objects requires using `Object.freeze()` or other immutability techniques like deep freezing or using immutable data structures from libraries like [Immer](https://immerjs.github.io/immer/) or [Immutable.js](https://immutable-js.com/).
+Therefore, `const` controls reassignment rather than object mutation. Enforcing deep immutability requires recursively freezing a supported object graph or using an immutable update convention or data structure. Libraries such as [Immer](https://immerjs.github.io/immer/) and [Immutable.js](https://immutable-js.com/) offer different approaches.
 
 ## Various ways to implement immutability in plain JavaScript objects
 
@@ -181,8 +181,13 @@ person.age = 35;
 
 console.log(person); // Output: { name: 'John Doe', age: 35 }
 
-// Try to re-configure an existing property descriptor (this will fail silently)
-Object.defineProperty(person, 'name', { writable: false }); // Fails silently in non-strict mode
+// Try to make a non-configurable property enumerable differently.
+// Object.defineProperty throws regardless of strict mode.
+try {
+  Object.defineProperty(person, 'name', { enumerable: false });
+} catch (error) {
+  console.log(error.name); // TypeError
+}
 
 // Check if the object is sealed
 console.log(Object.isSealed(person)); // Output: true
@@ -190,7 +195,7 @@ console.log(Object.isSealed(person)); // Output: true
 
 ### Freezing an object
 
-`Object.freeze()` creates a frozen object, which means it takes an existing object and essentially calls `Object.seal()` on it, but it also marks all "data accessor" properties as `writable: false`, so that their values cannot be changed.
+`Object.freeze()` creates a frozen object. It makes the object non-extensible, marks all own properties non-configurable, and marks own data properties non-writable. Accessor properties do not have a `writable` flag, and their setters can still have effects elsewhere.
 
 This approach is the highest level of immutability that you can attain for an object itself, as it prevents any changes to the object or to any of its direct properties (though, as mentioned above, the contents of any referenced other objects are unaffected).
 
@@ -198,7 +203,7 @@ This approach is the highest level of immutability that you can attain for an ob
 let immutableObject = Object.freeze({});
 ```
 
-Freezing an object does not allow new properties to be added to an object and prevents users from removing or altering the existing properties. `Object.freeze()` preserves the enumerability, configurability, writability and the `prototype` of the object. It returns the passed object and does not create a frozen copy.
+Freezing an object prevents adding or removing own properties and restricts changes to their descriptors. It preserves existing enumerability and the prototype, while setting configurability—and, for data properties, writability—to `false`. It returns the passed object and does not create a copy.
 
 `Object.freeze()` makes the object immutable. However, it is not necessarily constant. While `Object.freeze` prevents modifications to the object itself and its direct properties, nested objects within the frozen object can still be modified.
 
@@ -217,10 +222,10 @@ console.log(obj.user.name); //Output: 'John'
 
 ### Pros
 
-- **Easier change detection**: Object equality can be determined in a performant and easy manner through referential equality. This is useful for comparing object differences in React and Redux.
+- **Easier change detection with immutable updates**: If every change produces a new reference and unchanged branches are reused, referential equality can cheaply reveal which branches may have changed. Two separately created immutable objects with equal contents are still not equal by reference.
 - **Less complicated**: Programs with immutable objects are less complicated to think about, since you don't need to worry about how an object may evolve over time.
 - Easy sharing via references: One copy of an object is just as good as another, so you can cache objects or reuse the same object multiple times.
-- **Thread-safe**: Immutable objects can be safely used between threads in a multi-threaded environment since there is no risk of them being modified in other concurrently running threads. In most cases, JavaScript runs in a single-threaded environment.
+- **Safer sharing model**: Immutable values avoid mutation races in environments that can share memory. Web workers usually exchange ordinary objects through structured cloning rather than sharing the same object; shared memory uses `SharedArrayBuffer` and requires explicit synchronization.
 - **Less memory needed**: Using libraries like [Immer](https://immerjs.github.io/immer/) and [Immutable.js](https://immutable-js.com/), objects are modified using structural sharing and less memory is needed for having multiple objects with similar structures.
 - **No need for defensive copying**: Defensive copies are no longer necessary when immutable objects are returned from or passed to functions, since there is no possibility an immutable object will be modified by it.
 

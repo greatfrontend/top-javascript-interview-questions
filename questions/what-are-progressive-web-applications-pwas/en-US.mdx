@@ -4,7 +4,7 @@ title: What are Progressive Web Applications (PWAs)?
 
 ## TL;DR
 
-Progressive Web Applications (PWAs) are web applications that use modern web capabilities to deliver an app-like experience to users. They are reliable, fast, and engaging. PWAs can work offline, send push notifications, and be installed on a user's home screen. They use technologies like service workers, web app manifests, and HTTPS to provide these features.
+Progressive Web Applications (PWAs) are web applications enhanced with capabilities such as installation, offline behavior, background work, and notifications. Which capabilities are available—and the exact installation criteria—vary by browser and operating system. A web app manifest supplies installation metadata, service workers commonly provide offline and push behavior, and powerful features require a secure context.
 
 ---
 
@@ -16,15 +16,15 @@ Progressive Web Applications (PWAs) are web applications that combine the best o
 
 ### Key characteristics
 
-- **Progressive**: They work for every user, regardless of browser choice, because they are built with progressive enhancement as a core tenet.
+- **Progressively enhanced**: The core web experience should work where optional platform capabilities are unavailable.
 - **Responsive**: They fit any form factor, whether it's a desktop, mobile, or tablet.
 - **Connectivity independent**: They can work offline or on low-quality networks using service workers.
 - **App-like**: They provide an app-like experience to users with app-style interactions and navigation.
-- **Fresh**: They are always up-to-date thanks to the service worker update process.
+- **Updateable**: Service workers have an update lifecycle, but cache strategy and update UX must be designed correctly to avoid serving stale assets.
 - **Safe**: They are served via HTTPS to prevent snooping and ensure content hasn't been tampered with.
-- **Discoverable**: They are identifiable as "applications" thanks to W3C manifests and service worker registration, allowing search engines to find them.
-- **Re-engageable**: They can send push notifications to re-engage users.
-- **Installable**: They allow users to add apps they find most useful to their home screen without the hassle of an app store.
+- **Discoverable**: They remain linkable web applications and can expose installation metadata through a manifest.
+- **Re-engageable**: Where supported and permitted by the user, they can receive push notifications.
+- **Installable**: Supporting browsers can install eligible sites into an app-like window or home-screen entry; criteria and UX vary by platform.
 - **Linkable**: They can be easily shared via URL and do not require complex installation.
 
 ### Core technologies
@@ -74,13 +74,13 @@ The web app manifest is a JSON file that provides metadata about the application
 
 #### HTTPS
 
-PWAs must be served over HTTPS to ensure security and privacy. This is a requirement for service workers and other advanced web features.
+Service workers and many other powerful capabilities require a secure context, normally HTTPS (with localhost exceptions for development). A site can still use a manifest without a service worker, and current installation criteria are browser-specific.
 
 ### Benefits
 
-- **Improved performance**: PWAs load faster and provide a smoother user experience.
+- **Performance opportunities**: Caching and offline strategies can improve repeat-load resilience, but the PWA label itself does not guarantee fast loading.
 - **Increased engagement**: Features like push notifications and home screen installation help keep users engaged.
-- **Cost-effective**: Developing a PWA can be more cost-effective than building separate native apps for different platforms.
+- **Potentially shared implementation**: One web codebase can cover multiple platforms, though capability gaps and platform-specific UX can still add work.
 
 ## Further reading
 

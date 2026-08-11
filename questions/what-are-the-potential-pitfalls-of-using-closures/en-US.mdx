@@ -4,7 +4,7 @@ title: What are the potential pitfalls of using closures?
 
 ## TL;DR
 
-Closures can lead to memory leaks if not managed properly, especially when they capture variables that are no longer needed. They can also make debugging more difficult due to the complexity of the scope chain. Additionally, closures can cause performance issues if they are overused or used inappropriately, as they keep references to variables in their scope, which can prevent garbage collection.
+Closures are not inherently leaks or performance problems. The main risk is accidentally keeping a closure reachable through a long-lived listener, timer, cache, or callback when its captured state includes a large object graph. Closures can also make state flow harder to follow, and loop closures created with `var` can unintentionally share one binding. Release long-lived registrations when they are no longer needed and use block-scoped bindings for per-iteration state.
 
 ---
 
@@ -12,7 +12,7 @@ Closures can lead to memory leaks if not managed properly, especially when they 
 
 ### Memory leaks
 
-Closures can cause memory leaks if they capture variables that are no longer needed. This happens because closures keep references to the variables in their scope, preventing the garbage collector from freeing up memory.
+Reachable closures keep the lexical state they need reachable. That is intentional, not a leak by itself. Memory becomes a problem when some long-lived object retains a closure after the application no longer needs it, especially if the closure can reach a large object graph.
 
 ```js live
 function createClosure() {
@@ -23,8 +23,10 @@ function createClosure() {
 }
 
 let closure = createClosure();
-// The largeArray is still in memory because the closure keeps a reference to it
+// largeArray remains reachable while closure remains reachable.
 closure(); // Output: 'some data'
+
+closure = null; // It can now be collected if nothing else retains it.
 ```
 
 ### Debugging complexity
@@ -48,24 +50,17 @@ myFunction(); // Output: 'I am outside!'
 
 ### Performance issues
 
-Overusing closures or using them inappropriately can lead to performance issues. Since closures keep references to variables in their scope, they can prevent garbage collection, leading to increased memory usage and potential slowdowns.
+Creating many retained callbacks has allocation and memory costs, as creating many objects does. Measure before optimizing; the important distinction is whether the callbacks remain reachable. An immediately invoked closure does not permanently retain its environment after it returns.
 
 ```js live
-function createManyClosures() {
-  let counter = 0;
+function registerHandler(element, records) {
+  const handleClick = () => console.log(records.length);
+  element.addEventListener('click', handleClick);
 
-  for (let i = 0; i < 1000000; i++) {
-    (function () {
-      counter++;
-    })();
-    // The closure is executed immediately, but it still holds onto the reference to the `counter` variable
-    // This prevents the counter from being garbage collected
-  }
-
-  console.log(counter); // This can be inefficient
+  // Cleanup removes the long-lived registration. If nothing else refers to
+  // handleClick or records, both can become eligible for garbage collection.
+  return () => element.removeEventListener('click', handleClick);
 }
-
-createManyClosures();
 ```
 
 ### Unintended variable sharing

@@ -4,7 +4,7 @@ title: What are some best practices for writing maintainable and effective tests
 
 ## TL;DR
 
-To write maintainable and effective tests, ensure they are clear, concise, and focused on a single behavior. Use descriptive names for test cases and avoid hardcoding values. Mock external dependencies and keep tests isolated. Regularly review and refactor tests to keep them up-to-date with the codebase.
+Write tests around observable behavior and important risks. Give each test a name that describes the scenario and outcome, make failures easy to diagnose, control nondeterministic boundaries, and clean up all mutated state. Use real collaborators when they are fast and deterministic; mock only boundaries where control or isolation adds value. Explicit expected values are useful documentation—avoid duplicating production logic to calculate the expected result.
 
 ---
 
@@ -40,24 +40,21 @@ test('should add two numbers correctly', () => {
 });
 ```
 
-### Avoid hardcoding values
+### Keep expected results independent
 
-- Use variables and constants to make tests more readable and maintainable
+- Use explicit values when they clarify the contract.
+- Do not recreate the production algorithm inside the test, because the same mistake can appear in both.
 
 ```js
-const input = 5;
-const expectedOutput = 25;
-
-test('should return the square of a number', () => {
-  const result = square(input);
-  expect(result).toBe(expectedOutput);
+test('grants free shipping at the $50 boundary', () => {
+  expect(calculateShipping(50)).toBe(0);
 });
 ```
 
-### Mock external dependencies
+### Control external dependencies deliberately
 
-- Use mocking libraries to simulate external dependencies like APIs, databases, or third-party services
-- Keep tests isolated from external factors
+- Stub destructive, slow, nondeterministic, or unavailable services in unit tests.
+- Prefer a real in-memory collaborator or integration test when a mock would merely reproduce another module's implementation.
 
 ```js
 jest.mock('axios');
@@ -80,8 +77,11 @@ test('should fetch data from API', async () => {
 ```js
 afterEach(() => {
   jest.clearAllMocks();
+  jest.useRealTimers();
 });
 ```
+
+Also remove DOM nodes and listeners, reset servers or databases, and restore globals. A test should produce the same result alone, after any other test, and during parallel execution.
 
 ### Regularly review and refactor tests
 
@@ -93,6 +93,8 @@ afterEach(() => {
 
 - Measure test coverage to identify untested parts of the codebase
 - Aim for high coverage but prioritize meaningful tests over 100% coverage
+
+Coverage reveals code that did not execute; it cannot prove that assertions are useful. Review uncovered high-risk branches before chasing a repository-wide percentage.
 
 ### Write tests before fixing bugs
 

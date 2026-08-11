@@ -4,7 +4,7 @@ title: What is the purpose of the `new` keyword?
 
 ## TL;DR
 
-The `new` keyword in JavaScript is used to create an instance of a user-defined object type or one of the built-in object types that has a constructor function. When you use `new`, it does four things: it creates a new object, sets the prototype, binds `this` to the new object, and returns the new object.
+Calling a constructable function with `new` creates a fresh object, links its prototype to the constructor's `prototype`, calls the constructor with `this` set to that object, and normally returns the object. If the constructor explicitly returns another non-primitive object, that returned object wins; an explicit primitive return is ignored. Arrow functions and some other callables are not constructable.
 
 ```js live
 function Person(name) {

@@ -4,7 +4,7 @@ title: What is the difference between `setTimeout()`, `setImmediate()`, and `pro
 
 ## TL;DR
 
-`setTimeout()` schedules a callback to run after a minimum delay. `setImmediate()` schedules a callback to run after the current event loop completes. `process.nextTick()` schedules a callback to run before the next event loop iteration begins.
+In Node.js, `setTimeout()` schedules a timer callback after a minimum delay, `setImmediate()` schedules a callback for the event loop's check phase after I/O callbacks, and `process.nextTick()` queues work to be drained after the current JavaScript operation before the event loop continues. Node now marks `process.nextTick()` as legacy and recommends `queueMicrotask()` for most userland deferral.
 
 ```js
 setTimeout(() => console.log('setTimeout'), 0);
@@ -30,7 +30,7 @@ setTimeout(() => {
 
 ### `setImmediate()`
 
-`setImmediate()` is a function available in Node.js that schedules a callback to be executed immediately after the current event loop phase completes. It is similar to `setTimeout()` with a delay of 0, but it is more efficient for immediate execution.
+`setImmediate()` is a Node.js API that queues a callback for the check phase, after the poll phase's I/O callbacks. It is not simply a faster `setTimeout(0)`, and their relative order depends on where they were scheduled.
 
 ```js
 setImmediate(() => {
@@ -40,7 +40,7 @@ setImmediate(() => {
 
 ### `process.nextTick()`
 
-`process.nextTick()` is a function available in Node.js that schedules a callback to be executed before the next event loop iteration begins. It is used for deferring the execution of a function until the current operation completes.
+`process.nextTick()` adds a callback to Node's next-tick queue. Node drains that queue after the current JavaScript operation completes and before allowing the event loop to continue. Recursively scheduling next-tick callbacks can starve I/O. The API is now marked legacy; prefer the portable `queueMicrotask()` unless next-tick-specific ordering is required.
 
 ```js
 process.nextTick(() => {
@@ -66,7 +66,7 @@ setTimeout or setImmediate (order may vary)
 setImmediate or setTimeout (order may vary)
 ```
 
-`process.nextTick()` will always execute first, followed by either `setTimeout()` or `setImmediate()`, depending on the environment.
+In this CommonJS example, `process.nextTick()` executes first, followed by `setTimeout()` and `setImmediate()` in an order that can vary. Do not generalize the first-place rule to ES modules: Node evaluates ES modules through the microtask machinery, which can change ordering relative to `process.nextTick()`.
 
 ## Further reading
 

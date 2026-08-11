@@ -4,7 +4,7 @@ title: How do you check the data type of a variable?
 
 ## TL;DR
 
-To check the data type of a variable in JavaScript, you can use the `typeof` operator. For example, `typeof variableName` will return a string indicating the type of the variable, such as `"string"`, `"number"`, `"boolean"`, `"object"`, `"function"`, `"undefined"`, or `"symbol"`. For arrays and `null`, you can use `Array.isArray(variableName)` and `variableName === null`, respectively.
+Use `typeof` for primitive categories and functions. Its possible results include `"undefined"`, `"boolean"`, `"number"`, `"bigint"`, `"string"`, `"symbol"`, `"function"`, and `"object"`. Because `typeof null` is historically `"object"` and arrays are objects, check those with `value === null` and `Array.isArray(value)`. For specific object kinds, prefer purpose-built checks and be careful with `instanceof` across realms.
 
 ---
 
@@ -35,6 +35,9 @@ console.log(typeof undef); // "undefined"
 
 let sym = Symbol();
 console.log(typeof sym); // "symbol"
+
+let big = 42n;
+console.log(typeof big); // "bigint"
 ```
 
 ### Checking for `null`

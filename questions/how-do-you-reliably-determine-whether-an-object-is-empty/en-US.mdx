@@ -4,7 +4,7 @@ title: How do you reliably determine whether an object is empty?
 
 ## TL;DR
 
-To reliably determine whether an object is empty, you can use `Object.keys()` to check if the object has any enumerable properties. If the length of the array returned by `Object.keys()` is zero, the object is empty.
+First define what “empty” means. For the common case “no own enumerable string-keyed properties,” use `Object.keys(obj).length === 0`. If symbol or non-enumerable own keys should count, use `Reflect.ownKeys(obj).length === 0`. Validate the input separately if `null`, primitives, arrays, maps, or sets are not valid inputs.
 
 ```js live
 const isEmpty = (obj) => Object.keys(obj).length === 0;
@@ -87,6 +87,8 @@ console.log(childObj.key); // Output: 'value' (still has the inherited property)
 
 - **Prototype properties**: The methods above only check for the object's own properties, not properties inherited from its prototype.
 - **Non-enumerable properties**: These methods do not account for non-enumerable properties.
+- **Symbol properties**: `Object.keys()`, `Object.values()`, `Object.entries()`, and `for...in` ignore symbol keys. `Reflect.ownKeys()` includes both string and symbol own keys, whether enumerable or not.
+- **Other collection types**: For `Map` and `Set`, use `.size`. For arrays, decide whether “empty” means `.length === 0` or no own keys. Do not use a plain-object helper indiscriminately.
 - **Own-property checks**: Calling `obj.hasOwnProperty(key)` directly can fail if the object has a `null` prototype or shadows `hasOwnProperty`. Prefer `Object.hasOwn(obj, key)` (Baseline across modern browsers since 2022) or `Object.prototype.hasOwnProperty.call(obj, key)`.
 
 ## Further reading

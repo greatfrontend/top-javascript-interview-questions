@@ -17,7 +17,7 @@ const myObject = {
 const handler = {
   get: function (target, prop, receiver) {
     console.log(`Someone accessed property "${prop}"`);
-    return target[prop];
+    return Reflect.get(target, prop, receiver);
   },
 };
 
@@ -35,11 +35,11 @@ console.log(proxiedObject.age);
 Use cases include:
 
 - **Property access interception**: Intercept and customize property access on an object.
-  - **Property assignment validation**: Validate property values before they are set on the target object.
-  - **Logging and debugging**: Create wrappers for logging and debugging interactions with an object.
-  - **Creating reactive systems**: Trigger updates in other parts of your application when object properties change (data binding).
-  - **Data transformation**: Transforming data being set or retrieved from an object.
-  - **Mocking and stubbing in tests**: Create mock or stub objects for testing purposes, allowing you to isolate dependencies and focus on the unit under test.
+- **Property assignment validation**: Validate property values before they are set on the target object.
+- **Logging and debugging**: Create wrappers for logging and debugging interactions with an object.
+- **Creating reactive systems**: Trigger updates in other parts of your application when object properties change (data binding).
+- **Data transformation**: Transform data being set or retrieved from an object.
+- **Mocking and stubbing in tests**: Create mock or stub objects for testing purposes, allowing you to isolate dependencies and focus on the unit under test.
 - **Function invocation interception**: Used to cache and return the result of frequently accessed methods if they involve network calls or computationally intensive logic, improving performance.
 - **Dynamic property creation**: Useful for defining properties on the fly with default values and avoiding storing redundant data in objects.
 
@@ -61,9 +61,9 @@ const target = {
 };
 
 const handler = {
-  get: function (target, property) {
+  get: function (target, property, receiver) {
     if (property in target) {
-      return target[property];
+      return Reflect.get(target, property, receiver);
     }
 
     return `Property ${property} does not exist.`;
@@ -87,14 +87,13 @@ const target = {
 };
 
 const handler = {
-  get: function (target, property) {
+  get: function (target, property, receiver) {
     console.log(`Getting property ${property}`);
-    return target[property];
+    return Reflect.get(target, property, receiver);
   },
-  set: function (target, property, value) {
+  set: function (target, property, value, receiver) {
     console.log(`Setting property ${property} to ${value}`);
-    target[property] = value;
-    return true;
+    return Reflect.set(target, property, value, receiver);
   },
 };
 
@@ -117,12 +116,11 @@ const target = {
 };
 
 const handler = {
-  set: function (target, property, value) {
+  set: function (target, property, value, receiver) {
     if (property === 'age' && typeof value !== 'number') {
       throw new TypeError('Age must be a number');
     }
-    target[property] = value;
-    return true;
+    return Reflect.set(target, property, value, receiver);
   },
 };
 
@@ -145,11 +143,11 @@ const target = {
 };
 
 const handler = {
-  set: function (target, property, value) {
+  set: function (target, property, value, receiver) {
     console.log(`Property ${property} set to ${value}`);
-    target[property] = value;
+    const success = Reflect.set(target, property, value, receiver);
     // Automatically update the UI or perform other actions
-    return true;
+    return success;
   },
 };
 

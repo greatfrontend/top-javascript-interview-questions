@@ -4,7 +4,7 @@ title: What is the Module pattern and how does it help with encapsulation?
 
 ## TL;DR
 
-The Module pattern in JavaScript is a design pattern used to create self-contained modules of code. It helps with encapsulation by allowing you to define private and public members within a module. Private members are not accessible from outside the module, while public members are exposed through a returned object. This pattern helps in organizing code, avoiding global namespace pollution, and maintaining a clean separation of concerns.
+The classic Module pattern uses an IIFE and closure to expose a small public object while keeping other bindings private. It was especially useful before standardized modules. For new code, ES modules are usually the clearer default: each file has module scope and explicitly imports and exports dependencies. Closures and private class fields remain useful when you need per-instance private state rather than one module-scoped value.
 
 ```js live
 var myModule = (function () {
@@ -81,7 +81,22 @@ The Module pattern promotes a clean separation of concerns by allowing you to gr
 
 ### Conclusion
 
-The Module pattern is a useful tool in JavaScript for creating self-contained modules of code. It helps with encapsulation by allowing you to define private and public members, making the code more modular, maintainable, and organized.
+The IIFE Module pattern remains relevant in legacy scripts and embedded code that cannot use a module loader. In modern applications, prefer ES modules for file boundaries and dependency analysis:
+
+```js
+// counter.js
+let count = 0;
+
+export function increment() {
+  count += 1;
+}
+
+export function getCount() {
+  return count;
+}
+```
+
+`count` is not exported, but it is shared by every importer of that module instance. If each caller needs independent state, export a factory instead. Also avoid treating closure privacy as a security boundary: code with control of the same page or process may still observe inputs, outputs, and surrounding platform state.
 
 ## Further reading
 

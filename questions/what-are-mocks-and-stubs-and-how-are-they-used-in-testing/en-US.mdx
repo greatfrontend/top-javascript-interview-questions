@@ -4,51 +4,66 @@ title: What are mocks and stubs and how are they used in testing?
 
 ## TL;DR
 
-Mocks and stubs are tools used in testing to simulate the behavior of real objects. Stubs provide predefined responses to function calls, while mocks are more complex and can verify interactions, such as whether a function was called and with what arguments. Stubs are used to isolate the code being tested from external dependencies, and mocks are used to ensure that the code interacts correctly with those dependencies.
+A **stub** supplies controlled behavior, such as making a payment client return an approved response. A **spy** records calls. A **mock** often combines configured behavior with interaction expectations, although libraries use these terms differently. Use them at slow, nondeterministic, destructive, or unavailable boundaries—not to duplicate every implementation detail. Over-mocking can produce tests that pass while the real modules no longer work together.
 
 ---
 
-## What are mocks and stubs and how are they used in testing?
+## Stubs control indirect input
 
-### Stubs
-
-Stubs are simple objects that provide predefined responses to function calls made during tests. They are used to isolate the code being tested from external dependencies, such as databases or APIs, by providing controlled responses.
-
-#### Example
+This service depends on a payment client. A stub makes the failure path deterministic without charging a card:
 
 ```js
-// A simple stub for a function that fetches user data
-const fetchUserDataStub = sinon.stub();
-fetchUserDataStub.returns({ id: 1, name: 'John Doe' });
-
-// Using the stub in a test
-const userData = fetchUserDataStub();
-console.log(userData); // { id: 1, name: 'John Doe' }
+async function placeOrder(paymentClient, order) {
+  const payment = await paymentClient.charge(order.total);
+  if (!payment.approved) throw new Error('Payment declined');
+  return { orderId: order.id, paymentId: payment.id };
+}
 ```
-
-### Mocks
-
-Mocks are more complex than stubs. They not only provide predefined responses but also record information about how they were called. This allows you to verify interactions, such as whether a function was called, how many times it was called, and with what arguments.
-
-#### Example
 
 ```js
-// A simple mock for a function that logs user data
-const logUserDataMock = sinon.mock();
-logUserDataMock.expects('log').once().withArgs({ id: 1, name: 'John Doe' });
+import { expect, test, vi } from 'vitest';
 
-// Using the mock in a test
-logUserDataMock.log({ id: 1, name: 'John Doe' });
-logUserDataMock.verify(); // Verifies that the log method was called once with the specified arguments
+test('rejects a declined payment', async () => {
+  const paymentClient = {
+    charge: vi.fn().mockResolvedValue({ approved: false }),
+  };
+
+  await expect(
+    placeOrder(paymentClient, { id: 'order-1', total: 25 }),
+  ).rejects.toThrow('Payment declined');
+});
 ```
 
-### When to use stubs and mocks
+Here `charge` is acting primarily as a stub: its controlled response drives the code under test.
 
-- **Stubs**: Use stubs when you need to isolate the code being tested from external dependencies and control the responses those dependencies provide.
-- **Mocks**: Use mocks when you need to verify that the code interacts correctly with external dependencies, such as ensuring that a function is called with the correct arguments.
+## Spies and mocks verify indirect output
+
+When the call itself is part of the contract, inspect it:
+
+```js
+test('charges the order total once', async () => {
+  const charge = vi.fn().mockResolvedValue({ approved: true, id: 'payment-1' });
+
+  await placeOrder({ charge }, { id: 'order-1', total: 25 });
+
+  expect(charge).toHaveBeenCalledOnce();
+  expect(charge).toHaveBeenCalledWith(25);
+});
+```
+
+This test uses the function as both a stub and a spy; it is commonly called a mock function. Sinon, Jest, and Vitest expose related APIs with different terminology.
+
+## When to use them
+
+Good boundaries include payment/email providers, the clock, randomness, filesystem access, and failure responses that are hard to trigger reliably. Prefer a lightweight real implementation when it is fast and deterministic—for example, a real parser or in-memory data structure.
+
+Avoid asserting every internal call sequence. Those tests become coupled to refactoring and can hide integration defects. Add contract or integration tests around important adapters so the fake behavior stays aligned with the real dependency.
+
+Always restore patched globals and spies after the test. Test runners provide hooks such as `afterEach()` and restoration helpers for this cleanup.
 
 ## Further reading
 
-- [Sinon.js documentation](https://sinonjs.org/)
-- [Mocks Aren't Stubs](https://martinfowler.com/articles/mocksArentStubs.html) by Martin Fowler
-- [Sinon Tutorial: JavaScript Testing with Mocks, Spies & Stubs](https://www.sitepoint.com/sinon-tutorial-javascript-testing-mocks-spies-stubs/) on SitePoint
+- [Vitest: Mocking](https://vitest.dev/guide/mocking)
+- [Jest: Mock functions](https://jestjs.io/docs/mock-functions)
+- [Sinon documentation](https://sinonjs.org/)
+- [Mocks Aren't Stubs](https://martinfowler.com/articles/mocksArentStubs.html)

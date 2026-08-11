@@ -4,13 +4,14 @@ title: What are server-sent events?
 
 ## TL;DR
 
-[Server-sent events (SSE)](https://html.spec.whatwg.org/multipage/comms.html#the-eventsource-interface) is a standard that allows a web page to receive automatic updates from a server via an HTTP connection. Server-sent events are used with `EventSource` instances that open a connection with a server and allow the client to receive events from the server. Connections created by server-sent events are persistent (similar to the `WebSocket`s), however there are a few differences:
+[Server-sent events (SSE)](https://html.spec.whatwg.org/multipage/server-sent-events.html#server-sent-events) is the `text/event-stream` format for a server-to-client stream over HTTP. Browsers expose the `EventSource` API for a long-lived GET connection with built-in reconnection and last-event-ID support. A Fetch response body can also consume an SSE-formatted stream when an application needs a different HTTP method, request body, or custom headers, but reconnection and parsing then become application responsibilities.
 
 | Property | `WebSocket` | `EventSource` |
 | --- | --- | --- |
 | Direction | Bi-directional – both client and server can exchange messages | Unidirectional – only server sends data |
 | Data type | Binary and text data | Only text |
 | Protocol | WebSocket protocol (`ws://`) | Regular HTTP (`http://`) |
+| Browser API request shape | Custom handshake | `EventSource` issues GET; no request body and limited request-header control |
 
 **Creating an event source**
 
@@ -114,7 +115,7 @@ Server-Sent Events (SSE) is a standard that allows a server to push updates to a
 - **Text-only data**: SSE can only transmit text data, which means binary data needs to be encoded (e.g., Base64) before transmission. This can lead to increased overhead and inefficiency for applications that need to transmit large binary payloads.
 - **Built-in browser support**: Supported by most modern browsers without additional libraries.
 - **Event types**: SSE supports custom event types using the `event:` field, allowing categorization of messages.
-- **`Last-Event-Id`**: The client sends the `Last-Event-Id` header when reconnecting, allowing the server to resume the stream from the last received event. However, there is no built-in mechanism to replay missed events during the disconnection period. You may need to implement a mechanism to handle missed events, such as using the `Last-Event-Id` header.
+- **`Last-Event-ID`**: The client sends the `Last-Event-ID` header when reconnecting, allowing the server to identify the last received event. The server must implement storage and replay of missed events.
 - **Connection limitations**: Browsers have a limit on the maximum number of concurrent SSE connections, typically around 6 per domain. This can be a bottleneck if you need to establish multiple SSE connections from the same client. Using HTTP/2 will mitigate this issue.
 
 ## Implementing SSE in JavaScript
@@ -208,13 +209,11 @@ A useful decision rule:
 - For one-way notifications, dashboards, LLM streaming, or server progress updates, use SSE.
 - To support very old clients or restrictive networks where neither works, fall back to long polling.
 
-## Modern uses of SSE: LLM streaming and beyond
+## Modern uses of SSE: streaming responses and beyond
 
-SSE has become a common transport for LLM streaming. The fit is straightforward: completions stream tokens one at a time from server to client, the connection is one-way, and the protocol works over plain HTTPS through most corporate proxies.
+SSE is a common format for streaming generated text and other incremental server responses. The fit is straightforward: chunks flow from server to client over ordinary HTTP. APIs differ, however: some use SSE, while others use newline-delimited JSON or another streaming format, so clients must follow the protocol documented by the service.
 
-- The OpenAI Chat Completions API returns `text/event-stream` when called with `stream: true`. Each `data:` chunk contains a JSON delta with the next token.
-- The Anthropic Messages API uses the same pattern: `text/event-stream` with `data:` chunks per delta.
-- Self-hosted servers like vLLM (which exposes an OpenAI-compatible API) also stream via SSE. Some others (such as Ollama) stream over newline-delimited JSON instead, so check the API docs before assuming SSE.
+OpenAI is one concrete example: the Responses API emits server-sent events when `stream: true`, including typed incremental events such as `response.output_text.delta`. See the [OpenAI streaming events reference](https://platform.openai.com/docs/api-reference/responses-streaming).
 
 Beyond AI, SSE fits most "server has new data, push it to the user" use cases:
 

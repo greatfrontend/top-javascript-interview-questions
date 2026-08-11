@@ -4,7 +4,7 @@ title: Explain the concept of the Strategy pattern
 
 ## TL;DR
 
-The Strategy pattern is a behavioral design pattern that allows you to define a family of algorithms, encapsulate each one as a separate class, and make them interchangeable. This pattern lets the algorithm vary independently from the clients that use it. For example, if you have different sorting algorithms, you can define each one as a strategy and switch between them without changing the client code.
+The Strategy pattern defines interchangeable implementations behind the same contract, letting the caller select behavior without accumulating a large conditional. JavaScript strategies can be plain functions or objects; separate classes are not required. It is useful when multiple algorithms are real extension points, such as pricing or retry policies. Prefer a simple `if` or `switch` when there are only a few stable branches—the pattern otherwise adds indirection without useful flexibility.
 
 ```js live
 class Context {
@@ -110,6 +110,28 @@ console.log(context.executeStrategy([...data])); // Output: [9, 5, 4, 3, 1, 1]
 
 - **Overhead**: Increased number of classes and objects.
 - **Complexity**: Can make the system more complex if not used judiciously.
+
+### JavaScript implementation with functions
+
+A strategy map often fits JavaScript better than one class per option:
+
+```js live
+const shippingStrategies = {
+  standard: ({ weight }) => 5 + weight * 0.5,
+  express: ({ weight }) => 12 + weight * 1.25,
+  pickup: () => 0,
+};
+
+function quoteShipping(method, parcel) {
+  const strategy = shippingStrategies[method];
+  if (!strategy) throw new RangeError(`Unsupported method: ${method}`);
+  return strategy(parcel);
+}
+
+console.log(quoteShipping('express', { weight: 4 })); // 17
+```
+
+Every strategy receives the same input shape and returns the same kind of result. Validate that contract at the boundary. If strategies perform asynchronous work, also define common error, cancellation, and timeout behavior so callers can switch implementations safely.
 
 ## Further reading
 

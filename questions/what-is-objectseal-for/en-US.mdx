@@ -4,7 +4,7 @@ title: What is `Object.seal()` for?
 
 ## TL;DR
 
-`Object.seal()` is used to prevent new properties from being added to an object and to mark all existing properties as non-configurable. This means you can still modify the values of existing properties, but you cannot delete them or add new ones. Doing so will throw errors in strict mode but fail silently in non-strict mode. In the following examples, you can uncomment the 'use strict' comment to see this.
+`Object.seal()` prevents extensions and makes every existing own property non-configurable. Existing data-property values can still change when their descriptors are writable. The operation is shallow: nested objects are unaffected. Invalid additions and deletions throw in strict mode and may fail silently otherwise. Sealing is useful for catching accidental shape changes, not for enforcing authorization or protecting secrets.
 
 ```js live
 // 'use strict'
@@ -63,7 +63,7 @@ console.log(person); // { name: 'Bob', age: 30 } (gender not added, name not del
 ### Use cases
 
 - **Data integrity**: Ensuring that an object structure remains unchanged, which can be useful in scenarios where the object represents a fixed schema.
-- **Security**: Preventing accidental or malicious modifications to an object, especially in shared or global contexts.
+- **Shared contracts**: Catching accidental additions or deletions when several modules share a fixed-shape object. It does not stop changes to writable values or nested objects and is not a security boundary.
 
 ### Checking if an object is sealed
 

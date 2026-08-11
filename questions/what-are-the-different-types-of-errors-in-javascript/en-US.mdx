@@ -4,52 +4,75 @@ title: What are the different types of errors in JavaScript?
 
 ## TL;DR
 
-In JavaScript, there are three main types of errors: syntax errors, runtime errors, and logical errors. Syntax errors occur when the code violates the language's grammar rules, such as missing a parenthesis. Runtime errors happen during code execution, like trying to access a property of `undefined`. Logical errors are mistakes in the code's logic that lead to incorrect results but don't throw an error.
+Errors can be classified by when they appear—parse-time syntax errors, runtime exceptions, and logical errors that produce the wrong result. JavaScript also provides built-in exception classes such as `SyntaxError`, `ReferenceError`, `TypeError`, `RangeError`, `URIError`, and `AggregateError`. The class describes the failure category; application code can define domain-specific subclasses.
+
+Handle only errors you can recover from or translate at that boundary. Preserve unexpected errors and their causes, and use tests and debugging tools for logical errors that do not throw.
 
 ---
 
-## Different types of errors in JavaScript
+## Parse-time syntax errors
 
-### Syntax errors
-
-Syntax errors occur when the code does not follow the rules of the JavaScript language. These errors are detected by the JavaScript engine during the parsing stage before the code is executed.
-
-#### Example
+Invalid grammar prevents the script or module from being parsed:
 
 ```js
-console.log("Hello, world!; // Missing closing quote and parenthesis
+// SyntaxError: Unterminated string constant
+console.log('Hello);
 ```
 
-### Runtime errors
+Build tools and editors usually catch these before deployment. A `try...catch` inside the same malformed source cannot run because parsing never completed. Dynamically parsed code, such as `JSON.parse()` or `eval()`, can throw a `SyntaxError` that surrounding valid code catches.
 
-Runtime errors, also known as exceptions, occur during the execution of the code. These errors happen when the code is syntactically correct but encounters an issue that prevents it from completing its task.
+## Runtime exceptions
 
-#### Example
+Syntactically valid code can throw while executing. Common built-in classes include:
+
+- `ReferenceError`: A binding does not exist or is accessed in its temporal dead zone.
+- `TypeError`: An operation is incompatible with the value, such as calling a non-function.
+- `RangeError`: A numeric value or recursion depth is outside an allowed range.
+- `URIError`: A malformed URI sequence is passed to a URI encoder or decoder.
+- `AggregateError`: Several failures are represented together, such as rejection from `Promise.any()`.
+- `EvalError`: Retained for compatibility but rarely thrown by current engines.
 
 ```js live
-let obj = null;
-console.log(obj.property); // TypeError: Cannot read properties of null (reading 'property')
+try {
+  const user = null;
+  console.log(user.name);
+} catch (error) {
+  console.log(error instanceof TypeError); // true
+}
 ```
 
-### Logical errors
+Do not branch on exact engine-generated message text; wording can differ by runtime. Use a known class, a stable application error code, or the API's documented result.
 
-Logical errors are mistakes in the code's logic that lead to incorrect results. These errors do not throw exceptions and are often the hardest to debug because the code runs without any issues but produces the wrong output.
+## Logical errors
 
-#### Example
+Logical errors run without throwing but violate the intended behavior:
 
 ```js live
-let isAdmin = false;
+const isAdmin = false;
 
 if ((isAdmin = true)) {
-  // Wrong: Assignment instead of comparison
-  console.log('Access granted'); // Access granted even though isAdmin was falsy
-} else {
-  console.log('Access denied');
+  console.log('Access granted'); // Incorrectly runs because this assigns true.
+}
+```
+
+Static analysis can flag suspicious assignments, but authorization must ultimately be tested and enforced at a trusted boundary. Unit, integration, and property-based tests plus debugger output traces help find non-throwing defects.
+
+## Operational and programmer errors
+
+Another useful application-level distinction is between expected operational failures and programming defects. A timeout, rejected card, or missing record may have a defined response. A violated invariant or calling a function with an impossible internal state usually should propagate to an error boundary and alert developers rather than being silently converted into success.
+
+When wrapping an error to add context, use `cause`:
+
+```js
+try {
+  await saveOrder(order);
+} catch (cause) {
+  throw new OrderSubmissionError(order.id, { cause });
 }
 ```
 
 ## Further reading
 
-- [MDN Web Docs: Errors](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
-- [JavaScript.info: Error handling](https://javascript.info/error-handling)
-- [MDN Web Docs: Control flow and error handling](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling)
+- [MDN: `Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
+- [MDN: Control flow and error handling](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling)
+- [MDN: `AggregateError`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AggregateError)

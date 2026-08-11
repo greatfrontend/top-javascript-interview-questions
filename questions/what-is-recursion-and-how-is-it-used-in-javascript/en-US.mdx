@@ -4,10 +4,13 @@ title: What is recursion and how is it used in JavaScript?
 
 ## TL;DR
 
-Recursion is a programming technique where a function calls itself to solve a problem. In JavaScript, recursion is used to solve problems that can be broken down into smaller, similar sub-problems. A base case is essential to stop the recursive calls and prevent infinite loops. For example, calculating the factorial of a number can be done using recursion:
+Recursion solves a problem by calling the same function on smaller inputs until a base case is reached. It naturally fits recursive structures such as trees and divide-and-conquer algorithms, but each ordinary call consumes stack space. Validate that the input moves toward the base case, and use an explicit stack or loop when depth can be large or user-controlled.
 
 ```js live
 function factorial(n) {
+  if (!Number.isInteger(n) || n < 0) {
+    throw new RangeError('n must be a non-negative integer');
+  }
   if (n === 0) {
     return 1;
   }
@@ -39,6 +42,9 @@ Here is how you can implement this in JavaScript:
 
 ```js live
 function factorial(n) {
+  if (!Number.isInteger(n) || n < 0) {
+    throw new RangeError('n must be a non-negative integer');
+  }
   if (n === 0) {
     // base case
     return 1;
@@ -77,7 +83,7 @@ console.log(fibonacci(6)); // Output: 8
 
 ### Tail recursion
 
-Tail recursion is a special form of recursion where the recursive call is the last operation in the function. This can be optimized by some JavaScript engines to improve performance and prevent stack overflow. Here is an example of a tail-recursive factorial function:
+Tail recursion is a form where the recursive call is the last operation. The ECMAScript specification defines proper tail calls in strict mode, but support is not consistent across widely used JavaScript engines. Do not rely on tail-call optimization to prevent stack overflow in portable application code.
 
 ```js live
 function factorial(n, acc = 1) {
@@ -90,11 +96,25 @@ function factorial(n, acc = 1) {
 console.log(factorial(4)); // Output: 24
 ```
 
+For unbounded depth, write the accumulator as a loop:
+
+```js live
+function factorialIterative(n) {
+  let result = 1;
+  for (let value = 2; value <= n; value += 1) {
+    result *= value;
+  }
+  return result;
+}
+```
+
 ### Use cases for recursion
 
 - **Tree traversal**: Recursion is often used to traverse tree structures, such as the DOM or binary trees.
 - **Divide and conquer algorithms**: Algorithms like quicksort and mergesort use recursion to divide the problem into smaller sub-problems.
 - **Dynamic programming**: Problems like the knapsack problem and certain graph algorithms can be solved using recursion.
+
+The naive recursive Fibonacci example above performs repeated work and grows exponentially with `n`; it is useful for explaining recursion, not for production computation. Memoization or an iterative solution avoids recomputing the same subproblems.
 
 ## Further reading
 

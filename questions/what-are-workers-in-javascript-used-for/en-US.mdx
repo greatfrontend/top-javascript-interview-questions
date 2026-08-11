@@ -8,7 +8,7 @@ Workers in JavaScript are background threads that allow you to run scripts in pa
 
 - **Parallel processing**: Workers run in a separate thread from the main thread, allowing your web page to remain responsive to user interactions while the worker performs its tasks. It's useful for moving CPU-intensive work off the main thread and freeing you from JavaScript's single-threaded nature.
 - **Communication**: Uses `postMessage()` and `onmessage`/`'message'` event for messaging.
-- **Access to web APIs**: Workers have access to various Web APIs, including `fetch()`, IndexedDB, and Web Storage, allowing them to perform tasks like data fetching and persisting data independently.
+- **Access to selected web APIs**: Depending on the worker type, workers can use APIs such as `fetch()`, IndexedDB, Cache, Web Crypto, and timers. They do not expose the Window-only `localStorage` or `sessionStorage` APIs.
 - **No DOM access**: Workers cannot directly manipulate the DOM, thus cannot interact with the UI, ensuring they don't accidentally interfere with the main thread's operation.
 
 There are three main types of workers in JavaScript:
@@ -20,9 +20,9 @@ There are three main types of workers in JavaScript:
 - **Service workers**
   - Act as network proxies, handling requests between the app and network.
   - Enable offline functionality, caching, and push notifications.
-  - Run independently of the web page, even when it's closed.
+  - Are event-driven and can be started by the browser for supported events even when no controlled page is open; they are not continuously running background processes.
 - **Shared workers**
-  - Can be shared by multiple scripts running in different windows or frames, as long as they're in the same domain.
+  - Can be shared by compatible same-origin documents in different windows or frames.
   - Scripts communicate with the shared worker by sending and receiving messages.
   - Useful for coordinating tasks across different parts of a web page.
 
@@ -38,7 +38,7 @@ Workers in JavaScript are a way to run scripts in background threads, separate f
 - Designed for CPU-intensive tasks like data processing, mathematical computations, etc. Generally for non-async work.
 - Cannot directly access the DOM or other main thread resources for security.
 - Communicates with main thread via asynchronous message passing – `postMessage()` and `onmessage`/`'message'`.
-- Terminated when main script is unloaded or explicitly terminated.
+- Can be terminated explicitly, and the browser may stop a worker when its owning documents go away.
 
 Web workers can be used for:
 
@@ -171,7 +171,7 @@ You are not expected to know about worklets, so it won't be covered in great det
 
 ## Considerations and limitations
 
-- **Same-origin policy**: Workers must comply with the same-origin policy, meaning the script that creates the worker and the worker script itself must be from the same origin
+- **Origin and loading rules**: Worker script loading is subject to worker-type-specific same-origin and CORS rules. For example, classic dedicated worker entry scripts generally must be same-origin, while imported resources and module workers have their own Fetch/CORS behavior.
 - **No DOM access**: Workers do not have direct access to the DOM. They can communicate with the main thread through messages
 - **Performance**: Creating and managing workers incurs overhead. They should be used judiciously for tasks that truly benefit from parallel execution
 - **Error handling**: Proper error handling mechanisms should be in place to handle any issues within the worker scripts

@@ -4,7 +4,7 @@ title: Difference between document `load` event and document `DOMContentLoaded` 
 
 ## TL;DR
 
-The `DOMContentLoaded` event fires when the initial HTML document has been completely loaded and parsed, without waiting for stylesheets, images, and subframes to finish loading. The `load` event, on the other hand, fires when the entire page, including all dependent resources such as stylesheets and images, has finished loading.
+`DOMContentLoaded` fires after the HTML has been parsed and deferred and module scripts have executed. It does not directly wait for images, subframes, or stylesheets, although a blocking stylesheet can delay a script and therefore indirectly delay `DOMContentLoaded`. The window `load` event waits for the document and its dependent resources, apart from resources loaded lazily.
 
 ```javascript
 document.addEventListener('DOMContentLoaded', function () {
@@ -22,7 +22,7 @@ window.addEventListener('load', function () {
 
 ### `DOMContentLoaded` event
 
-The `DOMContentLoaded` event is fired when the initial HTML document has been completely loaded and parsed, without waiting for stylesheets, images, and subframes to finish loading. This event is useful when you want to execute JavaScript code as soon as the DOM is ready, without waiting for all resources to be fully loaded.
+The `DOMContentLoaded` event fires after the initial HTML has been parsed and deferred and module scripts have run. It does not directly wait for images, subframes, or stylesheets. However, deferred scripts wait for blocking stylesheets, and `DOMContentLoaded` waits for those scripts, so stylesheets can delay it indirectly.
 
 ```javascript
 document.addEventListener('DOMContentLoaded', function () {
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 ### `load` event
 
-The `load` event is fired when the entire page, including all dependent resources such as stylesheets, images, and subframes, has finished loading. This event is useful when you need to perform actions that require all resources to be fully loaded, such as initializing a slideshow or performing layout calculations that depend on image sizes.
+The window `load` event fires when the document and its dependent resources, such as stylesheets, eagerly loaded images, scripts, and subframes, have finished loading. Lazily loaded resources do not hold it up. Use it only for work that actually requires those resources, such as reading intrinsic image dimensions.
 
 ```javascript
 window.addEventListener('load', function () {

@@ -4,7 +4,7 @@ title: Explain the concept of caching and how it can be used to improve performa
 
 ## TL;DR
 
-Caching is a technique used to store copies of files or data in a temporary storage location to reduce the time it takes to access them. It improves performance by reducing the need to fetch data from the original source repeatedly. In front end development, caching can be implemented using browser cache, service workers, and HTTP headers like `Cache-Control`.
+Caching reuses a previously computed or fetched result to reduce latency, bandwidth, and server work. A cache is correct only when its key, freshness policy, and invalidation behavior match the data. For versioned static assets, long-lived HTTP caching is effective; personalized or frequently changing API data usually needs revalidation or a shorter lifetime. Service workers add offline and custom routing capabilities, but also add another cache that must be updated deliberately.
 
 ---
 
@@ -44,21 +44,24 @@ With service workers, cached resources can be served even when the user is offli
 
 ### Implementing caching
 
-#### Browser cache example
+#### HTTP caching example
 
-```html
-<head>
-  <link rel="stylesheet" href="styles.css" />
-  <script src="app.js"></script>
-</head>
+For a content-hashed asset such as `/assets/app.a1b2c3.js`, the server can send:
+
+```http
+Cache-Control: public, max-age=31536000, immutable
 ```
+
+When the content changes, the build emits a new URL. By contrast, an authenticated account response should not receive this policy. It might use `Cache-Control: private, no-cache` so the browser may store it but must revalidate before reuse, or `no-store` when storage is inappropriate.
 
 #### Service worker example
 
 ```js
+const CACHE_NAME = 'app-shell-v2';
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open('v1').then((cache) => {
+    caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(['/index.html', '/styles.css', '/app.js']);
     }),
   );
@@ -66,21 +69,27 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    }),
+    caches
+      .match(event.request)
+      .then((cachedResponse) => cachedResponse || fetch(event.request)),
   );
 });
 ```
 
-#### HTTP caching example
+This cache-first strategy suits versioned static assets, but can serve stale API data. A production service worker also needs version cleanup, update handling, error behavior, and a strategy chosen per request type. Libraries such as Workbox can implement these patterns, but do not remove the need to define freshness rules.
 
-```http
-Cache-Control: max-age=3600
-```
+### Cache failure modes
+
+- **Stale data**: A long lifetime or cache-first strategy returns an outdated result.
+- **Incorrect keys**: A cache omits a locale, authorization scope, or query parameter and returns one user's variant to another context.
+- **Unbounded growth**: An in-memory cache has no size or time-based eviction.
+- **Cache stampede**: Many misses recompute the same expensive result simultaneously.
+- **Sensitive data retention**: Private responses are stored in a shared or persistent cache.
+
+Measure hit rate and user-visible latency. A cache with few hits or expensive invalidation can add complexity without improving performance.
 
 ## Further reading
 
 - [MDN Web Docs: HTTP caching](https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching)
-- [Google Developers: The offline cookbook](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook)
-- [Service Workers: an Introduction](https://developers.google.com/web/fundamentals/primers/service-workers)
+- [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache)
+- [Service Worker API](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)

@@ -4,7 +4,7 @@ title: How can you avoid problems related to hoisting?
 
 ## TL;DR
 
-To avoid problems related to hoisting, always declare variables at the top of their scope using `let` or `const` instead of `var`. This ensures that variables are block-scoped and not hoisted to the top of their containing function or global scope. Additionally, declare functions before they are called to avoid issues with function hoisting.
+Use `const` by default and `let` when reassignment is required, keep declarations close to their first use, and never read a binding before it is initialized. `let` and `const` are still hoisted—their bindings exist from the start of the block—but they remain in the temporal dead zone until evaluation reaches the declaration. Static-analysis rules such as `no-use-before-define` and `no-undef` catch the risky patterns.
 
 ```js live
 // Use let or const
@@ -25,28 +25,28 @@ myFunction(); // Output: 'Hello, world!'
 
 ### Understand hoisting
 
-Hoisting is JavaScript's default behavior of moving declarations to the top of the current scope (script or function). This can lead to unexpected results if not properly managed.
+“Hoisting” describes the observable result of JavaScript creating bindings while it instantiates a scope before evaluating its statements. The engine does not physically move source code.
 
 ### Use `let` and `const` instead of `var`
 
-`let` and `const` are block-scoped, meaning they are only accessible within the block they are defined. This prevents them from being hoisted to the top of the function or global scope, reducing the risk of unexpected behavior.
+`let` and `const` are block-scoped. Their bindings are hoisted to the start of the block but stay uninitialized in the temporal dead zone, so an early access throws instead of silently producing `undefined`.
 
 ```js live
 console.log(x); // undefined. (Hoisted but uninitialized, risk of unexpected behavior)
-console.log(y); // ReferenceError: Cannot access 'y' before initialization. (Not hoisted)
-console.log(z); // ReferenceError: Cannot access 'z' before initialization. (Not hoisted)
+console.log(y); // ReferenceError: Cannot access 'y' before initialization. (TDZ)
+console.log(z); // ReferenceError: Cannot access 'z' before initialization. (TDZ)
 
 // Avoid using var
 var x = 10; // Hoisted to the top of the function or global scope
 
 // Use let or const
-let y = 20; // Block-scoped, not hoisted to the top
-const z = 30; // Block-scoped, not hoisted to the top
+let y = 20; // Block-scoped; initialized here
+const z = 30; // Block-scoped; initialized here
 ```
 
-### Declare variables at the top of their scope
+### Keep declarations close to their first use
 
-To avoid confusion and potential errors, always declare your variables at the top of their scope. This makes it clear where the variables are coming from and ensures they are initialized before use.
+Declare and initialize a binding before its first use, preferably close to the code that needs it. Moving every declaration to the top can widen its apparent lifetime and separate it from its purpose.
 
 ```js live
 function example() {
@@ -61,7 +61,7 @@ example(); // Output: 3
 
 ### Declare functions before calling them
 
-Function declarations are hoisted, but function expressions are not. To avoid issues, always declare functions before calling them.
+Function declarations are initialized during scope setup; function expressions are evaluated in place. Keeping either form before its first call usually makes control flow easier to read, even when an earlier call to a declaration would be valid.
 
 ```js live
 // Function declaration (hoisted)
@@ -70,7 +70,7 @@ function myFunction() {
 }
 myFunction(); // No issues here
 
-// Function expression (not hoisted)
+// Function expression (created when this declaration is evaluated)
 const anotherFunction = function () {
   console.log('Hello again!');
 };

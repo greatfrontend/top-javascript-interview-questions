@@ -57,37 +57,35 @@ tag`Hello ${'world'}! How are ${'you'}?`;
 
 Tagged templates can be used for various purposes, such as:
 
-- **String escaping**: Preventing XSS attacks by escaping user input
+- **Context-aware escaping**: Encoding interpolated values for one specifically defined output context
 - **Localization**: Translating template literals into different languages
 - **Custom formatting**: Applying custom formatting to the interpolated values
 
 ### Example
 
-Here is a simple example of a tagged template that escapes HTML:
+Here is a simple example of a tagged template that escapes interpolated values for an HTML text-content context:
 
 ```js live
-function escapeHTML(strings, ...values) {
+function escapeHTMLText(strings, ...values) {
   return strings.reduce((result, string, i) => {
-    const value = values[i - 1];
-    return (
-      result +
-      (value
-        ? String(value)
+    const escapedValue =
+      i < values.length
+        ? String(values[i])
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
-        : '') +
-      string
-    );
-  });
+        : '';
+    return result + string + escapedValue;
+  }, '');
 }
 
 const userInput = '<script>alert("XSS")</script>';
-const result = escapeHTML`User input: ${userInput}`;
+const result = escapeHTMLText`User input: ${userInput}`;
 console.log(result); // "User input: &lt;script&gt;alert("XSS")&lt;/script&gt;"
 ```
+
+This tag only defines encoding for HTML text content; it is not a general XSS sanitizer for attributes, URLs, CSS, or JavaScript contexts. When updating the DOM with plain text, assigning to `textContent` is simpler and safer. A production HTML-producing tag needs a well-reviewed, context-aware implementation.
 
 ## Further reading
 
 - [MDN Web Docs: Template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates)
-- [Exploring JS: Template literals](http://exploringjs.com/es6/ch_template-literals.html#tagged-templates)

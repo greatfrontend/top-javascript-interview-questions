@@ -4,9 +4,9 @@ title: Describe event capturing in JavaScript and browsers
 
 ## TL;DR
 
-Event capturing is a lesser-used counterpart to [event bubbling](/questions/quiz/describe-event-bubbling) in the DOM event propagation mechanism. It follows the opposite order, where an event triggers first on the ancestor element and then travels down to the target element.
+Event capturing is a lesser-used counterpart to [event bubbling](/questions/quiz/describe-event-bubbling) in the DOM event propagation mechanism. During capture, the event travels along its event path from ancestors toward the target, and capture listeners run in that order.
 
-Event capturing is rarely used as compared to event bubbling, but it can be used in specific scenarios where you need to intercept events at a higher level before they reach the target element. It is disabled by default but can be enabled through an option on `addEventListener()`.
+Event capturing is used less often than event bubbling, but it is useful when an ancestor needs to observe an event before it reaches the target. DOM events still travel through the capture phase; what defaults to `false` is the `capture` option when registering a listener with `addEventListener()`.
 
 ---
 
@@ -14,17 +14,17 @@ Event capturing is rarely used as compared to event bubbling, but it can be used
 
 Event capturing is a propagation mechanism in the DOM (Document Object Model) where an event, such as a click or a keyboard event, is first triggered at the root of the document and then flows down through the DOM tree to the target element.
 
-Capturing has a higher priority than bubbling, meaning that capturing event handlers are executed before bubbling event handlers, as shown by the phases of event propagation:
+Capture listeners run before bubble listeners because capture is the first phase of DOM event propagation:
 
 - **Capturing phase**: The event moves down towards the target element
 - **Target phase**: The event reaches the target element
 - **Bubbling phase**: The event bubbles up from the target element
 
-Note that event capturing is disabled by default. To enable it, you have to pass the capture option into `addEventListener()`.
+Listeners are registered for the bubbling phase by default. Pass `true` as the third argument, or `{ capture: true }`, to register a capture listener.
 
 ## Capturing phase
 
-During the capturing phase, the event starts at the document root and propagates down to the target element. Any event listeners on ancestor elements in this path will be triggered before the target element's handler. Note that event capturing will not happen unless the third argument of `addEventListener()` is set to `true` as shown below (the default value is `false`).
+During the capturing phase, the event travels from the top of the event path down toward the target. Capture listeners on ancestors in this path run before the target's listeners. The propagation phase exists regardless of whether any capture listeners are registered.
 
 Here's an example demonstrating event capturing:
 
@@ -127,7 +127,7 @@ The full picture: events go down, then up. Capture handlers fire from the root t
 | --- | --- | --- |
 | Phase order | First (down from root) | Last (up to root) |
 | `useCapture` argument | `true` (or `{ capture: true }`) | `false` (the default) |
-| Default behavior | Off; must opt in | On; every listener bubbles by default |
+| Listener registration default | Must opt in with `{ capture: true }` | Default (`capture: false`) |
 | Effect of `event.stopPropagation()` | Stops the event before it reaches the target | Stops the event before higher ancestors see it |
 | Common use cases | Intercepting non-bubbling events; pre-empting child handlers; analytics | Most click, input, and change handlers; event delegation |
 

@@ -4,7 +4,7 @@ title: What are JavaScript polyfills for?
 
 ## TL;DR
 
-Polyfills in JavaScript are pieces of code that provide modern functionality to older browsers that lack native support for those features. They bridge the gap between the JavaScript language features and APIs available in modern browsers and the limited capabilities of older browser versions.
+Polyfills implement a missing JavaScript or Web API in environments that do not provide it. Choose them from an explicit support matrix and feature tests, load only the required modules, and prefer maintained implementations because matching specification edge cases is difficult. A transpiler rewrites syntax; it does not by itself add runtime objects such as `Promise`, `URL`, or new array methods.
 
 They can be implemented manually or included through libraries and are often used in conjunction with feature detection.
 
@@ -35,27 +35,15 @@ Polyfills in JavaScript are pieces of code (usually JavaScript) that provide mod
 
 Polyfills detect if a feature or API is missing in a browser and provide a custom implementation of that feature using existing JavaScript capabilities. This allows developers to write code using the latest JavaScript features and APIs without worrying about browser compatibility issues.
 
-For example, let's consider the `Array.prototype.includes()` method, which determines if an array includes a specific element. This method is not supported in older browsers like Internet Explorer 11. To address this, we can use a polyfill:
+For example, an application can conditionally load a maintained `ResizeObserver` fallback before starting code that needs it:
 
-```js live
-// Polyfill for Array.prototype.includes()
-if (!Array.prototype.includes) {
-  Array.prototype.includes = function (searchElement) {
-    for (var i = 0; i < this.length; i++) {
-      if (this[i] === searchElement) {
-        return true;
-      }
-    }
-
-    return false;
-  };
+```js
+if (!('ResizeObserver' in globalThis)) {
+  await import('./resize-observer-polyfill.js');
 }
-
-console.log([1, 2, 3].includes(2)); // true
-console.log([1, 2, 3].includes(4)); // false
 ```
 
-By including this polyfill, we can safely use `Array.prototype.includes()` even in browsers that don't support it natively.
+This runs in an ES module because it uses top-level `await`. The fallback still needs tests in the actual target browsers; feature presence alone does not prove identical behavior for every edge case.
 
 ## Implementing polyfills
 
@@ -66,10 +54,12 @@ By including this polyfill, we can safely use `Array.prototype.includes()` even 
 
 ### Considerations
 
-- **Selective loading**: Polyfills should only be loaded for browsers that need them to optimize performance.
+- **Selective loading**: Load only the features required by the application's supported environments. Conditional loading can save bytes for newer clients but adds another request and code path.
 - **Feature detection**: Perform feature detection before applying a polyfill to avoid overwriting native implementations or applying unnecessary polyfills.
 - **Size and performance**: Polyfills can increase the JavaScript bundle size, so minification and compression techniques should be used to mitigate this impact.
 - **Existing libraries**: Consider using existing libraries and tools that offer comprehensive polyfill solutions for multiple features, handling feature detection, conditional loading, and fallbacks efficiently.
+- **Global mutation**: Many polyfills patch globals or prototypes. A “pure” library helper may be safer for embeddable code that must not change its host page.
+- **Unpolyfillable behavior**: Some syntax, security properties, rendering behavior, and platform capabilities cannot be reproduced faithfully with JavaScript alone. Use progressive enhancement or an alternative experience.
 
 ### Libraries for polyfills
 
@@ -86,7 +76,5 @@ Prefer installing maintained polyfills as project dependencies and bundling them
 ## Further reading
 
 - [Polyfill - MDN](https://developer.mozilla.org/en-US/docs/Glossary/Polyfill)
-- [Polyfills and transpilers](https://javascript.info/polyfills)
-- [Polyfills: How do they work?](https://medium.com/alienbrains/polyfills-how-do-they-work-ea6a12b792b)
-- [Polyfill in Javascript](https://www.linkedin.com/pulse/polyfill-javascript-divyansh-singh)
-- [Shubham Dutta](https://dev.to/shubhamdutta2000/polyfills-for-javascript-a-full-overview-3f7m)
+- [`core-js` documentation](https://github.com/zloirock/core-js)
+- [Browserslist](https://github.com/browserslist/browserslist)

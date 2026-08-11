@@ -4,64 +4,48 @@ title: When would you use `document.write()`?
 
 ## TL;DR
 
-`document.write()` is rarely used in modern web development because it can overwrite the entire document if called after the page has loaded. It is mainly used for simple tasks like writing content during the initial page load, such as for educational purposes or quick debugging. However, it is generally recommended to use other methods like `innerHTML`, `appendChild()`, or modern frameworks for manipulating the DOM.
+Almost never in new application code. During HTML parsing, `document.write()` injects markup into the input stream; after the document has loaded, it can implicitly call `document.open()` and replace the page. Its behavior in deferred or asynchronous scripts is problematic, it is an injection sink for untrusted strings, and browsers may intervene in slow-network cases.
+
+You may encounter it in legacy scripts or tightly controlled parser-time snippets. Replace it with normal HTML, DOM creation methods, or explicit script loading. Use the console and debugger—not `document.write()`—for debugging.
 
 ---
 
-## When would you use `document.write()`?
+## Why parser timing matters
 
-### Initial page load
-
-`document.write()` can be used to write content directly to the document during the initial page load. This is one of the few scenarios where it might be appropriate, as it can be simpler and faster for very basic tasks.
+This writes while the parser is processing the document:
 
 ```html
-<!doctype html>
-<html>
-  <head>
-    <title>Document Write Example</title>
-  </head>
-  <body>
-    <script>
-      document.write('<h1>Hello, World!</h1>');
-    </script>
-  </body>
-</html>
+<script>
+  document.write('<p>Inserted while parsing</p>');
+</script>
 ```
 
-### Educational purposes
-
-`document.write()` is sometimes used in educational contexts to demonstrate basic JavaScript concepts. It provides a straightforward way to show how JavaScript can manipulate the DOM.
-
-### Quick debugging
-
-For quick and dirty debugging, `document.write()` can be used to output variables or messages directly to the document. However, this is not recommended for production code.
+The result depends on when and how the script executes. Calling it later is destructive:
 
 ```js
-const debugMessage = 'Debugging message';
-document.write(debugMessage);
+window.addEventListener('load', () => {
+  // This can erase the existing document. Do not do this.
+  document.write('<p>Replacement document</p>');
+});
 ```
 
-### Legacy code
+## Safer alternatives
 
-In some older codebases, you might encounter `document.write()`. While it's not recommended to use it in new projects, understanding it can be useful for maintaining or refactoring legacy code.
+For text or DOM elements, create and append nodes:
 
-### Why not use `document.write()`?
-
-- **Overwrites the document**: If called after the page has loaded, `document.write()` will overwrite the entire document, which can lead to loss of content and a poor user experience.
-- **Better alternatives**: Modern methods like `innerHTML`, `appendChild()`, and frameworks like React or Vue provide more control and are safer to use.
-
-```js
-// Using innerHTML
-document.getElementById('content').innerHTML = '<h1>Hello, World!</h1>';
-
-// Using appendChild
-const newElement = document.createElement('h1');
-newElement.textContent = 'Hello, World!';
-document.getElementById('content').appendChild(newElement);
+```js live
+const heading = document.createElement('h1');
+heading.textContent = 'Hello, world!';
+document.querySelector('#content').append(heading);
 ```
+
+For static content, put the markup in HTML. For optional scripts, create a `<script>` element or use dynamic `import()`. If HTML from users is intentionally supported, process it with an appropriate sanitizer; do not pass it to `document.write()` or `innerHTML` directly.
+
+## Maintaining legacy usage
+
+First determine whether the third-party script requires parser-time synchronous insertion. Test the replacement under slow networks, restrictive CSP, and supported browsers. If the call cannot yet be removed, ensure every string is developer-controlled, isolate the integration, and do not call it after parsing.
 
 ## Further reading
 
-- [MDN Web Docs on document.write()](https://developer.mozilla.org/en-US/docs/Web/API/Document/write)
-- [Why is document.write() considered harmful?](https://stackoverflow.com/questions/802854/why-is-document-write-considered-a-bad-practice)
-- [Modern DOM manipulation methods](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Introduction#modifying_the_document)
+- [MDN: `document.write()`](https://developer.mozilla.org/en-US/docs/Web/API/Document/write)
+- [HTML Standard: `document.write()`](<https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#document.write()>)

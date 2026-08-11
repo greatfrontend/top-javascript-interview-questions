@@ -4,122 +4,117 @@ title: How can you test asynchronous code in JavaScript?
 
 ## TL;DR
 
-To test asynchronous code in JavaScript, you can use testing frameworks like Jest or Mocha. These frameworks provide built-in support for handling asynchronous operations. You can use `async`/`await` or return promises in your test functions. For example, in Jest, you can write:
+Return or `await` the asynchronous work so the test runner knows when the test finishes. Test fulfilled and rejected paths with controlled dependencies, use fake timers for timer-driven code, and avoid real networks and arbitrary sleeps in unit tests. Restore timers, mocks, listeners, servers, and other global state after each test.
 
-```js
-test('fetches data successfully', async () => {
-  const data = await fetchData();
-  expect(data).toBeDefined();
-});
-```
-
-Alternatively, you can use callbacks and the `done` function to signal the end of an asynchronous test.
+Vitest, Jest, and Mocha all support Promise-returning and `async` tests. Callback-style tests can use a `done` callback when maintaining callback APIs, but Promise-based tests are usually easier to compose and fail correctly.
 
 ---
 
-## How can you test asynchronous code in JavaScript?
+## Await the result and assert behavior
 
-Testing asynchronous code in JavaScript can be challenging, but modern testing frameworks like Jest and Mocha provide built-in support for handling asynchronous operations. Here are some common methods to test asynchronous code:
-
-### Using `async`/`await`
-
-One of the most straightforward ways to test asynchronous code is by using `async`/`await`. This approach makes your test code look synchronous, which can be easier to read and write.
-
-#### Example with Jest
+The examples use Vitest; Jest has a similar `test` / `expect` interface.
 
 ```js
-// fetchData.js
-export const fetchData = async () => {
-  const response = await fetch('https://api.example.com/data');
+// load-user.js
+export async function loadUser(fetchData, userId) {
+  const response = await fetchData(`/api/users/${userId}`);
+  if (!response.ok) throw new Error(`Request failed (${response.status})`);
   return response.json();
-};
+}
+```
 
-// fetchData.test.js
-import { fetchData } from './fetchData';
+```js
+import { expect, test, vi } from 'vitest';
+import { loadUser } from './load-user.js';
 
-test('fetches data successfully', async () => {
-  const data = await fetchData();
-  expect(data).toBeDefined();
+test('returns the decoded user', async () => {
+  const fetchData = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({ id: 42, name: 'Avery' }),
+  });
+
+  await expect(loadUser(fetchData, 42)).resolves.toEqual({
+    id: 42,
+    name: 'Avery',
+  });
+  expect(fetchData).toHaveBeenCalledWith('/api/users/42');
+});
+
+test('rejects when the server returns an error status', async () => {
+  const fetchData = vi.fn().mockResolvedValue({ ok: false, status: 503 });
+
+  await expect(loadUser(fetchData, 42)).rejects.toThrow('Request failed (503)');
 });
 ```
 
-### Returning a promise
+This test is deterministic and does not send data to a remote API. A separate integration test can exercise the real HTTP boundary against a controlled test server.
 
-Another way to handle asynchronous tests is by returning a promise from your test function. Jest and Mocha will wait for the promise to resolve before finishing the test.
+## Return Promises when not using `async`
 
-#### Example with Jest
+A runner also waits when the test returns a Promise:
 
 ```js
-// fetchData.js
-export const fetchData = () => {
-  return fetch('https://api.example.com/data').then((response) =>
-    response.json(),
-  );
-};
-
-// fetchData.test.js
-import { fetchData } from './fetchData';
-
-test('fetches data successfully', () => {
-  return fetchData().then((data) => {
-    expect(data).toBeDefined();
+test('loads a user', () => {
+  return loadUser(fetchData, 42).then((user) => {
+    expect(user.id).toBe(42);
   });
 });
 ```
 
-### Using callbacks
+Forgetting both `return` and `await` is a common false positive: the test finishes before its assertions run.
 
-For older codebases or specific scenarios, you might need to use callbacks. In Jest, you can use the `done` function to signal the end of an asynchronous test.
+## Test timer-driven code with fake timers
 
-#### Example with Jest
+Do not make a unit test sleep for a real second. Advance the clock deliberately and restore it afterward:
 
 ```js
-// fetchData.js
-export const fetchData = (callback) => {
-  fetch('https://api.example.com/data')
-    .then((response) => response.json())
-    .then((data) => callback(null, data))
-    .catch((error) => callback(error));
-};
+import { afterEach, expect, test, vi } from 'vitest';
 
-// fetchData.test.js
-import { fetchData } from './fetchData';
+afterEach(() => {
+  vi.useRealTimers();
+  vi.restoreAllMocks();
+});
 
-test('fetches data successfully', (done) => {
-  fetchData((error, data) => {
-    expect(error).toBeNull();
-    expect(data).toBeDefined();
-    done();
+test('retries after one second', async () => {
+  vi.useFakeTimers();
+  const operation = vi
+    .fn()
+    .mockRejectedValueOnce(new Error('temporary'))
+    .mockResolvedValue('saved');
+
+  const result = retryAfterDelay(operation, 1000);
+  await vi.advanceTimersByTimeAsync(1000);
+
+  await expect(result).resolves.toBe('saved');
+  expect(operation).toHaveBeenCalledTimes(2);
+});
+```
+
+Fake timers are not always appropriate for APIs whose behavior depends on the real event loop or browser. Use the runner's documented timer APIs and keep at least one integration test when timing behavior crosses real platform boundaries.
+
+## Callback APIs
+
+When an API genuinely uses callbacks, signal completion exactly once and route assertion failures to the runner:
+
+```js
+test('reads a value through a callback', (done) => {
+  readValue((error, value) => {
+    try {
+      expect(error).toBeNull();
+      expect(value).toBe('ready');
+      done();
+    } catch (assertionError) {
+      done(assertionError);
+    }
   });
 });
 ```
 
-### Using Mocha
-
-Mocha also supports `async`/`await`, returning promises, and using callbacks. Here is an example using `async`/`await` with Mocha:
-
-```js
-// fetchData.js
-export const fetchData = async () => {
-  const response = await fetch('https://api.example.com/data');
-  return response.json();
-};
-
-// fetchData.test.js
-import { fetchData } from './fetchData';
-import { expect } from 'chai';
-
-describe('fetchData', () => {
-  it('fetches data successfully', async () => {
-    const data = await fetchData();
-    expect(data).to.be.an('object');
-  });
-});
-```
+Do not mix a returned Promise and `done` in the same test; runners generally treat that as ambiguous or erroneous.
 
 ## Further reading
 
-- [Jest documentation on testing asynchronous code](https://jestjs.io/docs/asynchronous)
-- [Mocha documentation on testing asynchronous code](https://mochajs.org/#asynchronous-code)
-- [MDN Web Docs on async/await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
-- [Chai assertion library](https://www.chaijs.com/)
+- [Vitest: Testing asynchronous code](https://vitest.dev/guide/)
+- [Vitest: Mocking timers](https://vitest.dev/guide/mocking/timers)
+- [Jest: Testing asynchronous code](https://jestjs.io/docs/asynchronous)
+- [Mocha: Asynchronous code](https://mochajs.org/#asynchronous-code)

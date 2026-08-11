@@ -4,7 +4,7 @@ title: What are the pros and cons of using Promises instead of callbacks in Java
 
 ## TL;DR
 
-Promises offer a cleaner alternative to callbacks, helping to avoid callback hell and making asynchronous code more readable. They make it easier to write sequential and parallel asynchronous operations and to handle errors with `.catch()`. However, using Promises may introduce slightly more complex code.
+Promises standardize one eventual outcome and make sequential, parallel, and error flows composable with `.then()`, `async`/`await`, and combinators such as `Promise.all()`. They avoid many callback-contract ambiguities, but they do not cancel work, represent repeated events, or guarantee settlement. A Promise chain can still become unreadable or leak an unhandled rejection when callers forget to return or await it.
 
 ---
 
@@ -160,17 +160,18 @@ getFirstData()
   });
 ```
 
-### With Promises, these scenarios which are present in callbacks-only coding, will not happen:
+### A stricter settlement contract
 
-- Call the callback too early
-- Call the callback too late (or never)
-- Call the callback too few or too many times
-- Fail to pass along any necessary environment/parameters
-- Swallow any errors/exceptions that may happen
+A Promise settles at most once, and reactions always run asynchronously as microtasks. This prevents a producer from delivering two results or sometimes invoking a consumer synchronously and sometimes asynchronously. However, the Promise can still remain pending forever, settle later than useful, or wrap an operation that keeps running after the result is ignored.
 
 ## Cons
 
-- Slightly more complex code (debatable).
+- Promises model one future result, not repeated events or a stream of values.
+- Cancellation is separate. APIs such as `fetch()` accept `AbortSignal`, but calling code must pass and handle it.
+- `Promise.all()` rejects early without cancelling the remaining operations.
+- A forgotten `return` or `await` can detach work and its errors from the caller.
+- Long chains can obscure which operation failed unless errors include useful context.
+- Converting a callback API to a Promise is safe only when the callback is expected to produce one result. Event listeners and subscriptions need a different abstraction.
 
 ## Practice
 

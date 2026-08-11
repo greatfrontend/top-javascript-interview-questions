@@ -4,7 +4,7 @@ title: Explain the concept of hoisting with regards to functions
 
 ## TL;DR
 
-Hoisting in JavaScript is a behavior where function declarations are moved to the top of their containing scope during the compile phase. This means you can call a function before it is defined in the code. However, this does not apply to function expressions or arrow functions, which are not hoisted in the same way.
+"Hoisting" describes the observable result of declarations being instantiated before a scope's statements execute; the engine does not move source text. A function declaration's binding is initialized with the function during scope setup, so it can be called earlier in that scope. A function or arrow expression is created only when evaluation reaches the expression. Its variable binding follows the rules for `var`, `let`, or `const`.
 
 ```js live
 // Function declaration
@@ -24,7 +24,7 @@ var nonHoistedFunction = function () {
 
 ## What is hoisting?
 
-Hoisting is a JavaScript mechanism where variables and function declarations are moved to the top of their containing scope during the compile phase. This allows functions to be called before they are defined in the code.
+Hoisting is informal terminology for the way JavaScript creates bindings while instantiating a scope before executing its statements. Function declarations are initialized during that process, which allows them to be called before their declaration appears in source order.
 
 ### Function declarations
 
@@ -40,7 +40,7 @@ function hoistedFunction() {
 
 ### Function expressions
 
-Function expressions, including arrow functions, are not hoisted in the same way. They are treated as variable assignments and are only hoisted as undefined.
+Function expressions, including arrow functions, are evaluated in place. With `var`, the variable binding exists and initially contains `undefined`; with `let` or `const`, the binding is in the temporal dead zone until its declaration is evaluated.
 
 ```js live
 nonHoistedFunction(); // Throws an error: TypeError: nonHoistedFunction is not a function

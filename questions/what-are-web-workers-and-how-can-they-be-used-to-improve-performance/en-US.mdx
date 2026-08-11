@@ -4,7 +4,9 @@ title: What are Web Workers and how can they be used to improve performance?
 
 ## TL;DR
 
-Web Workers are a way to run JavaScript in the background, separate from the main execution thread of a web application. This helps in performing heavy computations without blocking the user interface. You can create a Web Worker using the `Worker` constructor and communicate with it using the `postMessage` and `onmessage` methods.
+Web Workers run JavaScript in a background thread so CPU-heavy work does not block browser input and rendering. Create a worker, exchange messages with `postMessage()`, handle message and error events, and call `terminate()` when its owning feature is disposed. Workers cannot access the DOM, and messages normally use structured cloning; transfer large `ArrayBuffer`s when ownership can move instead of copying them.
+
+A worker improves responsiveness, not automatically total execution time. Startup, serialization, copying, and coordination have costs, so profile the real task. Use asynchronous APIs or task chunking instead when the work is mostly waiting for I/O or is too small to justify a worker.
 
 ```js
 // main.js
@@ -14,6 +16,15 @@ worker.postMessage('Hello, worker!');
 worker.onmessage = function (event) {
   console.log('Message from worker:', event.data);
 };
+
+worker.onerror = function (event) {
+  console.error('Worker failed:', event.message);
+};
+
+// Call when the feature no longer needs the worker.
+function cleanup() {
+  worker.terminate();
+}
 
 // worker.js
 onmessage = function (event) {
@@ -109,9 +120,31 @@ function processData(data) {
 - Web Workers do not have access to the DOM, so they cannot directly manipulate the user interface.
 - They have a separate scope from the main script, so you need to pass data back and forth using `postMessage`.
 - Creating and managing Web Workers can add complexity to your codebase.
+- A message is copied using the structured clone algorithm unless transferable ownership is supplied. Repeatedly copying large data can remove the responsiveness benefit.
+- Errors and Promise rejections inside the worker need explicit reporting and handling.
+- Browser Web Workers and Node.js `worker_threads` solve similar problems but have different globals and APIs.
+
+### Transferring large data
+
+When the main thread no longer needs a buffer, transfer it:
+
+```js
+const buffer = new ArrayBuffer(16 * 1024 * 1024);
+worker.postMessage({ buffer }, [buffer]);
+
+console.log(buffer.byteLength); // 0: ownership moved to the worker
+```
+
+The transfer avoids copying that buffer, but the sender can no longer use it. Shared memory with `SharedArrayBuffer` requires careful synchronization and, in browsers, appropriate cross-origin isolation headers.
+
+### Lifecycle and cancellation
+
+`terminate()` stops the worker immediately and does not run a graceful cleanup callback. For cooperative cancellation or cleanup, send a cancellation message and design the worker to stop between chunks, then terminate it as a final fallback. Include a request ID in messages when several jobs can be in flight so late results are not applied to the wrong UI state.
 
 ## Further reading
 
 - [MDN Web Docs: Using Web Workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers)
 - [MDN Web Docs: Web Workers API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)
 - [MDN Web Docs: Worker](https://developer.mozilla.org/en-US/docs/Web/API/Worker)
+- [MDN: Transferable objects](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Transferable_objects)
+- [Node.js: Worker threads](https://nodejs.org/api/worker_threads.html)

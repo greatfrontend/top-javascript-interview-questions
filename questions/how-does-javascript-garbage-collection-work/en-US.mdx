@@ -4,7 +4,7 @@ title: How does JavaScript garbage collection work?
 
 ## TL;DR
 
-Garbage collection in JavaScript is an automatic memory management mechanism that reclaims memory occupied by objects and variables that are no longer in use by the program. The two most common algorithms are mark-and-sweep and generational garbage collection.
+JavaScript engines automatically reclaim objects that are no longer reachable from roots such as the current call stack, global objects, and live host objects. Modern engines combine tracing collectors with optimizations such as generations, incremental work, and compaction; the exact strategy is an engine implementation detail.
 
 **Mark-and-sweep**
 
@@ -19,7 +19,7 @@ This algorithm effectively identifies and removes objects that have become unrea
 
 Used by modern JavaScript engines, objects are divided into different generations based on their age. Objects start in the young generation, and those that survive several collections are promoted to the old generation. This optimization reduces the overhead of garbage collection by focusing on the younger generation, where most objects are short-lived.
 
-Different JavaScript engines (which differ across browsers) implement different garbage collection algorithms and there's no standard way of doing garbage collection.
+Garbage collection does not prevent memory leaks: a listener, timer, closure, DOM reference, or unbounded cache can keep data reachable even when the application no longer needs it. Diagnose a suspected leak by repeating the problematic action, comparing heap snapshots, and following retaining paths. Do not try to force garbage collection in normal application code.
 
 ---
 
@@ -47,7 +47,7 @@ If there is a chain of references from a root to an object, that object is consi
 1. **Mark-and-sweep**:
    - **Mark phase**: The garbage collector starts from the root objects and marks all reachable objects.
    - **Sweep phase**: It then scans memory for objects that were not marked and reclaims their memory.
-2. **Reference counting**:
+2. **Reference counting (historical/simple implementations)**:
    - This algorithm keeps a count of references to each object. When an object's reference count drops to zero, it is considered unreachable and can be collected.
    - A drawback of reference counting is that it cannot handle circular references well (e.g., two objects referencing each other but not referenced by any other object).
 3. **Generational garbage collection**:
@@ -58,7 +58,7 @@ If there is a chain of references from a root to an object, that object is consi
 
 ### JavaScript engine implementations
 
-Different JavaScript engines use variations of these algorithms:
+Different JavaScript engines use combinations and variations of these algorithms. Their internals change over time, so application code should rely on reachability rather than a particular collector:
 
 - **V8 (Google Chrome, Node.js)**: Uses a combination of generational, mark-and-sweep, and other optimizations for efficient garbage collection.
 - **SpiderMonkey (Mozilla Firefox)**: Uses incremental and generational garbage collection.
@@ -71,15 +71,43 @@ Memory leaks in JavaScript occur when a program fails to release memory that it 
 Memory leaks in JavaScript can occur due to various reasons, including:
 
 - **Accidental global variables**: Unintentionally creating global variables that remain in memory even after they are no longer needed.
-- **Closures**: Improper use of closures, where an inner function retains references to variables from an outer function's scope, preventing the outer function's scope from being garbage collected.
+- **Closures**: A long-lived closure can retain a large value from its outer scope even after the feature no longer needs it.
 - **Event listeners**: Failing to remove event listeners or callbacks when they are no longer needed, causing the associated objects to remain in memory.
 - **Caching**: Implementing caches without proper eviction logic, leading to unbounded memory growth over time.
 - **Detached DOM node references**: Keeping references to detached DOM nodes, preventing them from being garbage collected.
 - **Forgotten timers or callbacks**: Failing to clear timers or callbacks when they are no longer needed, causing their associated data to remain in memory.
 
-To avoid leaking memory:
+Circular references are not inherently leaks. A tracing collector can reclaim a cycle when nothing reachable points to it. The problem is a reachable reference that keeps the cycle alive.
 
-- **Remove event listeners**: Always remove event listeners when they are no longer needed.
+### Diagnosing a leak in practice
+
+Suppose memory grows whenever a modal is opened and closed:
+
+1. Open DevTools' Memory panel and take a baseline heap snapshot.
+2. Open and close the modal several times, then take another snapshot.
+3. Compare snapshots and look for growing modal objects or detached DOM nodes.
+4. Inspect the retaining path. It may lead to a global event listener, interval, observer, or cache.
+5. Add the matching cleanup, repeat the same interaction, and confirm that retained objects no longer grow.
+
+For example, pair setup and cleanup explicitly:
+
+```js
+function mountModal(modal) {
+  function handleKeydown(event) {
+    if (event.key === 'Escape') modal.close();
+  }
+
+  window.addEventListener('keydown', handleKeydown);
+
+  return () => {
+    window.removeEventListener('keydown', handleKeydown);
+  };
+}
+```
+
+To reduce accidental retention:
+
+- **Remove event listeners**: Remove long-lived listeners when their feature is disposed. A listener on an element that becomes unreachable with its callback can itself be collected.
 - **Clear references in closures**: Avoid holding unnecessary references in closures.
 - **Manage DOM references**: Explicitly remove DOM nodes and their references when they are no longer needed.
 - **Avoid global variables**: Minimize the use of global variables to reduce the risk of inadvertently keeping references alive.
@@ -88,6 +116,4 @@ To avoid leaking memory:
 
 - [Garbage collection - MDN](https://developer.mozilla.org/en-US/docs/Glossary/Garbage_collection)
 - [Memory management](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_management)
-- [Understanding memory management and garbage collection in JavaScript](https://www.linkedin.com/pulse/understanding-memory-management-garbage-collection-aayush-patniya)
-- [JavaScript memory management: A comprehensive guide to garbage collection in JavaScript](https://www.calibraint.com/blog/garbage-collection-in-javascript)
-- [Garbage collection - javascript.info](https://javascript.info/garbage-collection)
+- [Record heap snapshots in Chrome DevTools](https://developer.chrome.com/docs/devtools/memory-problems/heap-snapshots)

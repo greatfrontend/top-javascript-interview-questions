@@ -16,23 +16,13 @@ In JavaScript, data types can be categorized into `primitive` and `non-primitive
 - **Symbol**: A unique and immutable value used as object property keys. Read more in our [deep dive on `Symbol`s](/questions/quiz/what-are-symbols-used-for).
 - **BigInt**: Represents integers with arbitrary precision.
 
-**Non-primitive (Reference) data types**
-
-- **Object**: Used to store collections of data.
-- **Array**: An ordered collection of data.
-- **Function**: A callable object.
-- **Date**: Represents dates and times.
-- **RegExp**: Represents regular expressions.
-- **Map**: A collection of keyed data items.
-- **Set**: A collection of unique values.
-
-The primitive types store a single value, while non-primitive types can store collections of data or complex entities.
+The remaining ECMAScript language type is **Object**. Arrays, functions, dates, regular expressions, maps, and sets are all kinds of objects rather than additional language types. Functions are callable objects and receive the special `typeof` result `"function"`.
 
 ---
 
 ## Data types in JavaScript
 
-JavaScript, like many programming languages, has a variety of data types to represent different kinds of data. The main data types in JavaScript can be divided into two categories: primitive and non-primitive (reference) types.
+JavaScript values belong to primitive language types or the Object language type.
 
 ### Primitive data types
 
@@ -96,9 +86,11 @@ console.log(bigNumber); // 9007199254740991n
 console.log(anotherBigNumber); // 1234567890123456789012345678901234567890n
 ```
 
-### Non-primitive (reference) data types
+### Object type and common object kinds
 
-1. **Object**: It is used to store collections of data and more complex entities. `Objects` are created using curly braces `{}`.
+The entries below are common kinds of objects, not separate ECMAScript language types.
+
+1. **Ordinary object**: Often used to store keyed data. Object literals are created using curly braces `{}`.
 
 ```js live
 let person = {

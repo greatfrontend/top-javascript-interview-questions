@@ -4,11 +4,14 @@ title: How do you make an HTTP request using the Fetch API?
 
 ## TL;DR
 
-To make an HTTP request using the Fetch API, you can use the `fetch` function, which returns a promise. You can handle the response using `.then()` and `.catch()` for error handling. Here's a basic example of a GET request:
+To make an HTTP request, call `fetch()`, which returns a promise for a `Response`. Fetch rejects for failures such as malformed URLs, network errors, CORS failures, and aborts—not for HTTP statuses such as 404 or 500—so check `response.ok` (or `response.status`) before reading the body.
 
 ```js live
 fetch('https://jsonplaceholder.typicode.com/todos/1')
-  .then((response) => response.json())
+  .then((response) => {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  })
   .then((data) => console.log(data))
   .catch((error) => console.error('Error:', error));
 ```
@@ -27,7 +30,10 @@ fetch('https://jsonplaceholder.typicode.com/posts', {
     'Content-Type': 'application/json; charset=UTF-8',
   },
 })
-  .then((response) => response.json())
+  .then((response) => {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  })
   .then((data) => console.log(data))
   .catch((error) => console.error('Error:', error));
 ```
@@ -91,7 +97,7 @@ fetch('https://jsonplaceholder.typicode.com/posts', {
 
 ### Handling errors
 
-Error handling in the Fetch API can be done using the `.catch()` method. It's also a good practice to check the `response.ok` property to ensure the request was successful.
+Use `.catch()` or `try...catch` for rejected promises. Because an HTTP error response still fulfills the Fetch promise, explicitly check `response.ok` (or handle the status codes your application expects).
 
 ```js live
 fetch('https://jsonplaceholder.tyicode.com/posts/1/comments') // Typo in the URL

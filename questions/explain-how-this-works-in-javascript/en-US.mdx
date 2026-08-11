@@ -26,7 +26,7 @@ In JavaScript, `this` is a keyword that refers to the current execution context 
 
 ### Used globally
 
-In the global scope, `this` refers to the global object, which is the `window` object in a web browser or the `global` object in a Node.js environment.
+At the top level of a classic browser script, `this` refers to `window`. At the top level of an ES module, it is `undefined`. Node.js also depends on the module system: top-level `this` in CommonJS is `module.exports`, not `globalThis`, while it is `undefined` in an ES module.
 
 ```js
 console.log(this); // In a browser, this will log the window object (for non-strict mode).
@@ -195,16 +195,16 @@ obj.regularFunction.apply(anotherObj); // Regular function: Bob
 const boundRegularFunction = obj.regularFunction.bind(anotherObj);
 boundRegularFunction(); // Regular function: Bob
 
-// Using call/apply/bind with an arrow function, `this` refers to the global scope and cannot be modified.
-obj.arrowFunction.call(anotherObj); // Arrow function: window/undefined (depending if strict mode)
-obj.arrowFunction.apply(anotherObj); // Arrow function: window/undefined (depending if strict mode)
+// call/apply/bind cannot replace an arrow function's lexically captured `this`.
+obj.arrowFunction.call(anotherObj); // Uses the surrounding scope's `this`.
+obj.arrowFunction.apply(anotherObj); // Uses the surrounding scope's `this`.
 const boundArrowFunction = obj.arrowFunction.bind(anotherObj);
-boundArrowFunction(); // Arrow function: window/undefined (depending if strict mode)
+boundArrowFunction(); // Still uses the surrounding scope's `this`.
 ```
 
 ### Within event handlers
 
-When a function is called as a DOM event handler, `this` refers to the element that triggered the event. In this example, `this` refers to the `<button>` element that was clicked.
+When a regular function is called as a DOM event listener, `this` refers to the element on which the listener was registered (`event.currentTarget`). It is not necessarily the element where the event originated (`event.target`). In this example both values are the same button.
 
 ```html
 <button id="my-button" onclick="console.log(this)">Click me</button>
@@ -223,7 +223,7 @@ As mentioned above, ES2015 introduced [arrow functions](https://developer.mozill
 
 ```js
 document.getElementById('my-button').addEventListener('click', () => {
-  console.log(this); // Window / undefined (depending on whether strict mode) instead of the button element.
+  console.log(this); // Lexically captured `this`, not the button element.
 });
 ```
 

@@ -4,7 +4,7 @@ title: Explain the concept of `this` binding in event handlers
 
 ## TL;DR
 
-In JavaScript, the `this` keyword refers to the object that is currently executing the code. In event handlers, `this` typically refers to the element that triggered the event. However, the value of `this` can change depending on how the event handler is defined and called. To ensure `this` refers to the desired object, you can use methods like `bind()`, arrow functions, or assign the context explicitly.
+For a non-arrow function registered with `addEventListener()`, the browser calls the listener with `this` set to the element on which the listener is registered. This is the same value as `event.currentTarget`, and it may differ from `event.target`, the descendant where the event originated. Arrow functions instead capture `this` lexically, and `bind()` can explicitly fix a regular function's `this` value.
 
 ---
 
@@ -12,11 +12,11 @@ In JavaScript, the `this` keyword refers to the object that is currently executi
 
 ### Understanding `this` in JavaScript
 
-In JavaScript, the `this` keyword is a reference to the object that is currently executing the code. The value of `this` is determined by how a function is called, not where it is defined. This can lead to different values of `this` in different contexts.
+For regular functions, the value of `this` is determined primarily by how the function is called. Arrow functions are the exception: they capture `this` from the surrounding lexical scope.
 
 ### `this` in event handlers
 
-In the context of event handlers, `this` usually refers to the DOM element that triggered the event. For example:
+For a regular function passed to `addEventListener()`, `this` refers to the DOM element that received the listener. For example:
 
 ```js live
 // Create a button element and append it to the DOM
@@ -32,6 +32,15 @@ button.click(); // Logs the button element
 ```
 
 In this example, `this` inside the event handler refers to the button element that was clicked.
+
+With delegation, the distinction is clearer: clicking a descendant changes `event.target`, but `this` and `event.currentTarget` still refer to the ancestor holding the listener.
+
+```js
+list.addEventListener('click', function (event) {
+  console.log(this === event.currentTarget); // true
+  console.log(event.target); // The descendant that was clicked
+});
+```
 
 ### Changing the value of `this`
 

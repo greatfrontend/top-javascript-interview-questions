@@ -8,9 +8,9 @@ The primary difference between `Map`/`Set` and `WeakMap`/`WeakSet` in JavaScript
 
 **`Map` vs. `WeakMap`**
 
-`Map`s allow any data type (strings, numbers, objects) as keys. The key-value pairs remain in memory as long as the `Map` object itself is referenced. Thus they are suitable for general-purpose key-value storage where you want to maintain references to both keys and values. Common use cases include storing user data, configuration settings, or relationships between objects.
+`Map`s allow any JavaScript value as a key and hold their keys and values strongly while the `Map` remains reachable. They are suitable for general-purpose key-value storage and are iterable in insertion order.
 
-`WeakMap`s only allow objects as keys. However, these object keys are held weakly. This means the garbage collector can remove them from memory even if the `WeakMap` itself still exists, as long as there are no other references to those objects. `WeakMap`s are ideal for scenarios where you want to associate data with objects without preventing those objects from being garbage collected. This can be useful for things like:
+`WeakMap`s allow objects and non-registered symbols as keys. These keys are held weakly: an entry does not by itself keep its key reachable. `WeakMap`s are useful for associating metadata with a key without controlling that key's lifetime. Garbage collection timing is not observable or guaranteed.
 
 - Caching data based on objects without preventing garbage collection of the objects themselves.
 - Storing private data associated with DOM nodes without affecting their lifecycle.
@@ -19,7 +19,7 @@ The primary difference between `Map`/`Set` and `WeakMap`/`WeakSet` in JavaScript
 
 Similar to `Map`, `Set`s allow any data type as elements. The elements within a `Set` must be unique. `Set`s are useful for storing unique values and checking for membership efficiently. Common use cases include removing duplicates from arrays or keeping track of completed tasks.
 
-On the other hand, `WeakSet` only allows objects as elements, and these object elements are held weakly, similar to `WeakMap` keys. `WeakSet`s are less commonly used, but applicable when you want a collection of unique objects without affecting their garbage collection. This might be necessary for:
+`WeakSet` allows objects and non-registered symbols as elements. Like `WeakMap` keys, they are held weakly. `WeakSet`s are useful when membership should not keep an object alive.
 
 - Tracking DOM nodes that have been interacted with without affecting their memory management.
 - Implementing custom object weak references for specific use cases.
@@ -28,14 +28,14 @@ On the other hand, `WeakSet` only allows objects as elements, and these object e
 
 | Feature | Map | WeakMap | Set | WeakSet |
 | --- | --- | --- | --- | --- |
-| Key Types | Any data type | Objects (weak references) | Any data type (unique) | Objects (weak references, unique) |
-| Garbage Collection | Keys and values are not garbage collected | Keys can be garbage collected if not referenced elsewhere | Elements are not garbage collected | Elements can be garbage collected if not referenced elsewhere |
+| Key Types | Any JavaScript value | Objects and non-registered symbols | Any JavaScript value (unique) | Objects and non-registered symbols (unique) |
+| References | Strong keys and values | Weak keys; values are associated with the key's lifetime | Strong elements | Weak elements |
 | Use Cases | General-purpose key-value storage | Caching, private DOM node data | Removing duplicates, membership checks | Object weak references, custom use cases |
 
 **Choosing between them**
 
 - Use `Map` and `Set` for most scenarios where you need to store key-value pairs or unique elements and want to maintain references to both the keys/elements and the values.
-- Use `WeakMap` and `WeakSet` cautiously in specific situations where you want to associate data with objects without affecting their garbage collection. Be aware of the implications of weak references and potential memory leaks if not used correctly.
+- Use `WeakMap` and `WeakSet` when membership should not keep an object or non-registered symbol alive. They are intentionally non-iterable, so use `Map` or `Set` if entries must be listed or counted.
 
 ---
 
@@ -43,11 +43,11 @@ On the other hand, `WeakSet` only allows objects as elements, and these object e
 
 The key differences between `Map`/`Set` and `WeakMap`/`WeakSet` in JavaScript are:
 
-1. **Key types**: `Map` and `Set` can have keys of any type (objects, primitive values, etc.), while `WeakMap` and `WeakSet` can only have objects as keys. Primitive values like strings or numbers are not allowed as keys in `WeakMap` and `WeakSet`.
-2. **Memory management**: The main difference lies in how they handle memory. `Map` and `Set` have strong references to their keys and values, which means they will prevent garbage collection of those values. On the other hand, `WeakMap` and `WeakSet` have weak references to their keys (objects), allowing those objects to be garbage collected if there are no other strong references to them.
+1. **Key types**: `Map` and `Set` accept any JavaScript value. `WeakMap` keys and `WeakSet` elements must be objects or non-registered symbols; strings, numbers, registered symbols from `Symbol.for()`, and most other primitives are rejected by `set()`/`add()`.
+2. **Memory management**: `Map` and `Set` hold entries strongly. `WeakMap` keys and `WeakSet` elements do not prevent otherwise unreachable keys from being reclaimed. A `WeakMap` value is not weak independently; it can be reclaimed when its key becomes unreachable.
 3. **Key enumeration**: Keys in `Map` and `Set` are enumerable (can be iterated over), while keys in `WeakMap` and `WeakSet` are not enumerable. This means you cannot get a list of keys or values from a `WeakMap` or `WeakSet`.
 4. **`size` property**: `Map` and `Set` have a `size` property that returns the number of elements, while `WeakMap` and `WeakSet` do not have a `size` property because their size can change due to garbage collection.
-5. **Use cases**: `Map` and `Set` are useful for general-purpose data structures and caching, while `WeakMap` and `WeakSet` are primarily used for storing metadata or additional data related to objects, without preventing those objects from being garbage collected.
+5. **Use cases**: `Map` and `Set` are general-purpose collections. `WeakMap` and `WeakSet` are primarily for metadata, caching, and membership tied to another object's lifetime.
 
 `Map` and `Set` are regular data structures that maintain strong references to their keys and values, while `WeakMap` and `WeakSet` are designed for scenarios where you want to associate data with objects without preventing those objects from being garbage collected when they are no longer needed.
 
@@ -107,7 +107,7 @@ function traverse(obj) {
 
   // Traverse the object's properties
   for (let prop in obj) {
-    if (obj.hasOwnProperty(prop)) {
+    if (Object.hasOwn(obj, prop)) {
       let value = obj[prop];
       if (typeof value === 'object' && value !== null) {
         traverse(value);

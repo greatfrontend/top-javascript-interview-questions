@@ -27,7 +27,7 @@ socket.addEventListener('message', function (event) {
 
 ## What is the WebSocket API?
 
-The WebSocket API is a technology that provides a way to establish a persistent, low-latency, full-duplex communication channel between a client (usually a web browser) and a server. This is different from the traditional HTTP request-response model, which is stateless and requires a new connection for each request.
+The WebSocket API establishes a persistent, full-duplex communication channel between a client (usually a web browser) and a server. Unlike HTTP's request-response message model, either WebSocket peer can send a message after the connection is established. HTTP can reuse or multiplex network connections, so the distinction is the communication model—not necessarily one new transport connection per HTTP request.
 
 ### Key features
 

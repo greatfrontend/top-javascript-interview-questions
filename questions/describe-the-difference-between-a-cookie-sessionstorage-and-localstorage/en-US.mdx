@@ -4,11 +4,11 @@ title: Describe the difference between a cookie, `sessionStorage` and `localStor
 
 ## TL;DR
 
-All of the following are mechanisms of storing data on the client, the user's browser in this case. `localStorage` and `sessionStorage` both implement the [Web Storage API interface](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API).
+Cookies, `localStorage`, and `sessionStorage` all store data in the browser, but they differ in lifetime, scope, server interaction, and security controls. `localStorage` and `sessionStorage` implement the [Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API).
 
-- **Cookies**: Suitable for server-client communication, small storage capacity, can be persistent or session-based, domain-specific. Sent to the server on every request.
-- **`localStorage`**: Suitable for long-term storage, data persists even after the browser is closed, accessible across all tabs and windows of the same origin, highest storage capacity among the three.
-- **`sessionStorage`**: Suitable for temporary data within a single page session, data is cleared when the tab or window is closed, has a higher storage capacity compared to cookies.
+- **Cookies**: Small values that the browser sends with matching HTTP requests. They can be session or persistent cookies and support controls such as `HttpOnly`, `Secure`, and `SameSite`.
+- **`localStorage`**: Origin-scoped string storage that persists until it is cleared and is shared by same-origin tabs and windows.
+- **`sessionStorage`**: Origin- and tab-scoped string storage for a page session. It survives reloads but is normally cleared when the tab or window closes.
 
 Here's a table summarizing the 3 client storage mechanisms.
 
@@ -17,8 +17,8 @@ Here's a table summarizing the 3 client storage mechanisms.
 | Initiator | Client or server. Server can use `Set-Cookie` header | Client | Client |
 | Lifespan | As specified | Until deleted | Until tab is closed |
 | Persistent across browser sessions | If a future expiry date is set | Yes | No |
-| Sent to server with every HTTP request | Yes, sent via `Cookie` header | No | No |
-| Typical storage limit | About 4 KB per cookie | About 5 MB per origin (browser-dependent) | About 5 MB per origin (browser-dependent) |
+| Sent to server with matching HTTP requests | Yes, via the `Cookie` header | No | No |
+| Typical storage limit | About 4 KB per cookie | Browser-dependent quota, commonly several MiB per origin | Browser-dependent quota, commonly several MiB per origin |
 | Access | Across windows/tabs | Across windows/tabs | Same tab |
 | Security | JavaScript cannot access `HttpOnly` cookies | None | None |
 
@@ -26,11 +26,11 @@ Here's a table summarizing the 3 client storage mechanisms.
 
 ## Storage on the web
 
-Cookies, `localStorage`, and `sessionStorage`, are all storage mechanisms on the client (web browser). It is useful to store data on the client for client-only state like access tokens, themes, personalized layouts, so that users can have a consistent experience on a website across tabs and usage sessions.
+Cookies, `localStorage`, and `sessionStorage` are browser storage mechanisms. Client storage is useful for state such as themes, personalized layouts, draft form data, and identifiers needed by a server session. Sensitive authentication credentials require a threat-model-specific design; they should not be placed in Web Storage by default.
 
 These client-side storage mechanisms have the following common properties:
 
-- This means the clients can read and modify the values (except for `HttpOnly` cookies).
+- Client-side JavaScript can read and modify the values, except for `HttpOnly` cookies.
 - Key-value based storage.
 - They are only able to store values as strings. Non-strings will have to be serialized into a string (e.g. `JSON.stringify()`) in order to be stored.
 
@@ -38,9 +38,9 @@ These client-side storage mechanisms have the following common properties:
 
 Since cookies have a relatively low maximum size, it is not advisable to store all your client-side data within cookies. The distinguishing properties about cookies are that cookies are sent to the server on every HTTP request so the low maximum size is a feature that prevents your HTTP requests from being too large due to cookies. Automatic expiry of cookies is a useful feature as well.
 
-With that in mind, the best kind of data to store within cookies is small pieces of data that need to be transmitted to the server, such as auth tokens, session IDs, analytics tracking IDs, GDPR cookie consent, language preferences that are important for authentication, authorization, and rendering on the server. These values are sometimes sensitive and can benefit from the `HttpOnly`, `Secure`, and `Expires`/`Max-Age` capabilities that cookies provide.
+With that in mind, cookies suit small values that the server needs, such as opaque session identifiers, analytics identifiers, consent choices, or language preferences used during server rendering. Sensitive cookies can benefit from `HttpOnly`, `Secure`, and `SameSite`; `Expires` or `Max-Age` controls persistence. The server must still validate and authorize every request.
 
-`localStorage` and `sessionStorage` both implement the [Web Storage API interface](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API). Web Storage has a generous total capacity of 5MB, so storage size is usually not a concern. The key difference is that values stored in Web Storage are not automatically sent along with HTTP requests.
+`localStorage` and `sessionStorage` both implement the [Web Storage API interface](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API). Their quota is browser-dependent and can be exceeded, so applications should handle `QuotaExceededError`. Values stored in Web Storage are not automatically sent with HTTP requests.
 
 While you can manually include values from Web Storage when making AJAX/`fetch()` requests, the browser does not include them in the initial request / first load of the page. Hence Web Storage should not be used to store data that is relied on by the server for the initial rendering of the page if server-side rendering is being used (typically authentication/authorization-related information). `localStorage` is most suitable for user preferences data that do not expire, like themes and layouts (if it is not important for the server to render the final layout). `sessionStorage` is most suitable for temporary data that only needs to be accessible within the current browsing session, such as form data (useful to preserve data during accidental reloads).
 
@@ -51,22 +51,22 @@ The following sections dive deeper into each client storage mechanism.
 Cookies are used to store small pieces of data on the client side that can be sent back to the server with every HTTP request.
 
 - **Storage capacity**: Limited to around 4 KB per cookie. Browsers also limit how many cookies can be stored per domain.
-- **Lifespan**: Cookies can have a specific expiration date set using the `Expires` or `Max-Age` attributes. If no expiration date is set, the cookie is deleted when the browser is closed (session cookie).
+- **Lifespan**: Cookies can have a specific expiration date set using the `Expires` or `Max-Age` attributes. Without one, they are session cookies, although browsers may restore session cookies as part of session restore.
 - **Access**: Cookies are domain-specific and can be shared across different pages and subdomains within the same domain.
 - **Security**: Cookies can be marked as `HttpOnly` to prevent access from JavaScript, reducing the risk of XSS attacks. They can also be secured with the `Secure` flag to ensure they are sent only when HTTPS is used.
 
 ```js
-// Set a cookie for the name/key `auth_token` with an expiry.
+// Set a non-sensitive preference cookie with an expiry.
 document.cookie =
-  'auth_token=abc123def; expires=Fri, 31 Dec 2100 23:59:59 GMT; path=/';
+  'theme=dark; expires=Fri, 31 Dec 2100 23:59:59 GMT; path=/; SameSite=Lax; Secure';
 
 // Read all cookies. There's no way to read specific cookies using `document.cookie`.
 // You have to parse the string yourself.
-console.log(document.cookie); // auth_token=abc123def
+console.log(document.cookie); // theme=dark
 
-// Delete the cookie with the name/key `auth_token` by setting an
+// Delete the cookie with the name/key `theme` by setting an
 // expiry date in the past. The value doesn't matter.
-document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+document.cookie = 'theme=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
 ```
 
 It is a pain to read/write to cookies. `document.cookie` returns a single string containing all the key/value pairs delimited by `;` and you have to parse the string yourself. The [`js-cookie`](https://github.com/js-cookie/js-cookie) npm library provides a simple and lightweight API for reading/writing cookies in JavaScript.
@@ -75,16 +75,16 @@ A modern native way of accessing cookies is via the [Cookie Store API](https://d
 
 ```js
 // Set a cookie. More options are available too.
-cookieStore.set('auth_token', 'abc123def');
+cookieStore.set('theme', 'dark');
 
 // Async method to access a single cookie and do something with it.
-cookieStore.get('auth_token').then(...);
+cookieStore.get('theme').then(...);
 
 // Async method to get all cookies.
 cookieStore.getAll().then(...);
 
 // Async method to delete a single cookie.
-cookieStore.delete('auth_token').then(() =>
+cookieStore.delete('theme').then(() =>
   console.log('Cookie deleted')
 );
 ```
@@ -148,12 +148,12 @@ A side-by-side feature comparison hides the most important practical difference 
 | `Secure` flag (HTTPS-only transport) | Yes | N/A (values never leave the client unless your code sends them) |
 | `SameSite` flag (CSRF defense: `Strict`, `Lax`, `None`) | Yes | N/A |
 | Partitioned cookies (CHIPS, isolated per top-level site) | Yes (modern browsers) | N/A |
-| Survives an XSS exploit | An `HttpOnly` cookie does | All values are exfiltrable |
+| Can an injected script read the value? | Not if the cookie is `HttpOnly` | Yes |
 
 The practical takeaways:
 
-- **Auth and session tokens belong in `HttpOnly; Secure; SameSite=Lax` cookies, not in `localStorage`.** Any XSS bug in any script on the origin can read everything in `localStorage`. An `HttpOnly` cookie cannot be read by JavaScript at all, so the attacker would have to make requests through the user's browser, which CSRF defenses (`SameSite`, double-submit tokens) are designed to block.
-- **CSRF vs XSS is the trade-off.** Cookies need CSRF protection; `localStorage` tokens (with the Authorization-header pattern) do not. The cookie plus `SameSite=Lax` combination is generally considered safer because it survives XSS, and `SameSite=Lax` blocks the most common CSRF cases by default.
+- **Opaque session identifiers are commonly stored in `HttpOnly; Secure; SameSite=Lax` cookies.** Any injected script on the origin can read Web Storage. `HttpOnly` prevents it from reading the cookie value, but it does not make the application survive XSS: the script may still perform authenticated same-origin actions or steal data visible to the page.
+- **Cookie authentication needs CSRF defenses.** `SameSite` mitigates many cross-site requests, and applications may also validate CSRF tokens, `Origin`, or Fetch Metadata. These controls do not stop a script already executing on the application's own origin.
 - **`localStorage` is fine for non-sensitive client state**: theme preferences, layout settings, draft text, recently viewed items.
 
 ## Real-world set, get, and remove
@@ -173,22 +173,21 @@ sessionStorage.removeItem('draft');
 
 // Cookie: modern async API (where supported)
 await cookieStore.set({
-  name: 'session',
-  value: 'abc123',
+  name: 'theme',
+  value: 'dark',
   sameSite: 'Lax',
   secure: true,
   expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
 });
-const session = await cookieStore.get('session');
-await cookieStore.delete('session');
+const theme = await cookieStore.get('theme');
+await cookieStore.delete('theme');
 
 // Cookie: legacy `document.cookie` API (universally supported)
-document.cookie =
-  'session=abc123; Path=/; Max-Age=604800; SameSite=Lax; Secure';
+document.cookie = 'theme=dark; Path=/; Max-Age=604800; SameSite=Lax; Secure';
 // Reading a specific cookie still requires parsing the string yourself:
 const value = document.cookie
   .split('; ')
-  .find((row) => row.startsWith('session='))
+  .find((row) => row.startsWith('theme='))
   ?.split('=')[1];
 ```
 

@@ -4,14 +4,14 @@ title: How can you prevent clickjacking attacks?
 
 ## TL;DR
 
-To prevent clickjacking attacks, you can use the `X-Frame-Options` HTTP header to control whether your site can be embedded in iframes. Set it to `DENY` to prevent all framing, or `SAMEORIGIN` to allow framing only from the same origin. Additionally, you can use the `Content-Security-Policy` (CSP) header with the `frame-ancestors` directive to specify which origins are allowed to frame your content.
+Prevent clickjacking at the server boundary with the Content Security Policy `frame-ancestors` directive. Use `'none'` when the page must never be framed, `'self'` for same-origin embedding, or an explicit list of trusted origins. `X-Frame-Options: DENY` or `SAMEORIGIN` remains a useful fallback for older clients, but cannot express a modern multi-origin allowlist. JavaScript “frame-busting” code is not a reliable primary defense.
 
 ```http
 X-Frame-Options: DENY
 ```
 
 ```http
-Content-Security-Policy: frame-ancestors 'self'
+Content-Security-Policy: frame-ancestors 'none'
 ```
 
 ---
@@ -57,7 +57,7 @@ Content-Security-Policy: frame-ancestors 'self' https://trusted.com
 
 ### Combining both headers
 
-For maximum compatibility and security, it is recommended to use both `X-Frame-Options` and `Content-Security-Policy` headers together.
+For compatibility with older clients, sites often send both headers with equivalent policies. Modern browsers that enforce `frame-ancestors` use it in preference to `X-Frame-Options`.
 
 Example:
 
@@ -65,6 +65,8 @@ Example:
 X-Frame-Options: SAMEORIGIN
 Content-Security-Policy: frame-ancestors 'self'
 ```
+
+These protections must be delivered as HTTP response headers; `frame-ancestors` is not supported in a `<meta>` policy. Test every page that performs sensitive actions, including error and authentication pages. `SameSite` cookies and re-authentication for high-risk actions can reduce impact, but do not replace a framing policy.
 
 ## Further reading
 

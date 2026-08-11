@@ -100,18 +100,15 @@ console.log(person.name); // 'Eve'
 Arrow functions do not have their own `this` and inherit `this` from the surrounding lexical context.
 
 ```js live
-const obj = {
-  firstName: 'Frank',
-  greet: () => {
-    console.log(this.firstName);
-  },
-};
+function makeGreeter() {
+  return () => console.log(this.firstName);
+}
 
-obj.greet(); // undefined, because `this` is inherited from the global scope
+const greet = makeGreeter.call({ firstName: 'Frank' });
+greet.call({ firstName: 'Grace' }); // 'Frank'; call() cannot rebind the arrow
 ```
 
 ## Further reading
 
 - [MDN Web Docs: this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
 - [JavaScript.info: Object methods, "this"](https://javascript.info/object-methods)
-- [You Don't Know JS: this & Object Prototypes](https://github.com/getify/You-Dont-Know-JS/tree/2nd-ed/this%20%26%20object%20prototypes)

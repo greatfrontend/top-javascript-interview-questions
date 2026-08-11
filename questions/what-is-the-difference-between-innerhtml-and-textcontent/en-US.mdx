@@ -4,7 +4,7 @@ title: What is the difference between `innerHTML` and `textContent`?
 
 ## TL;DR
 
-`innerHTML` and `textContent` are both properties used to get or set the content of an HTML element, but they serve different purposes. `innerHTML` returns or sets the HTML markup contained within the element, which means it can parse and render HTML tags. On the other hand, `textContent` returns or sets the text content of the element, ignoring any HTML tags and rendering them as plain text.
+`innerHTML` gets or replaces serialized HTML markup, so assigning to it invokes the HTML parser and creates elements. `textContent` gets or replaces text and treats `<` and `>` as characters. Use `textContent` for untrusted plain text. Use `innerHTML` only when HTML is intentionally required and the value is trusted or processed by an appropriate HTML sanitizer; assigning arbitrary user input creates an XSS sink.
 
 ```js
 // Example of innerHTML
@@ -36,7 +36,7 @@ element.innerHTML = '<strong>Bold Text</strong>'; // This will render as bold te
 
 #### Security considerations
 
-Using `innerHTML` can expose your application to Cross-Site Scripting (XSS) attacks if you insert untrusted content. Always sanitize any user input before setting it as `innerHTML`.
+Using `innerHTML` can expose your application to Cross-Site Scripting (XSS) attacks if you insert untrusted content. Use `textContent` when the value is plain text. If users are intentionally allowed to author a limited HTML subset, process it with a maintained, allowlist-based HTML sanitizer before insertion and consider enforcing Trusted Types.
 
 ### `textContent`
 
@@ -52,14 +52,15 @@ element.textContent = '<strong>Bold Text</strong>'; // This will render as plain
 #### Use cases
 
 - Safely inserting user-generated content
-- Stripping HTML tags from a string
+- Inserting a string as literal text without parsing markup
 
 #### Performance considerations
 
-`textContent` is generally faster than `innerHTML` because it does not parse and render HTML tags. It simply updates the text content of the element.
+`textContent` avoids HTML parsing, but performance depends on the operation and document. Choose between the APIs for semantics and security first; profile a real bottleneck before making a performance claim.
 
 ## Further reading
 
 - [MDN Web Docs: innerHTML](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML)
 - [MDN Web Docs: textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent)
 - [Cross-Site Scripting (XSS)](https://owasp.org/www-community/attacks/xss/)
+- [OWASP DOM based XSS Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html)

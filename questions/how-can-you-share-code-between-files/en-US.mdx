@@ -4,7 +4,7 @@ title: How can you share code between JavaScript files?
 
 ## TL;DR
 
-To share code between JavaScript files, you can use modules. In modern JavaScript, you can use ES6 modules with `export` and `import` statements. For example, you can export a function from one file and import it into another:
+Share code through modules with an explicit public API. ECMAScript modules (`export` / `import`) are the language standard and work in browsers, Node.js, and toolchains with host-specific resolution rules. CommonJS (`module.exports` / `require`) remains relevant to existing Node.js code and packages; do not mix the two formats without checking the runtime's interoperability rules.
 
 ```javascript
 // file1.js
@@ -32,7 +32,7 @@ greet();
 
 ---
 
-## Using ES6 modules
+## Using ECMAScript modules
 
 ### Exporting code
 
@@ -80,6 +80,8 @@ console.log(subtract(5, 2)); // 3
 ```
 
 ## Using CommonJS modules in Node.js
+
+Node.js supports both ESM and CommonJS. The file extension, nearest `package.json` `type` field, and package configuration determine how a file is interpreted. The following is the CommonJS form:
 
 ### Exporting code
 
@@ -130,4 +132,4 @@ console.log(subtract(5, 2)); // 3
 
 - [MDN Web Docs on ES6 modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
 - [Node.js documentation on modules](https://nodejs.org/api/modules.html)
-- [JavaScript modules: A beginner’s guide](https://www.freecodecamp.org/news/javascript-modules-a-beginner-s-guide-783f7d7a5fcc/)
+- [Node.js documentation on ECMAScript modules](https://nodejs.org/api/esm.html)

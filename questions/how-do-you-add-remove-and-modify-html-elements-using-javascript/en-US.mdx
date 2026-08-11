@@ -4,7 +4,7 @@ title: How do you add, remove, and modify HTML elements using JavaScript?
 
 ## TL;DR
 
-To add, remove, and modify HTML elements using JavaScript, you can use methods like `createElement`, `appendChild`, `removeChild`, and properties like `innerHTML` and `textContent`. For example, to add an element, you can create it using `document.createElement` and then append it to a parent element using `appendChild`. To remove an element, you can use `removeChild` on its parent. To modify an element, you can change its `innerHTML` or `textContent`.
+Create elements with `document.createElement()`, set text with `textContent`, and insert them with `append()`, `prepend()`, `before()`, `after()`, or `replaceWith()`. Remove an element with `remove()`. Use `classList`, properties, and attributes for targeted updates. Avoid assigning untrusted strings to `innerHTML`; use text and DOM construction, or an appropriate HTML sanitizer when the product intentionally accepts HTML.
 
 ```js
 // Adding an element
@@ -14,11 +14,11 @@ document.body.appendChild(newElement);
 
 // Removing an element
 const elementToRemove = document.getElementById('elementId');
-elementToRemove.parentNode.removeChild(elementToRemove);
+elementToRemove?.remove();
 
 // Modifying an element
 const elementToModify = document.getElementById('elementId');
-elementToModify.innerHTML = 'New Content';
+if (elementToModify) elementToModify.textContent = 'New content';
 ```
 
 ---
@@ -55,7 +55,7 @@ parentElement.insertBefore(newElement, referenceElement);
 
 ### Removing elements
 
-To remove an HTML element, you can use the `removeChild` method on its parent element.
+To remove an HTML element, you can use the `removeChild` method on its parent element. Check that both references exist and the node is still that parent's child when the DOM may change asynchronously.
 
 ```js
 // Select the element to be removed
@@ -79,9 +79,6 @@ To modify an HTML element, you can change its properties such as `innerHTML`, `t
 ```js live
 const elementToModify = document.createElement('div');
 
-// Change its inner HTML
-elementToModify.innerHTML = 'New Content';
-
 // Change its text content
 elementToModify.textContent = 'New Text Content';
 
@@ -89,6 +86,14 @@ elementToModify.textContent = 'New Text Content';
 elementToModify.setAttribute('class', 'new-class');
 
 console.log(elementToModify);
+```
+
+When intentional, trusted markup is already available as DOM nodes, `replaceChildren()` can replace a container without string parsing:
+
+```js
+const message = document.createElement('strong');
+message.textContent = 'Saved';
+elementToModify.replaceChildren(message);
 ```
 
 You can also use methods like `classList.add`, `classList.remove`, and `classList.toggle` to modify the element's classes.
@@ -111,6 +116,6 @@ element.classList.toggle('active');
 - [MDN Web Docs: Document.createElement](https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement)
 - [MDN Web Docs: Node.appendChild](https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild)
 - [MDN Web Docs: Node.removeChild](https://developer.mozilla.org/en-US/docs/Web/API/Node/removeChild)
-- [MDN Web Docs: Element.innerHTML](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML)
 - [MDN Web Docs: Element.textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent)
 - [MDN Web Docs: Element.classList](https://developer.mozilla.org/en-US/docs/Web/API/Element/classList)
+- [MDN Web Docs: Element.remove](https://developer.mozilla.org/en-US/docs/Web/API/Element/remove)

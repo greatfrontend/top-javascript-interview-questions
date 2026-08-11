@@ -4,7 +4,7 @@ title: How can you optimize network requests for better performance?
 
 ## TL;DR
 
-To optimize network requests for better performance, you can minimize the number of requests, use caching, compress data, and use modern web technologies like HTTP/2 and service workers. For example, you can combine multiple CSS files into one to reduce the number of requests, use `Cache-Control` headers to cache static assets, and enable Gzip compression on your server to reduce the size of the data being transferred.
+Measure real traffic, then reduce transferred bytes, avoid unnecessary or duplicate requests, cache immutable assets and revalidate changing data, compress text with Brotli or Gzip, and prioritize critical resources. Under HTTP/2 and HTTP/3, blindly merging every file can hurt caching and code splitting; bundle boundaries should balance request overhead, compression, and independent cacheability.
 
 ---
 
@@ -12,11 +12,11 @@ To optimize network requests for better performance, you can minimize the number
 
 ### Minimize the number of requests
 
-Reducing the number of network requests can significantly improve performance. Here are some strategies:
+Avoid requests that do not contribute to the current experience, while preserving useful cache and code-splitting boundaries:
 
-- **Combine files**: Merge multiple CSS or JavaScript files into a single file.
-- **Image sprites**: Combine multiple images into a single sprite sheet and use CSS to display the correct part of the image.
-- **Inline small assets**: Use data URIs to inline small images or fonts directly into your CSS or HTML.
+- **Remove duplication**: Deduplicate dependencies and requests, and coalesce API calls when the server can answer them efficiently.
+- **Load on demand**: Split code and media by route or feature so users do not download work they do not need.
+- **Inline only tiny critical assets**: Inlining removes a request but also prevents independent caching and increases the containing resource, so measure the tradeoff.
 
 ### Use caching
 
@@ -36,7 +36,7 @@ Reducing the size of the data being transferred can speed up network requests:
 
 Modern web technologies can help optimize network performance:
 
-- **HTTP/2**: Use HTTP/2 to take advantage of multiplexing, header compression, and server push, which can reduce latency and improve load times.
+- **HTTP/2 or HTTP/3**: Multiplexing and compressed headers reduce the cost of concurrent requests. Browser support for HTTP/2 server push was removed, so use preload or `Link` hints only for resources proven to be critical.
 - **CDNs**: Use Content Delivery Networks (CDNs) to serve static assets from locations closer to the user, reducing latency.
 
 ### Optimize images
@@ -52,7 +52,7 @@ Images often account for a large portion of the data transferred:
 Reducing the amount of data sent in each request can improve performance:
 
 - **API optimization**: Optimize API responses to include only the necessary data.
-- **GraphQL**: Use GraphQL to request only the specific data needed by the client.
+- **Shape API responses intentionally**: Field selection through GraphQL or purpose-built endpoints can reduce over-fetching, but either approach can still produce excessive round trips or hard-to-cache responses. Measure the complete request pattern.
 
 ## Further reading
 

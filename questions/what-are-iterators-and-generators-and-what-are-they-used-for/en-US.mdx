@@ -229,15 +229,22 @@ for (const number of range) {
 
 Generators are well-suited for iterating over data streams, such as fetching data from an API or reading files. This example demonstrates using a generator to fetch data from an API in batches:
 
-```js live
-async function* fetchDataInBatches(url, numBatches = 5, batchSize = 10) {
+```js
+async function* fetchDataInBatches(
+  url,
+  { numBatches = 5, batchSize = 10, signal } = {},
+) {
   let startIndex = 0;
   let currBatch = 0;
 
   while (currBatch < numBatches) {
-    const response = await fetch(
-      `${url}?_start=${startIndex}&_limit=${batchSize}`,
-    );
+    const endpoint = new URL(url, location.origin);
+    endpoint.searchParams.set('start', startIndex);
+    endpoint.searchParams.set('limit', batchSize);
+
+    const response = await fetch(endpoint, { signal });
+    if (!response.ok) throw new Error(`Request failed (${response.status})`);
+
     const data = await response.json();
     if (data.length === 0) break;
     yield data;
@@ -247,12 +254,17 @@ async function* fetchDataInBatches(url, numBatches = 5, batchSize = 10) {
 }
 
 async function fetchAndLogData() {
-  const dataGenerator = fetchDataInBatches(
-    'https://jsonplaceholder.typicode.com/todos',
-  );
+  const controller = new AbortController();
+  const dataGenerator = fetchDataInBatches('/api/todos', {
+    signal: controller.signal,
+  });
 
-  for await (const batch of dataGenerator) {
-    console.log(batch);
+  try {
+    for await (const batch of dataGenerator) {
+      console.log(batch);
+    }
+  } finally {
+    controller.abort();
   }
 }
 fetchAndLogData();
@@ -264,12 +276,15 @@ This generator function `fetchDataInBatches` fetches data from an API in batches
 
 Generators can be used to implement asynchronous iterators, which are useful for working with asynchronous data sources. This example demonstrates an asynchronous iterator for fetching data from an API:
 
-```js live
-async function* fetchDataAsyncIterator(url, pagesToFetch = 3) {
+```js
+async function* fetchDataAsyncIterator(url, pagesToFetch = 3, { signal } = {}) {
   let currPage = 1;
 
   while (currPage <= pagesToFetch) {
-    const response = await fetch(`${url}?_page=${currPage}`);
+    const endpoint = new URL(url, location.origin);
+    endpoint.searchParams.set('page', currPage);
+    const response = await fetch(endpoint, { signal });
+    if (!response.ok) throw new Error(`Request failed (${response.status})`);
     const data = await response.json();
     if (data.length === 0) break;
     yield data;
@@ -278,9 +293,7 @@ async function* fetchDataAsyncIterator(url, pagesToFetch = 3) {
 }
 
 async function fetchAndLogData() {
-  const asyncIterator = fetchDataAsyncIterator(
-    'https://jsonplaceholder.typicode.com/todos',
-  );
+  const asyncIterator = fetchDataAsyncIterator('/api/todos');
 
   for await (const chunk of asyncIterator) {
     console.log(chunk);

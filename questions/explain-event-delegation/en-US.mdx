@@ -8,14 +8,14 @@ Event delegation is a technique in JavaScript where a single event listener is a
 
 Event delegation provides the following benefits:
 
-- **Improved performance**: Attaching a single event listener is more efficient than attaching multiple event listeners to individual elements, especially for large or dynamic lists. This reduces memory usage and improves overall performance.
+- **Fewer listeners**: A single listener can reduce listener bookkeeping and per-item closures for very large collections. Whether that produces a measurable performance improvement depends on the page and should be profiled.
 - **Simplified event handling**: With event delegation, you only need to write the event handling logic once in the parent element's event listener. This makes the code more maintainable and easier to update.
 - **Dynamic element support**: Event delegation automatically handles events for dynamically added or removed elements within the parent element. There's no need to manually attach or remove event listeners when the DOM structure changes.
 
 However, do note that:
 
 - It is important to identify the target element that triggered the event.
-- Not all events can be delegated because they are not bubbled. Non-bubbling events include: `focus`, `blur`, `scroll`, `mouseenter`, `mouseleave`, `resize`, etc.
+- Not every event bubbles. For example, `focus`/`blur` and `mouseenter`/`mouseleave` need capture-phase handling or bubbling alternatives such as `focusin`/`focusout` and `mouseover`/`mouseout`. Element `scroll` and `resize` generally need direct listeners.
 
 ---
 
@@ -32,7 +32,7 @@ Event delegation is a design pattern in JavaScript used to efficiently manage an
 
 ## Benefits of event delegation
 
-1. **Efficiency**: Event delegation reduces the number of event listeners, improving memory usage and performance, especially when dealing with a large number of elements.
+1. **Fewer listeners**: Event delegation reduces listener bookkeeping and can reduce memory use when dealing with a very large number of elements.
 1. **Dynamic elements**: It works with dynamically added or removed child elements, as the common ancestor continues to listen for events on them.
 
 ## Example
@@ -264,7 +264,7 @@ For `scroll`, the bubbling-sibling approach does not exist. Capture-phase delega
 
 The common claim is "delegation is faster because there are fewer listeners." That is partly true but often overstated.
 
-- **Listener count is rarely the bottleneck.** On modern browsers, attaching 100 vs 10,000 click listeners is still sub-millisecond. Adding listeners is almost free, and dispatching a click is fast either way.
+- **Listener count is often not the bottleneck.** Modern browsers handle many listeners efficiently, so measure the actual page rather than relying on a fixed listener-count rule.
 - **Memory is the meaningful win.** Each direct listener creates a closure that holds references to its enclosing scope. With 10,000 rows, that is 10,000 closures kept alive, which can become noticeable. One delegated listener is one closure.
 - **Dynamic content is the structural win.** With direct listeners, you have to attach (and detach) listeners on every DOM mutation, which is easy to leak. Delegation just works for elements added later, and that is the main reason most code uses it.
 - **Delegation is not always faster at runtime.** A delegated handler runs `event.target.closest(...)` on every event, which is cheap but not free. For a small fixed number of elements with stable handlers, attaching directly is fine and arguably cleaner.
@@ -282,11 +282,11 @@ Event delegation comes with several pitfalls:
 
 ## Event delegation in JavaScript frameworks
 
-In [React](https://react.dev/), event handlers are attached to the React root's DOM container into which the React tree is rendered. Even though `onClick` is added to child elements, the actual event listeners are attached to the root DOM node, using event delegation to optimize event handling and improve performance.
+For many event types, [React](https://react.dev/) installs native listeners on the React root and dispatches synthetic events through the component tree. Some event types are handled differently because they do not delegate normally, so this is an implementation detail rather than a guarantee that every React handler maps to one root listener.
 
 When an event occurs, React's event listener captures it and determines which React component rendered the target element based on its internal bookkeeping. React then dispatches the event to the appropriate component's event handler by calling the handler function with a synthetic event object. This synthetic event object wraps the native browser event, providing a consistent interface across different browsers and capturing information about the event.
 
-By using event delegation, React avoids attaching individual event handlers to each component instance, which would create significant overhead, especially for large component trees. Instead, React uses the browser's native event bubbling mechanism to capture events at the root and distribute them to the appropriate components.
+This lets React provide a consistent event API and centralize much of its event dispatch. Application code should still choose delegation based on the DOM behavior it needs rather than assuming it is always faster.
 
 ## Further reading
 

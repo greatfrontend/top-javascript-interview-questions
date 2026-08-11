@@ -4,7 +4,7 @@ title: How do you convert a string to a number in JavaScript?
 
 ## TL;DR
 
-In JavaScript, you can convert a string to a number using several methods. The most common ones are `Number()`, `parseInt()`, `parseFloat()`, and the unary plus operator (`+`). For example, `Number("123")` converts the string `"123"` to the number `123`, and `parseInt("123.45")` converts the string `"123.45"` to the integer `123`.
+Use `Number(value)` when the whole string must represent a number. Use `parseInt(value, radix)` or `parseFloat(value)` when intentionally accepting a numeric prefix such as `'12px'`; they stop at the first invalid character. Check the result with `Number.isNaN()` or, for finite application values, `Number.isFinite()`. Remember that `Number('')` and `Number('   ')` are `0`, so validate required input before conversion.
 
 ---
 
@@ -77,6 +77,18 @@ console.log(parseInt(invalidStr)); // NaN
 console.log(parseFloat(invalidStr)); // NaN
 console.log(+invalidStr); // NaN
 ```
+
+The conversion methods are intentionally different:
+
+```js live
+console.log(Number('12px')); // NaN: the entire string is not numeric
+console.log(parseInt('12px', 10)); // 12: parses a numeric prefix
+console.log(Number('')); // 0
+console.log(parseInt('', 10)); // NaN
+console.log(Number('0x10')); // 16
+```
+
+Always pass the radix to `parseInt()` when the expected base is known. Do not test for `NaN` with `value === NaN`; `NaN` is unequal to itself.
 
 ## Further reading
 

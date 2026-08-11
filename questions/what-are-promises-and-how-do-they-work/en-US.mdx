@@ -4,7 +4,9 @@ title: What are Promises and how do they work?
 
 ## TL;DR
 
-Promises in JavaScript are objects that represent the eventual completion (or failure) of an asynchronous operation and its resulting value. They have three states: `pending`, `fulfilled`, and `rejected`. You can handle the results of a promise using the `.then()` method for success and the `.catch()` method for errors.
+Promises represent the eventual outcome of an asynchronous operation. They start pending and settle once as fulfilled with a value or rejected with a reason. `.then()`, `.catch()`, and `.finally()` return new Promises, so returned values and thrown errors flow through a chain. Reactions run as microtasks even when the original Promise is already settled.
+
+A Promise coordinates an outcome; it does not automatically start work on another thread or cancel the underlying operation. Expose an `AbortSignal` or another explicit cancellation mechanism when work can be stopped.
 
 ```js live
 let promise = new Promise((resolve, reject) => {
@@ -13,7 +15,7 @@ let promise = new Promise((resolve, reject) => {
   if (success) {
     resolve('Success!');
   } else {
-    reject('Error!');
+    reject(new Error('Operation failed'));
   }
 });
 
@@ -53,7 +55,7 @@ let promise = new Promise((resolve, reject) => {
   if (success) {
     resolve('Success!');
   } else {
-    reject('Error!');
+    reject(new Error('Operation failed'));
   }
 });
 ```
@@ -123,6 +125,15 @@ Promise.all([promise1, promise2, promise3]).then((results) => {
 ```
 
 In the above example, while `promise1` and `promise2` resolve instantly, `Promise.all` waits for `promise3`, which takes 2 seconds, before logging the results.
+
+### Practical failure modes
+
+- Constructing a Promise runs its executor synchronously; only its eventual reactions are deferred.
+- Forgetting to `return` a Promise inside `.then()` breaks sequencing and error propagation.
+- A Promise can remain pending forever if the underlying API never settles it.
+- Reject with an `Error` to preserve a useful message and stack.
+- `Promise.all()` rejects after the first input rejection, but it does not cancel the other operations. Pass a shared cancellation signal when that behavior is required.
+- Always return, await, or otherwise handle a Promise. A discarded Promise can produce an unhandled rejection.
 
 ## Further reading
 

@@ -4,19 +4,19 @@ title: Explain what a single page app is and how to make one SEO-friendly
 
 ## TL;DR
 
-A single page application (SPA) is a web application that loads a single HTML document and updates its content in the browser via JavaScript, rather than requesting a new page from the server on each navigation. This model provides application-like UX but presents challenges for search engine indexing because the initial HTML does not contain the rendered content.
+A single page application (SPA) performs route transitions and view updates in the browser instead of loading a new HTML document for every navigation. A purely client-rendered SPA may return only an HTML shell initially, which can delay content discovery, metadata, and meaningful paint. SPA navigation does not require client-only initial rendering: the first route can be server-rendered or pre-rendered and then hydrated for client-side navigation.
 
-In current practice, SPAs are made SEO-friendly by producing HTML on the server rather than relying solely on client-side rendering. The available strategies are server-side rendering (SSR), static site generation (SSG), incremental static regeneration (ISR), and streaming with React Server Components. Each strategy offers a different tradeoff between freshness, server cost, and time to first paint, and modern frameworks such as Next.js, Nuxt, Remix, SvelteKit, and Astro support selecting the strategy per route.
+For indexable routes, return meaningful HTML and correct status codes, canonical URLs, titles, metadata, structured data, and crawlable links. HTML can be produced per request (SSR), at build time or on demand (static generation/prerendering), or through a framework-specific cached regeneration model. Streaming can improve delivery but is not itself an SEO requirement. Test the rendered output and crawler behavior for the actual search engines and link-preview clients you support.
 
 ---
 
 ## What is a single page app?
 
-A SPA is a web application that loads a single HTML document and performs navigation and content updates on the client via JavaScript. The initial page load retrieves the HTML shell and application bundle; subsequent user actions update the DOM in place rather than triggering full-page navigations.
+A SPA performs navigation and content updates on the client after the initial document load. That initial document can be a minimal client-rendered shell or fully rendered HTML that is later hydrated; the defining characteristic is client-side navigation, not an empty initial response.
 
 Key characteristics:
 
-- A single HTML document is served on initial load; subsequent views are rendered client-side.
+- Subsequent route transitions reuse the current document and update the view client-side.
 - The `fetch` API (or `XMLHttpRequest`) is used to communicate with the server without full-page reloads.
 - A client-side router (for example, `react-router` or `vue-router`) maps URL changes to view transitions.
 - Application state is typically held in memory rather than stored per request.
@@ -24,7 +24,7 @@ Key characteristics:
 Benefits:
 
 - Smoother navigation after the initial load.
-- Reduced server load, because subsequent navigations do not require rendering a new page.
+- The browser can avoid full-document reloads, though server load depends on the API, rendering, caching, and data-fetching architecture.
 - Application-like interaction patterns, such as preserved state across route transitions.
 
 ## How search engines render JavaScript
@@ -33,8 +33,8 @@ The statement "Google cannot index JavaScript" is out of date. The practical sit
 
 - **Googlebot executes JavaScript** using an evergreen Chromium-based renderer. The bot fetches HTML first, and pages requiring JavaScript rendering are added to a separate render queue. The render queue has improved substantially since 2019, but indexing of JS-rendered content is typically slower than indexing of server-rendered HTML.
 - **Rendering is separate from crawling.** This two-phase model means JS-rendered content can appear in the index later than its server-rendered counterpart, which is a disadvantage for time-sensitive content or highly competitive queries.
-- **Other search engines render JavaScript less reliably.** Bing's JavaScript rendering is less consistent than Google's, and other engines such as Yandex and Baidu have more limited support. SSR or prerendering is therefore still relevant when non-Google traffic is important.
-- **Social and preview scrapers do not execute JavaScript.** Clients that fetch OpenGraph and Twitter Card metadata — including Slack, LinkedIn, Discord, and Facebook — read the initial HTML only. Meta tags that are injected by client-side code are not visible to these clients.
+- **Crawler capabilities and budgets vary.** Do not assume every search engine or specialized crawler executes the same JavaScript successfully or on the same schedule.
+- **Many social and preview scrapers rely on response HTML.** Return important Open Graph and other preview metadata from the server rather than depending on client-side injection.
 
 For details, see Google's [JavaScript SEO documentation](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics) and the [Google Search Central documentation on rendering](https://developers.google.com/search/docs/crawling-indexing/javascript/dynamic-rendering).
 
@@ -51,7 +51,8 @@ Example with the Next.js App Router:
 ```jsx
 // app/products/[id]/page.tsx — a React Server Component, async by default
 export default async function ProductPage({ params }) {
-  const res = await fetch(`https://api.example.com/products/${params.id}`, {
+  const { id } = await params;
+  const res = await fetch(`https://api.example.com/products/${id}`, {
     cache: 'no-store',
   });
   const product = await res.json();
@@ -81,8 +82,9 @@ export async function generateStaticParams() {
 }
 
 export default async function Post({ params }) {
-  const post = await fetch(`https://api.example.com/posts/${params.slug}`).then(
-    (r) => r.json(),
+  const { slug } = await params;
+  const post = await fetch(`https://api.example.com/posts/${slug}`).then((r) =>
+    r.json(),
   );
   return <article>{post.body}</article>;
 }
@@ -95,7 +97,8 @@ Pages are generated statically and cached, with a configurable revalidation inte
 ```jsx
 // app/categories/[slug]/page.tsx
 export default async function Category({ params }) {
-  const res = await fetch(`https://api.example.com/categories/${params.slug}`, {
+  const { slug } = await params;
+  const res = await fetch(`https://api.example.com/categories/${slug}`, {
     next: { revalidate: 3600 },
   });
   const category = await res.json();
@@ -105,7 +108,7 @@ export default async function Category({ params }) {
 
 ### React Server Components with streaming
 
-React Server Components execute on the server and ship as a serialized tree rather than HTML. Combined with `Suspense` boundaries, the framework can stream the HTML shell early and defer slower sections until their data resolves. This is useful for pages with a fast critical section and slower below-the-fold content.
+React Server Components execute on the server and produce a serialized component payload that a framework can use alongside server-rendered HTML. Combined with `Suspense` boundaries and a streaming-capable framework, the server can send ready HTML earlier while slower sections continue rendering. React Server Components and HTML streaming are related framework features, not interchangeable rendering strategies.
 
 ```jsx
 import { Suspense } from 'react';
@@ -134,7 +137,7 @@ The appropriate strategy depends on the route's data characteristics and indexin
 | --- | --- | --- |
 | E-commerce product page | ISR, short revalidation window | Prices and inventory change, but not per visit; cached HTML improves Largest Contentful Paint |
 | Marketing site, documentation, blog | SSG | No per-request variability; suitable for CDN distribution |
-| Dashboard behind authentication | CSR | Not indexed; SSR provides no SEO benefit and increases server cost |
+| Dashboard behind authentication | Often CSR; SSR can still help first load | Usually not indexed; choose based on latency, personalization, and server cost |
 | Personalized feed or homepage | RSC with streaming | Fast shell response; personalized content is streamed as it resolves |
 | Search results page | SSR | Query-dependent output that should be indexable for long-tail queries |
 | Real-time dashboard | CSR | Data changes more frequently than server HTML can be regenerated usefully |
@@ -142,15 +145,15 @@ The appropriate strategy depends on the route's data characteristics and indexin
 
 ## Core Web Vitals comparison
 
-The rendering strategy affects the metrics used by search ranking and perceived performance. The following table gives illustrative ranges for a content page with approximately 100 KB of data, measured on a slow mobile connection. Actual values depend on payload size, server region, and CDN configuration, and should be measured against the specific deployment.
+The rendering strategy affects both perceived performance and the Core Web Vitals users experience. The directions below are common tendencies, not guaranteed results; payload size, caching, server location, device speed, hydration work, and data waterfalls can reverse them.
 
 | Strategy | TTFB | LCP | Notes |
 | --- | --- | --- | --- |
-| CSR | Low | High | Fast first byte (shell only); LCP blocked by JS download and API round trip |
-| SSR | Moderate | Low | Slower first byte due to server rendering; content visible sooner |
-| SSG | Low | Low | CDN-cached HTML; typically the fastest overall |
-| ISR | Low | Low | Served from CDN cache; regenerated in background on revalidation |
-| RSC streaming | Low | Low | Shell streams first; Suspense boundaries hydrate as data resolves |
+| CSR | Often low | Can be high | Fast shell response; meaningful content may wait for JS and data |
+| SSR | Can be higher | Can be lower | Server work affects TTFB; content may become visible sooner |
+| SSG | Often low | Often low | Cacheable HTML, subject to asset and hydration costs |
+| Cached regeneration | Often low on cache hits | Often low | Miss and revalidation behavior is framework-specific |
+| Streaming SSR | Early shell possible | Boundary-dependent | Slow boundaries need not hold back already completed HTML |
 
 Tools such as [PageSpeed Insights](https://pagespeed.web.dev/) and WebPageTest provide lab measurements against a specific URL.
 

@@ -4,7 +4,7 @@ title: What are some common performance bottlenecks in JavaScript applications?
 
 ## TL;DR
 
-Common performance bottlenecks in JavaScript applications include inefficient DOM manipulation, excessive use of global variables, blocking the main thread with heavy computations, memory leaks, and improper use of asynchronous operations. To mitigate these issues, you can use techniques like debouncing and throttling, optimizing DOM updates, and leveraging web workers for heavy computations.
+Common bottlenecks include too much JavaScript during startup, long main-thread tasks, repeated layout work, excessive rendering, slow or duplicated network requests, and memory retained by long-lived references. Do not optimize from a checklist: reproduce the slow user action, record it with browser or Node.js profiling tools, fix the dominant cost, and measure again under the same conditions.
 
 ---
 
@@ -56,20 +56,6 @@ boxes.forEach((box, i) => {
 });
 ```
 
-## Excessive use of global variables
-
-Global variables can lead to memory leaks and make the code harder to maintain. Use local variables and closures to limit the scope of variables.
-
-```js
-// Inefficient
-var globalVar = 'I am global';
-
-// Efficient
-function myFunction() {
-  let localVar = 'I am local';
-}
-```
-
 ## Blocking the main thread
 
 ### Heavy computations
@@ -90,49 +76,23 @@ self.onmessage = function (e) {
 };
 ```
 
-### Synchronous operations
-
-Avoid synchronous operations like `alert`, `prompt`, and synchronous XHR requests, as they block the main thread.
-
-```js
-// Inefficient
-alert('This blocks the main thread');
-
-// Efficient
-console.log('This does not block the main thread');
-```
+Moving work to a worker is worthwhile only when the computation is large enough to justify startup and message-transfer costs. Smaller work may be better split into chunks so the browser can process input and render between them.
 
 ## Memory leaks
 
-Memory leaks occur when memory that is no longer needed is not released. Common causes include circular references and unremoved event listeners.
-
-### Circular references
-
-```js
-// Inefficient
-function createCircularReference() {
-  const obj1 = {};
-  const obj2 = {};
-  obj1.ref = obj2;
-  obj2.ref = obj1;
-}
-
-// Efficient
-function createNonCircularReference() {
-  const obj1 = {};
-  const obj2 = {};
-  obj1.ref = obj2;
-}
-```
+Memory leaks occur when reachable references retain data the application no longer needs. Circular references alone are not leaks in modern tracing garbage collectors. Common causes include unbounded caches, forgotten timers, detached DOM nodes, observers, and listeners attached to long-lived targets.
 
 ### Unremoved event listeners
 
 ```js
-// Inefficient
-element.addEventListener('click', handleClick);
+const controller = new AbortController();
 
-// Efficient
-element.removeEventListener('click', handleClick);
+window.addEventListener('resize', handleResize, {
+  signal: controller.signal,
+});
+
+// When this feature is disposed:
+controller.abort();
 ```
 
 ## Improper use of asynchronous operations
@@ -191,4 +151,6 @@ function throttle(func, limit) {
 ## Further reading
 
 - [MDN Web Docs: Performance](https://developer.mozilla.org/en-US/docs/Web/Performance)
+- [Analyze runtime performance with Chrome DevTools](https://developer.chrome.com/docs/devtools/performance)
+- [Optimize long tasks](https://web.dev/articles/optimize-long-tasks)
 - [web.dev: Performance](https://web.dev/explore/fast)

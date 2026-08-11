@@ -12,7 +12,7 @@ Here's a code example demonstrating the use of getters and setters:
 
 ```js live
 const person = {
-  _name: 'John Doe', // Private property
+  _name: 'John Doe', // Underscore is a naming convention, not privacy
 
   get name() {
     // Getter
@@ -67,7 +67,7 @@ person.fullName = 'Jane Smith';
 console.log(person.fullName); // Output: Jane Smith
 ```
 
-In this example, the `fullName` property doesn't have a direct value stored in the object. The getter function calculates it by combining the `_firstName` and `_lastName` properties. The setter splits the assigned value into first and last names and updates the internal properties accordingly.
+In this example, the `fullName` property doesn't have a direct value stored in the object. The getter function calculates it by combining the `_firstName` and `_lastName` properties. The setter splits the assigned value into first and last names and updates the internal properties accordingly. The leading underscores only signal “internal” by convention; use class `#private` fields or closures if access must be enforced.
 
 ## Benefits
 

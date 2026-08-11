@@ -102,7 +102,7 @@ async function loadUsers() {
 }
 ```
 
-The modern version is shorter, easier to read, and composes naturally with `Promise.all`, `AbortController` for cancellation, and libraries like React Query and SWR for caching and deduplication. The remaining reason some teams still use `XMLHttpRequest` is to track upload progress with the `xhr.upload.onprogress` event, since `fetch` upload-progress reporting is more limited. Streaming a `ReadableStream` request body in `fetch` (which would let you build progress on top) is supported in Chromium (since Chrome 105) and Safari (since 18.2), but not yet in Firefox; it also requires the `duplex: 'half'` option on the request.
+The modern version is shorter and composes naturally with `Promise.all` and `AbortController`. Data-fetching libraries can add caching and request deduplication when an application needs them. One reason some code still uses `XMLHttpRequest` is its straightforward `xhr.upload.onprogress` event; browser `fetch()` does not expose an equally portable upload-progress event. Request-streaming support and required options vary by browser, so check the target environments before building progress reporting on streamed request bodies.
 
 ## Re-examining the disadvantages
 

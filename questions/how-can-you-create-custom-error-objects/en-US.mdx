@@ -4,21 +4,26 @@ title: How can you create custom error objects?
 
 ## TL;DR
 
-To create custom error objects in JavaScript, you can extend the built-in `Error` class. This allows you to add custom properties and methods to your error objects. Here's a quick example:
+Extend `Error` when callers need to distinguish a domain failure from other exceptions or inspect structured context. Call `super(message, options)`, give the class a useful `name`, and add stable properties such as a machine-readable `code`. Preserve an underlying error with the standard `cause` option instead of replacing its diagnostic context.
 
 ```js live
-class CustomError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'CustomError';
+class ValidationError extends Error {
+  constructor(message, { field, cause } = {}) {
+    super(message, { cause });
+    this.name = 'ValidationError';
+    this.code = 'INVALID_INPUT';
+    this.field = field;
   }
 }
 
 try {
-  throw new CustomError('This is a custom error message');
+  throw new ValidationError('Email is invalid', { field: 'email' });
 } catch (error) {
-  console.log(error.name); // CustomError
-  console.log(error.message); // This is a custom error message
+  if (error instanceof ValidationError) {
+    console.log(error.field); // email
+  } else {
+    throw error;
+  }
 }
 ```
 
@@ -108,6 +113,32 @@ try {
   }
 }
 ```
+
+Catch a custom error only where you can recover, translate it into an expected API result, or add useful context. Re-throw unexpected errors so programming defects are not silently treated as validation failures.
+
+### Preserving the original cause
+
+Wrapping a low-level error can give callers a domain-specific error without losing the original failure:
+
+```js
+class UserLookupError extends Error {
+  constructor(userId, options) {
+    super(`Could not load user ${userId}`, options);
+    this.name = 'UserLookupError';
+    this.userId = userId;
+  }
+}
+
+async function loadUser(userId) {
+  try {
+    return await database.findUser(userId);
+  } catch (cause) {
+    throw new UserLookupError(userId, { cause });
+  }
+}
+```
+
+Error stacks, causes, and custom properties may contain secrets or personal data. Log them only in trusted systems with suitable redaction, and send a deliberately shaped public error response rather than serializing the error object directly.
 
 ## Further reading
 

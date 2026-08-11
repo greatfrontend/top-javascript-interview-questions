@@ -30,7 +30,7 @@ inner(); // "I am outside of innerFunction"
 Key points to remember:
 
 - Closure occurs when an inner function has access to variables in its outer (lexical) scope, even when the outer function has finished executing.
-- Closure allows a function to **remember** the environment in which it was created, even if that environment is no longer present.
+- Closure allows a function to **remember** the environment in which it was created. The needed lexical environment remains reachable for as long as the closure needs it.
 - Closures are used extensively in JavaScript, such as in callbacks, event handlers, and asynchronous functions.
 
 ---

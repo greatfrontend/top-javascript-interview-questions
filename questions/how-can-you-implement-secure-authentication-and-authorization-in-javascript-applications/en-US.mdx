@@ -4,7 +4,7 @@ title: How can you implement secure authentication and authorization in JavaScri
 
 ## TL;DR
 
-To implement secure authentication and authorization in JavaScript applications, use HTTPS to encrypt data in transit. Implement token-based authentication using JWTs, and validate tokens on the server side. Prefer storing tokens in `HttpOnly` cookies over `localStorage` or `sessionStorage`, since the latter are accessible to JavaScript and therefore vulnerable to XSS. Use protocols like OAuth for third-party authentication and ensure proper role-based access control (RBAC) for authorization.
+Use a proven identity provider or framework rather than inventing an authentication protocol. Protect credentials with HTTPS; use phishing-resistant passkeys or properly hashed passwords with MFA where appropriate; establish a short-lived server-side session or carefully validated token; and keep browser session credentials in `HttpOnly`, `Secure`, appropriately scoped cookies when possible. Enforce authorization on every server-side operation using the application's actual permission model—never rely on hidden UI or client-side role checks. Cookie-based sessions also need CSRF defenses such as `SameSite` plus a CSRF token where necessary.
 
 ---
 
@@ -14,16 +14,18 @@ To implement secure authentication and authorization in JavaScript applications,
 
 Ensure that your application uses HTTPS to encrypt data in transit. This prevents man-in-the-middle attacks and ensures that data exchanged between the client and server is secure.
 
-### Token-based authentication
+### Choose a session architecture
 
-Use JSON Web Tokens (JWT) for token-based authentication. JWTs are compact, URL-safe tokens that can be used to securely transmit information between parties.
+Opaque session identifiers stored in a server-side session store are often the simplest choice for a browser application. JWTs can be useful for distributed systems, but they add key management, claim validation, revocation, and rotation concerns; they are a format, not an authentication strategy.
 
 #### Example of generating a JWT
 
 ```js
 const jwt = require('jsonwebtoken');
 
-const token = jwt.sign({ userId: 123 }, 'your-256-bit-secret', {
+const token = jwt.sign({ sub: '123', aud: 'api.example.com' }, signingKey, {
+  algorithm: 'RS256',
+  issuer: 'https://auth.example.com',
   expiresIn: '1h',
 });
 ```
@@ -34,7 +36,11 @@ const token = jwt.sign({ userId: 123 }, 'your-256-bit-secret', {
 const jwt = require('jsonwebtoken');
 
 try {
-  const decoded = jwt.verify(token, 'your-256-bit-secret');
+  const decoded = jwt.verify(token, verificationKey, {
+    algorithms: ['RS256'],
+    audience: 'api.example.com',
+    issuer: 'https://auth.example.com',
+  });
   console.log(decoded);
 } catch (err) {
   console.error('Invalid token');
@@ -43,53 +49,31 @@ try {
 
 ### Secure storage
 
-Store sensitive data like tokens securely. `localStorage` and `sessionStorage` are accessible to any JavaScript running on the page, so a single XSS vulnerability can leak the token. Prefer `HttpOnly` cookies (combined with the `Secure` and `SameSite` attributes), which are not readable by JavaScript.
-
-#### Example of storing a token in `localStorage`
+`localStorage` and `sessionStorage` are readable by any script running in the origin, so a single XSS vulnerability can exfiltrate a bearer token. For same-site browser applications, prefer a narrowly scoped `HttpOnly; Secure; SameSite` session cookie. Because cookies are attached automatically, add CSRF protection where `SameSite` alone does not cover the flow.
 
 ```js
-localStorage.setItem('token', token);
-```
-
-#### Example of retrieving a token from `localStorage`
-
-```js
-const token = localStorage.getItem('token');
+// Server-side Express example. Use a random, opaque session ID and keep the
+// session data in a server-side store.
+res.cookie('session', sessionId, {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'lax',
+  path: '/',
+  maxAge: 30 * 60 * 1000,
+});
 ```
 
 ### Server-side validation
 
-Always validate tokens on the server side to ensure they are not tampered with. This adds an extra layer of security.
+Authenticate the session or token on the server for every protected request. For JWTs, allow-list the expected algorithm and validate the signature, issuer, audience, expiry, and any application-specific claims. Authentication proves who the caller is; authorization still decides whether that caller may perform this exact action on this exact resource.
 
-### OAuth for third-party authentication
+### OpenID Connect for third-party sign-in
 
-Use OAuth for third-party authentication. Libraries like Passport.js can simplify the implementation of OAuth in your application.
+OAuth 2.0 delegates authorization; OpenID Connect adds the identity layer used for sign-in. Use Authorization Code with PKCE through a maintained provider SDK or library, validate `state` and `nonce`, and use HTTPS redirect URIs. Avoid implementing the protocol from scratch.
 
-#### Example of using Passport.js for Google OAuth
+### Server-side authorization
 
-```js
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: 'YOUR_GOOGLE_CLIENT_ID',
-      clientSecret: 'YOUR_GOOGLE_CLIENT_SECRET',
-      callbackURL: 'http://www.example.com/auth/google/callback',
-    },
-    function (accessToken, refreshToken, profile, done) {
-      User.findOrCreate({ googleId: profile.id }, function (err, user) {
-        return done(err, user);
-      });
-    },
-  ),
-);
-```
-
-### Role-based access control (RBAC)
-
-Implement role-based access control to ensure that users have the appropriate permissions to access resources.
+RBAC is one option when permissions map cleanly to roles. Applications may instead need ownership checks, attribute-based policies, or explicit capabilities. Whatever the model, enforce it server-side and default to denial.
 
 #### Example of RBAC middleware in Express.js
 
@@ -110,9 +94,13 @@ app.get('/admin', checkRole('admin'), (req, res) => {
 });
 ```
 
+Real handlers should also check resource-level permissions—for example, whether a user owns the document being edited—rather than assuming a coarse role is sufficient.
+
 ## Further reading
 
 - [JWT.io](https://jwt.io/)
 - [Passport.js documentation](https://www.passportjs.org/docs/)
 - [OWASP Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
+- [OWASP Authorization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html)
+- [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)
 - [MDN Web Docs on HTTP Strict Transport Security (HSTS)](https://developer.mozilla.org/en-US/docs/Web/Security/HTTP_strict_transport_security)

@@ -4,7 +4,7 @@ title: What is the difference between `event.preventDefault()` and `event.stopPr
 
 ## TL;DR
 
-`event.preventDefault()` is used to prevent the default action that belongs to the event, such as preventing a form from submitting. `event.stopPropagation()` is used to stop the event from bubbling up to parent elements, preventing any parent event handlers from being executed.
+`event.preventDefault()` cancels an event's default browser action when the event is cancelable, such as link navigation or form submission. `event.stopPropagation()` stops the event from continuing through the remaining capture and bubble path. It does not cancel the default action or stop other listeners on the same element; use `stopImmediatePropagation()` for the latter.
 
 ---
 
@@ -23,7 +23,7 @@ document.querySelector('form').addEventListener('submit', function (event) {
 
 ### `event.stopPropagation()`
 
-`event.stopPropagation()` is a method that prevents the event from bubbling up the DOM tree, stopping any parent handlers from being notified of the event. This is useful when you want to handle an event at a specific level and do not want it to trigger handlers on parent elements:
+`event.stopPropagation()` prevents the event from continuing through the DOM propagation path. In a bubble listener it prevents later ancestor listeners from seeing the event; in a capture listener it can prevent the event from reaching the target at all. It does not stop other listeners already registered on the current element.
 
 ```js
 document.querySelector('.child').addEventListener('click', function (event) {
@@ -35,7 +35,8 @@ document.querySelector('.child').addEventListener('click', function (event) {
 ### Key differences
 
 - `event.preventDefault()` stops the default action associated with the event.
-- `event.stopPropagation()` stops the event from propagating (bubbling) up to parent elements.
+- `event.stopPropagation()` stops further capture or bubbling through the event path.
+- `event.stopImmediatePropagation()` additionally stops later listeners on the current element.
 
 ### Use cases
 

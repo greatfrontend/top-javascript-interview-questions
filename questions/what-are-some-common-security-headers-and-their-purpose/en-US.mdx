@@ -9,9 +9,9 @@ Security headers are HTTP response headers that help protect web applications fr
 - `Content-Security-Policy (CSP)`: Prevents cross-site scripting (XSS) and other code injection attacks by specifying allowed content sources.
 - `X-Content-Type-Options`: Prevents MIME type sniffing by instructing the browser to follow the declared `Content-Type`.
 - `Strict-Transport-Security (HSTS)`: Enforces secure (HTTPS) connections to the server.
-- `X-Frame-Options`: Prevents clickjacking by controlling whether a page can be displayed in a frame.
-- `X-XSS-Protection`: Enables the cross-site scripting (XSS) filter built into most browsers.
+- `Content-Security-Policy: frame-ancestors ...`: Controls which sites may embed the page, helping prevent clickjacking. `X-Frame-Options` is a narrower legacy fallback.
 - `Referrer-Policy`: Controls how much referrer information is included with requests.
+- `Permissions-Policy`: Enables or disables selected browser capabilities for the page and embedded frames.
 
 ---
 
@@ -22,10 +22,10 @@ Security headers are HTTP response headers that help protect web applications fr
 The `Content-Security-Policy` header helps prevent cross-site scripting (XSS) and other code injection attacks by specifying which content sources are allowed to be loaded on the web page. For example:
 
 ```http
-Content-Security-Policy: default-src 'self'; img-src 'self' https://example.com; script-src 'self' 'unsafe-inline'
+Content-Security-Policy: default-src 'self'; img-src 'self' https://example.com; script-src 'self' 'nonce-r4nd0m'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'
 ```
 
-This policy allows content to be loaded only from the same origin (`'self'`), images from the same origin or `https://example.com`, and scripts from the same origin or inline scripts.
+This policy defaults to same-origin resources, permits images from one additional origin, and permits inline scripts only when their `nonce` attribute matches the per-response nonce. It also blocks plugins, base-URL injection, and framing. Avoid adding `'unsafe-inline'` merely to make a policy pass, because it substantially weakens script protection.
 
 ### X-Content-Type-Options
 
@@ -45,9 +45,9 @@ Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 
 This policy tells the browser to enforce HTTPS for one year (`max-age=31536000`), including all subdomains (`includeSubDomains`), and allows the site to be included in browsers' HSTS preload lists (`preload`).
 
-### X-Frame-Options
+### Framing policy
 
-The `X-Frame-Options` header prevents clickjacking by controlling whether a page can be displayed in a frame. Common values are `DENY` and `SAMEORIGIN`:
+The CSP `frame-ancestors` directive is the modern, flexible way to control who can embed a page. `X-Frame-Options` remains useful as a legacy fallback; its common values are `DENY` and `SAMEORIGIN`:
 
 ```http
 X-Frame-Options: DENY
@@ -55,15 +55,15 @@ X-Frame-Options: DENY
 
 This policy prevents the page from being displayed in a frame, iframe, or object.
 
-### X-XSS-Protection
+### Legacy: X-XSS-Protection
 
-The `X-XSS-Protection` header enables the cross-site scripting (XSS) filter built into most browsers. It can block pages or sanitize scripts that appear to be malicious. For example:
+`X-XSS-Protection` controlled old browser XSS auditors. Modern browsers ignore it, and the filters could introduce vulnerabilities of their own. Do not treat it as an XSS defense; deploy context-aware output handling, a strong CSP, and preferably Trusted Types where appropriate.
 
 ```http
 X-XSS-Protection: 1; mode=block
 ```
 
-This policy enables the XSS filter and instructs the browser to block the page if an attack is detected. Note that `X-XSS-Protection` is deprecated and ignored by modern browsers, which removed their built-in XSS auditors. Use a strong `Content-Security-Policy` instead.
+Some legacy browsers interpret this as enabling their filter and blocking a suspected response. Current applications generally omit the header or set `X-XSS-Protection: 0` to disable problematic legacy behavior.
 
 ### Referrer-Policy
 
@@ -74,6 +74,14 @@ Referrer-Policy: no-referrer
 ```
 
 This policy ensures that no referrer information is sent with requests.
+
+### Permissions-Policy
+
+`Permissions-Policy` restricts access to capabilities such as camera, microphone, geolocation, and fullscreen, including for embedded frames:
+
+```http
+Permissions-Policy: camera=(), microphone=(), geolocation=(self)
+```
 
 ## Further reading
 

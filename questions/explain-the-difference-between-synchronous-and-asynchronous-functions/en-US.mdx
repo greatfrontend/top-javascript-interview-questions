@@ -4,7 +4,7 @@ title: Explain the difference between synchronous and asynchronous functions in 
 
 ## TL;DR
 
-Synchronous functions are blocking while asynchronous functions are not. In synchronous functions, statements complete before the next statement is run. As a result, programs containing only synchronous code are evaluated exactly in order of the statements. The execution of the program is paused if one of the statements takes a very long time.
+Synchronous code runs to completion on the current call stack before later statements can run. Asynchronous APIs arrange for a result to be handled later through a callback, promise, or event, allowing the current stack to finish while the host waits for I/O or a timer. Asynchronous does not mean “runs on another thread”: an `async` function runs synchronously until its first suspension point, and CPU-heavy JavaScript still blocks its thread.
 
 ```js live
 function sum(a, b) {
@@ -16,7 +16,7 @@ const result = sum(2, 3); // The program waits for sum() to complete before assi
 console.log('Result: ', result); // Output: 5
 ```
 
-Asynchronous functions usually accept a callback as a parameter and execution continues on to the next line immediately after the asynchronous function is invoked. The callback is only invoked when the asynchronous operation is complete and the call stack is empty. Heavy duty operations such as loading data from a web server or querying a database should be done asynchronously so that the main thread can continue executing other operations instead of blocking until that long operation completes (in the case of browsers, the UI will freeze).
+Asynchronous APIs commonly expose callbacks, promises, or events. Once the operation can make progress, its continuation is scheduled according to the host's event loop. This works especially well for I/O such as network and database requests; CPU-intensive work must instead be split up or moved to a worker to keep a browser UI responsive.
 
 ```js live
 function fetchData(callback) {
@@ -45,7 +45,7 @@ In JavaScript, synchronous and asynchronous functions are fundamental to underst
 
 Synchronous functions execute in a sequential order, one after the other. Each operation must wait for the previous one to complete before moving on to the next.
 
-- Synchronous code is blocking, meaning the program execution halts until the current operation finishes.
+- Synchronous code occupies the current JavaScript thread until the current operation finishes.
 - It follows a strict sequence, executing instructions line by line.
 - Synchronous functions are easier to understand and debug since the flow is predictable.
 
@@ -69,12 +69,12 @@ Synchronous functions execute in a sequential order, one after the other. Each o
    console.log(result);
    ```
 
-## Asynchronous functions
+## Asynchronous functions and APIs
 
-Asynchronous functions do not block the execution of the program. They allow other operations to continue while waiting for a response or completion of a time-consuming task.
+Asynchronous APIs let the host wait for operations such as network or file I/O without keeping the JavaScript stack occupied. Their JavaScript callbacks still run on an event-loop thread and can block it if they do expensive work.
 
-- Asynchronous code is non-blocking, allowing the program to keep running without waiting for a specific operation to finish.
-- It enables concurrent execution, improving performance and responsiveness.
+- It enables concurrency while waiting for host operations, often improving responsiveness.
+- Declaring a function `async` does not move its body to another thread. It executes immediately until an `await` actually suspends it.
 - Asynchronous functions are commonly used for tasks like network requests, file I/O, and timers.
 
 ### Asynchronous function examples
@@ -85,7 +85,10 @@ Asynchronous functions do not block the execution of the program. They allow oth
    console.log('Start of the program'); // This will be printed first as program starts here
 
    fetch('https://jsonplaceholder.typicode.com/todos/1')
-     .then((response) => response.json())
+     .then((response) => {
+       if (!response.ok) throw new Error(`HTTP ${response.status}`);
+       return response.json();
+     })
      .then((data) => {
        console.log(data);
        /** Process the data without blocking the main thread

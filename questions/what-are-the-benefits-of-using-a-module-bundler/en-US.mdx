@@ -4,7 +4,7 @@ title: What are the benefits of using a module bundler?
 
 ## TL;DR
 
-Using a module bundler like Webpack, Rollup, or Parcel helps manage dependencies, optimize performance, and improve the development workflow. It combines multiple JavaScript files into a single file or a few files, which reduces the number of HTTP requests and can include features like code splitting, tree shaking, and hot module replacement.
+A module bundler builds a dependency graph and transforms application modules into deployable assets. Depending on the tool and configuration, it can transpile syntax, process CSS and images, split code by route or feature, remove code proven unused, hash assets for caching, and support development features such as hot module replacement. Combining files is a tradeoff rather than an automatic speedup: modern HTTP supports efficient parallel requests, while overly large bundles delay download and execution.
 
 ---
 
@@ -24,7 +24,7 @@ myFunction();
 
 ### Performance optimization
 
-Module bundlers can optimize performance by reducing the number of HTTP requests. They combine multiple JavaScript files into a single file or a few files, which can significantly improve load times.
+Bundlers can optimize a production graph through minification, code splitting, asset hashing, and sometimes tree shaking. They may combine modules to reduce request overhead, but the right chunk boundaries depend on caching, HTTP protocol, download size, and execution cost. Measure the production build instead of assuming fewer files is faster.
 
 ### Code splitting
 
@@ -39,7 +39,7 @@ import('./myModule.js').then((module) => {
 
 ### Tree shaking
 
-Tree shaking is a feature that removes unused code from the final bundle. This helps reduce the bundle size and improve performance.
+Tree shaking uses static module structure and side-effect analysis to omit code proven unused. Its effectiveness depends on module format, package metadata, side effects, and bundler configuration.
 
 ```js
 // Only the used function will be included in the final bundle

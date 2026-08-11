@@ -4,7 +4,7 @@ title: What is Cross-Site Scripting (XSS) and how can you prevent it?
 
 ## TL;DR
 
-Cross-Site Scripting (XSS) is a security vulnerability that allows attackers to inject malicious scripts into web pages viewed by other users. This can lead to data theft, session hijacking, and other malicious activities. To prevent XSS, you should validate and sanitize user inputs, use Content Security Policy (CSP), and escape data before rendering it in the browser.
+Cross-Site Scripting (XSS) occurs when untrusted data reaches an executable browser context and runs with a trusted site's origin. Prevent it primarily with context-aware output encoding and safe APIs such as `textContent`, framework text interpolation, and parameterized URL/attribute handling. Sanitize only when the product intentionally accepts HTML, using a maintained HTML sanitizer. Add a nonce- or hash-based Content Security Policy and Trusted Types where applicable as defense in depth; input validation alone is not an XSS defense.
 
 ---
 
@@ -27,9 +27,11 @@ There are three main types of XSS attacks:
 
 ### How can you prevent XSS?
 
-#### Validate and sanitize user inputs
+#### Validate input and handle each output context safely
 
-Always validate and sanitize user inputs to ensure they do not contain malicious code. Use libraries and frameworks that provide built-in functions for input validation and sanitization.
+Validate input against the application's data rules, but encode or safely insert it at the output sink. For plain text, prefer `textContent` or a framework's escaped text interpolation. HTML, URL, CSS, and JavaScript contexts require different handling; do not reuse one generic escape function for all of them.
+
+If users are intentionally allowed to author HTML, sanitize that markup with a maintained, allowlist-based HTML sanitizer before inserting it:
 
 ```js
 const sanitizeHtml = require('sanitize-html');
@@ -45,29 +47,20 @@ A Content Security Policy (CSP) is a security feature that helps prevent XSS att
 Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted.cdn.com;
 ```
 
-#### Escape data before rendering
+#### Encode for the specific output context
 
-Always escape data before rendering it in the browser to prevent the execution of malicious scripts. Use functions provided by your framework or library to escape HTML, JavaScript, and other content.
+Use the framework or platform API designed for the destination context. For ordinary text, avoid constructing HTML at all:
 
 ```js
-const escapeHtml = (str) => {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-};
-
-const safeOutput = escapeHtml(userInput);
+element.textContent = userInput;
 ```
 
 #### Use HTTP-only cookies
 
-Set cookies to be HTTP-only to prevent client-side scripts from accessing them. This can help mitigate the risk of session hijacking.
+Set session cookies to `HttpOnly` so injected JavaScript cannot read the cookie value directly. This limits one impact of XSS but does not stop malicious code from performing authenticated actions through the victim's browser.
 
 ```http
-Set-Cookie: sessionId=abc123; HttpOnly;
+Set-Cookie: sessionId=abc123; HttpOnly; Secure; SameSite=Lax
 ```
 
 #### Regularly update dependencies

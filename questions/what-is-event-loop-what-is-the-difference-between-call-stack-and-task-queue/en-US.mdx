@@ -12,7 +12,7 @@ The event loop is a concept within the JavaScript runtime environment regarding 
 3. Once the asynchronous operation completes, its callback function is placed in the respective queues – task queues (also known as macrotask queues / callback queues) or microtask queues. We will refer to "task queue" as "macrotask queue" from here on to better differentiate from the microtask queue.
 4. The event loop continuously monitors the call stack and executes items on the call stack. If/when the call stack is empty:
    1. Microtask queue is processed. Microtasks include promise callbacks (`then`, `catch`, `finally`), `await` continuations, `MutationObserver` callbacks, and calls to `queueMicrotask()`. The event loop takes the first callback from the microtask queue and pushes it to the call stack for execution. This repeats until the microtask queue is empty.
-   2. Macrotask queue is processed. It contains tasks scheduled by the host, such as timer callbacks and user interface event callbacks. APIs such as `setTimeout()` and networking APIs are not themselves macrotasks; they arrange for callbacks or promise reactions to be queued when appropriate. The event loop dequeues the first callback from the macrotask queue and pushes it onto the call stack for execution. However, after a macrotask queue callback is processed, the event loop does not proceed with the next macrotask yet! The event loop first checks the microtask queue. Checking the microtask queue is necessary as microtasks have higher priority than macrotask queue callbacks. The macrotask queue callback that was just executed could have added more microtasks!
+   2. A task is selected from a host-defined task queue. Tasks include running timer callbacks and dispatching user interface events. APIs such as `setTimeout()` and networking APIs are not themselves tasks; they arrange for tasks or promise reactions to be queued when appropriate. After a task completes, the runtime performs a microtask checkpoint before selecting another task. This is an ordering rule rather than a general-purpose priority system, and continuously queuing microtasks can delay later tasks and rendering.
       1. If the microtask queue is non-empty, process them as per the previous step.
       2. If the microtask queue is empty, the next macrotask queue callback is processed. This repeats until the macrotask queue is empty.
 5. This process continues indefinitely, allowing the JavaScript engine to handle both synchronous and asynchronous operations efficiently without blocking the call stack.
@@ -33,15 +33,15 @@ The call stack keeps track of the functions being executed in a program. When a 
 
 #### Web APIs/Node.js APIs
 
-Asynchronous operations like `setTimeout()`, HTTP requests, file I/O, etc., are handled by Web APIs (in the browser) or C++ APIs (in Node.js). These APIs are not part of the JavaScript engine and run on separate threads, allowing them to execute concurrently without blocking the call stack.
+Hosts such as browsers and Node.js manage timers, networking, and file I/O outside the currently executing JavaScript stack. The implementation varies: an operation may use operating-system facilities, an evented subsystem, or a worker pool rather than one new thread per operation. When work becomes ready, the host schedules the relevant task or microtask.
 
 #### Task queue / Macrotask queue / Callback queue
 
-The macrotask queue (also called the task queue, callback queue, or event queue) holds callbacks waiting to run when the call stack and microtask queue are empty.
+Task queues hold tasks that are ready to run. Browsers may maintain multiple task queues and choose among eligible queues according to the HTML event loop rules; "macrotask queue" is convenient informal terminology, not the specification's single queue.
 
 #### Microtasks queue
 
-The microtask queue holds higher-priority callbacks that drain after the call stack empties and between every macrotask.
+The microtask queue holds promise reactions, `queueMicrotask()` callbacks, and other microtasks. At a microtask checkpoint, it drains until empty, including newly added microtasks; an unbounded stream can starve later tasks.
 
 ### Event loop order
 
@@ -50,7 +50,7 @@ The microtask queue holds higher-priority callbacks that drain after the call st
 3. Once the asynchronous operation completes, its callback function is placed in the respective queues – task queues (also known as macrotask queues / callback queues) or microtask queues. We will refer to "task queue" as "macrotask queue" from here on to better differentiate from the microtask queue.
 4. The event loop continuously monitors the call stack and executes items on the call stack. If/when the call stack is empty:
    1. Microtask queue is processed. The event loop takes the first callback from the microtask queue and pushes it to the call stack for execution. This repeats until the microtask queue is empty.
-   2. Macrotask queue is processed. The event loop dequeues the first callback from the macrotask queue and pushes it onto the call stack for execution. However, after a macrotask queue callback is processed, the event loop does not proceed with the next macrotask yet! The event loop first checks the microtask queue. Checking the microtask queue is necessary as microtasks have higher priority than macrotask queue callbacks. The macrotask queue callback that was just executed could have added more microtasks!
+   2. The host selects an eligible task and runs it. After that task completes, the runtime performs another microtask checkpoint before selecting the next task. A task can therefore enqueue microtasks that run before a later task.
       1. If the microtask queue is non-empty, process them as per the previous step.
       2. If the microtask queue is empty, the next macrotask queue callback is processed. This repeats until the macrotask queue is empty.
 5. This process continues indefinitely, allowing the JavaScript engine to handle both synchronous and asynchronous operations efficiently without blocking the call stack.
@@ -290,17 +290,16 @@ Specified in the [HTML Living Standard](https://html.spec.whatwg.org/multipage/w
 - Each agent has its own event loop.
 - The macrotask queue is partitioned into multiple task sources (timers, network I/O, UI events, `postMessage`, and others). FIFO order is guaranteed within a source but not across sources — the user agent may choose any non-empty source each turn.
 - `requestAnimationFrame` callbacks run in a separate phase of the event loop, before the render step, rather than on the macrotask queue.
-- Rendering (style, layout, paint) occurs between macrotasks, not between microtasks. This is why a long microtask chain can freeze the UI.
+- A browser may update rendering between tasks, but it does not render in the middle of a microtask checkpoint. This is why a long microtask chain can delay rendering.
 
 #### Where `requestAnimationFrame` and `requestIdleCallback` fit
 
-Within a single iteration of the event loop, the browser visits these phases in order:
+At a rendering opportunity, the simplified order relevant to application code is:
 
-1. Run one task from a macrotask queue source.
-2. Drain the microtask queue (including any microtasks scheduled by step 1).
-3. If a render is due this turn, run all `requestAnimationFrame` callbacks queued for the next frame.
-4. Style, layout, and paint.
-5. During any remaining idle time before the next frame deadline, run `requestIdleCallback` callbacks.
+1. Run a selected task, then perform a microtask checkpoint.
+2. If the browser decides to update rendering, run eligible `requestAnimationFrame` callbacks.
+3. Update style, layout, and paint as needed.
+4. Run eligible idle callbacks when the user agent determines there is idle time.
 
 `requestAnimationFrame` schedules work for the next paint, making it the right tool for visual updates synchronized with the display refresh rate (~ 16.7 ms per frame at 60 Hz). `requestIdleCallback` schedules work for the period after rendering and only if the browser has idle time, making it suitable for non-urgent background work.
 
@@ -313,28 +312,31 @@ typeof requestIdleCallback === 'function' &&
   requestIdleCallback(() => console.log('5: rIC'));
 console.log('6: sync');
 
-// Typical output: 1, 6, 2, 3, 4, 5
+// Guaranteed prefix: 1, 6, 2
+// Relative ordering of 3 and 4 depends on timing and the rendering opportunity.
 // `5: rIC` may run later or be deferred under load
 ```
 
-`setTimeout(fn, 0)` typically logs before the `requestAnimationFrame` callback because the timer's macrotask is dispatched on the next event loop turn, while `rAF` waits for the next paint (often a few milliseconds later at typical refresh rates). `requestIdleCallback` runs only after the browser finishes rendering, which is why it appears last and is the only callback in this example that may be deferred.
+Do not depend on the timer and `requestAnimationFrame` callbacks having a fixed relative order: it varies with when the code runs and whether a rendering opportunity occurs. `requestIdleCallback` can also be deferred; use its timeout option when work must eventually run.
 
 ### Node.js
 
 Built on libuv, with additional phases beyond what the HTML spec describes:
 
-- `process.nextTick()` has a higher-priority queue that drains before the promise microtask queue on every phase transition.
-- Macrotasks are divided into named phases: timers, pending callbacks, idle/prepare, poll (I/O), check (`setImmediate`), and close callbacks. Phases run in order, and microtasks together with `nextTick` drain between each.
+- In CommonJS, Node drains the `process.nextTick()` queue before the promise microtask queue after the current operation. In ES modules, top-level scheduling can produce a different order because module evaluation already runs as a microtask.
+- Event-loop work is divided into named phases such as timers, pending callbacks, poll (I/O), check (`setImmediate`), and close callbacks. Current Node versions run microtasks after callbacks, not merely once per complete loop iteration.
 - At the top level of a script, the execution order of `setImmediate(fn)` and `setTimeout(fn, 0)` is not deterministic and depends on loop timing. Inside an I/O callback, `setImmediate` is guaranteed to run before `setTimeout(fn, 0)`.
+
+`process.nextTick()` is a Node-specific legacy API for most userland scheduling. Prefer `queueMicrotask()` unless the next-tick behavior is specifically required.
 
 A comparison of the Node-specific scheduling primitives:
 
 | Mechanism | Queue | Runs at | Notes |
 | --- | --- | --- | --- |
-| `process.nextTick(fn)` | nextTick queue | Every phase transition, before the promise microtask queue | Highest priority — recursive use can starve I/O |
-| `queueMicrotask(fn)` / `Promise.then` | Microtask queue | Every phase transition, after the nextTick queue drains | Same semantics as in browsers |
+| `process.nextTick(fn)` | nextTick queue | After the current operation, before the event loop continues | Legacy for most userland uses; recursive use can starve I/O |
+| `queueMicrotask(fn)` / `Promise.then` | Microtask queue | At microtask checkpoints | Portable ordering model; recursive use can also starve later work |
 | `setImmediate(fn)` | Check phase | Once per loop iteration, after the poll (I/O) phase | Use to defer work until after the current I/O cycle |
-| `setTimeout(fn, 0)` | Timers phase | At the top of the next loop iteration once the delay elapses | Minimum delay clamped to 1 ms |
+| `setTimeout(fn, 0)` | Timers phase | After its minimum delay has elapsed and the timers phase is reached | Node clamps a delay below 1 or above its supported maximum to 1 ms |
 
 Observed ordering at the top of a script:
 
@@ -344,7 +346,7 @@ setTimeout(() => console.log('setTimeout'), 0);
 Promise.resolve().then(() => console.log('promise'));
 process.nextTick(() => console.log('nextTick'));
 
-// Output:
+// CommonJS output begins:
 // nextTick
 // promise
 // setTimeout (or setImmediate — order between these two is not guaranteed at the top level)

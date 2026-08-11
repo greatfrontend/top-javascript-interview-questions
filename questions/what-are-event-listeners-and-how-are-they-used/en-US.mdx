@@ -4,7 +4,7 @@ title: What are event listeners and how are they used?
 
 ## TL;DR
 
-Event listeners are functions that wait for specific events to occur on elements, such as clicks or key presses. They are used to execute code in response to these events. You can add an event listener to an element using the `addEventListener` method. For example:
+Event listeners register callbacks on an `EventTarget` for events such as clicks, input, network state, or custom notifications. `addEventListener()` supports options for capture, one-time delivery, passive scrolling behavior, and cleanup through an `AbortSignal`. Keep ownership explicit: remove long-lived listeners when their feature is disposed, and use event delegation when many dynamic descendants share behavior.
 
 ```js
 document.getElementById('myButton').addEventListener('click', function () {
@@ -47,6 +47,22 @@ button.addEventListener('click', handleClick);
 button.removeEventListener('click', handleClick);
 ```
 
+`removeEventListener()` needs the same event type, callback identity, and capture setting. An inline function cannot be removed later by writing a new identical-looking function. An `AbortController` can own several listeners:
+
+```js
+const controller = new AbortController();
+
+window.addEventListener('resize', handleResize, {
+  signal: controller.signal,
+});
+document.addEventListener('visibilitychange', handleVisibility, {
+  signal: controller.signal,
+});
+
+// Disposes both listeners.
+controller.abort();
+```
+
 ### Event object
 
 When an event listener is triggered, an event object is passed to the event handler function. This object contains useful information about the event, such as the target element, the type of event, and more.
@@ -82,8 +98,19 @@ list.addEventListener('click', function (event) {
 
 In this example, a single event listener is added to a list element. When any list item (`LI`) is clicked, the event listener will handle the event.
 
+Use `event.target.closest('li')` in real delegated handlers so clicks on a nested element still resolve to the list item, and verify the matched item belongs to the intended list. Delegation reduces listener management; it is not automatically faster for every small, fixed interface.
+
+### Listener options and failure modes
+
+- `{ once: true }` removes a listener after its first invocation.
+- `{ passive: true }` promises not to call `preventDefault()`, allowing the browser to optimize relevant scrolling events. Calling `preventDefault()` from that listener has no effect.
+- `{ capture: true }` listens during capture instead of the normal bubbling phase.
+- A listener runs on the event loop's thread. CPU-heavy handlers still block rendering and input.
+- A thrown error does not turn `dispatchEvent()` into a rejected Promise. Handle asynchronous work and errors explicitly.
+
 ## Further reading
 
 - [MDN Web Docs: EventTarget.addEventListener()](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener)
+- [MDN Web Docs: EventTarget.removeEventListener()](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener)
 - [JavaScript.info: Introduction to browser events](https://javascript.info/introduction-browser-events)
 - [MDN Web Docs: Introduction to events](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events)

@@ -4,7 +4,7 @@ title: Explain how prototypal inheritance works in JavaScript
 
 ## TL;DR
 
-Prototypal inheritance in JavaScript is a way for objects to inherit properties and methods from other objects. Every JavaScript object has a special hidden property called `[[Prototype]]` (commonly accessed via `__proto__` or using `Object.getPrototypeOf()`) that is a reference to another object, which is called the object's "prototype".
+Prototypal inheritance is property lookup by delegation. An object's internal `[[Prototype]]` is another object or `null`; when an own property is missing, lookup continues along that chain. Inspect it with `Object.getPrototypeOf()` and create a deliberate link with `Object.create()` or `class` / `extends`. Avoid the legacy `__proto__` accessor in application code, and avoid changing prototypes of existing objects in hot code because it can invalidate engine optimizations.
 
 When a property is accessed on an object and if the property is not found on that object, the JavaScript engine looks at the object's `__proto__`, and the `__proto__`'s `__proto__` and so on, until it finds the property defined on one of the `__proto__`s or until it reaches the end of the prototype chain.
 

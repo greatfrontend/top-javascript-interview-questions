@@ -4,12 +4,12 @@ title: What is the `Intl` namespace object for?
 
 ## TL;DR
 
-The `Intl` namespace object in JavaScript is used for internationalization purposes. It provides language-sensitive string comparison, number formatting, and date and time formatting. For example, you can use `Intl.DateTimeFormat` to format dates according to a specific locale:
+`Intl` provides locale-aware formatting and comparison for numbers, currencies, dates, times, lists, relative time, plural categories, segments, and more. Pass the locale and domain options explicitly rather than hand-building localized strings. For dates, specify the intended time zone; for money, store the currency separately from the numeric amount. Exact output can vary with locale data, so test semantic parts rather than brittle punctuation where possible.
 
 ```js live
-const date = new Date();
+const date = new Date('2026-08-11T04:00:00Z');
 const formatter = new Intl.DateTimeFormat('en-US');
-console.log(formatter.format(date)); // Outputs date in 'MM/DD/YYYY' format
+console.log(formatter.format(date)); // Locale-formatted calendar date
 ```
 
 ---
@@ -37,7 +37,7 @@ const formatter = new Intl.NumberFormat('de-DE', {
   style: 'currency',
   currency: 'EUR',
 });
-console.log(formatter.format(number)); // Outputs '1.234.567,89 €'
+console.log(formatter.format(number)); // German-formatted EUR amount
 ```
 
 ### Date and time formatting
@@ -51,7 +51,7 @@ const formatter = new Intl.DateTimeFormat('en-GB', {
   month: 'long',
   day: 'numeric',
 });
-console.log(formatter.format(date)); // Outputs date in 'DD Month YYYY' format
+console.log(formatter.format(date)); // British English long date
 ```
 
 ### Plural rules
@@ -63,6 +63,25 @@ const pluralRules = new Intl.PluralRules('en-US');
 console.log(pluralRules.select(1)); // Outputs 'one'
 console.log(pluralRules.select(2)); // Outputs 'other'
 ```
+
+`Intl.PluralRules` returns a category; the application still provides translated message forms. English-style `count === 1 ? singular : plural` logic does not generalize to every language.
+
+### Practical considerations
+
+```js live
+const formatter = new Intl.DateTimeFormat('en-GB', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+  timeZone: 'Asia/Singapore',
+});
+
+console.log(formatter.format(new Date('2026-08-11T04:00:00Z')));
+```
+
+- Reuse a formatter when formatting many values instead of constructing one for every table cell.
+- Use `formatToParts()` when markup must wrap specific semantic pieces; do not split a formatted string on assumed punctuation.
+- Locale fallback and supported options depend on the runtime's locale data. Use `supportedLocalesOf()` when exact locale support matters.
+- `Intl` formats values but does not translate arbitrary product copy or convert time zones into business-calendar rules.
 
 ## Further reading
 

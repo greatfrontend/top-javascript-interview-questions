@@ -4,10 +4,15 @@ title: Explain the concept of lazy loading and how it can improve performance
 
 ## TL;DR
 
-Lazy loading is a design pattern that delays the loading of resources until they are actually needed. This can significantly improve performance by reducing initial load times and conserving bandwidth. For example, images on a webpage can be lazy-loaded so that they only load when they come into the viewport. This can be achieved using the `loading="lazy"` attribute in HTML or by using JavaScript libraries.
+Lazy loading defers non-critical resources until they are likely to be needed, reducing initial network and processing work. Use native `loading="lazy"` for below-the-fold images and iframes, dynamic `import()` for optional JavaScript, and `IntersectionObserver` when custom preloading behavior is required. Do not lazy-load a page's hero or other likely Largest Contentful Paint image; deferring critical content can make performance worse.
 
 ```html
-<img src="image.jpg" loading="lazy" alt="Lazy loaded image" />
+<img
+  src="product-800.jpg"
+  width="800"
+  height="600"
+  loading="lazy"
+  alt="Blue trail-running shoe" />
 ```
 
 ---
@@ -20,13 +25,13 @@ Lazy loading is a design pattern used to defer the initialization of an object u
 
 ### How does lazy loading work?
 
-Lazy loading works by delaying the loading of resources until they are actually needed. For example, images on a webpage can be lazy-loaded so that they only load when they come into the viewport. This can be achieved using the `loading="lazy"` attribute in HTML or by using JavaScript libraries.
+Lazy loading works by delaying a fetch, initialization, or code evaluation until a trigger such as proximity to the viewport or a user action. It is not automatically beneficial: loading too late can leave blank content as the user scrolls, while splitting JavaScript too aggressively adds request and execution overhead.
 
 ### Benefits of lazy loading
 
-- **Improved performance**: By loading only the necessary resources initially, the page load time is reduced, leading to a faster and more responsive user experience.
-- **Reduced bandwidth usage**: Lazy loading helps in conserving bandwidth by loading resources only when they are needed.
-- **Better user experience**: Users can start interacting with the content faster as the initial load time is reduced.
+- **Less initial work**: Deferring non-critical resources can reduce initial bytes, parsing, and execution.
+- **Reduced bandwidth usage**: Resources the user never approaches may never be fetched.
+- **Earlier critical-content availability**: Competing less for network and main-thread time can help critical content, but verify the effect with loading and field measurements.
 
 ### Implementing lazy loading
 
@@ -35,7 +40,12 @@ Lazy loading works by delaying the loading of resources until they are actually 
 The simplest way to implement lazy loading for images is by using the `loading` attribute in HTML.
 
 ```html
-<img src="image.jpg" loading="lazy" alt="Lazy loaded image" />
+<img
+  src="product-800.jpg"
+  width="800"
+  height="600"
+  loading="lazy"
+  alt="Blue trail-running shoe" />
 ```
 
 #### Using JavaScript
@@ -43,30 +53,47 @@ The simplest way to implement lazy loading for images is by using the `loading` 
 For more complex scenarios, you can use JavaScript to implement lazy loading. Here is an example using the Intersection Observer API:
 
 ```js
-document.addEventListener('DOMContentLoaded', function () {
-  const lazyImages = document.querySelectorAll('img.lazy');
+const lazyImages = document.querySelectorAll('img[data-src]');
 
-  const imageObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const img = entry.target;
-        img.src = img.dataset.src;
-        img.classList.remove('lazy');
-        observer.unobserve(img);
-      }
-    });
-  });
+const imageObserver = new IntersectionObserver(
+  (entries, observer) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
 
-  lazyImages.forEach((image) => {
-    imageObserver.observe(image);
-  });
-});
+      const image = entry.target;
+      image.src = image.dataset.src;
+      image.removeAttribute('data-src');
+      observer.unobserve(image);
+    }
+  },
+  // Start loading shortly before the image enters the viewport.
+  { rootMargin: '300px' },
+);
+
+for (const image of lazyImages) {
+  imageObserver.observe(image);
+}
+
+// If the whole view is disposed before every image loads:
+function cleanup() {
+  imageObserver.disconnect();
+}
 ```
 
-In this example, images with the class `lazy` will only load when they come into the viewport.
+The markup must keep a reserved size to avoid layout shifts:
+
+```html
+<img
+  data-src="product-800.jpg"
+  width="800"
+  height="600"
+  alt="Blue trail-running shoe" />
+```
+
+If JavaScript is unavailable, provide a usable fallback when the image is important to understanding the page. Prefer native lazy loading unless you need behavior such as a custom preload distance or support for a different resource type.
 
 ## Further reading
 
 - [MDN Web Docs: Lazy loading](https://developer.mozilla.org/en-US/docs/Web/Performance/Lazy_loading)
-- [Google Developers: Lazy loading images and video](https://developers.google.com/web/fundamentals/performance/lazy-loading-guidance/images-and-video)
 - [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)
+- [Code splitting with dynamic `import()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import)

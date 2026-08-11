@@ -13,17 +13,17 @@ subtitle: What are the advantages and disadvantages to using it?
 - Makes assignments which would otherwise silently fail to throw an exception.
 - Makes attempts to delete undeletable properties throw an exception (where before the attempt would simply have no effect).
 - Requires that function parameter names be unique.
-- `this` is `undefined` in the global context.
+- A plain function call receives `this === undefined` instead of coercing it to the global object.
 - It catches some common coding bloopers, throwing exceptions.
 - It disables features that are confusing or poorly thought out.
 
 **Disadvantages**
 
-- Many missing features that some developers might be used to.
-- No more access to `function.caller` and `function.arguments`.
-- Concatenation of scripts written in different strict modes might cause issues.
+- Some legacy syntax and reflective features such as `with`, `arguments.callee`, and access to `function.caller` are unavailable.
+- Code that depended on silent failures or implicit globals will throw and may need migration work.
+- A strict-mode directive cannot be placed in a function with non-simple parameters, such as default, rest, or destructured parameters.
 
-The benefits outweigh the disadvantages and there is not really a need to rely on the features that strict mode prohibits. We should all be using strict mode by default.
+ES modules and class bodies are already strict. Use the directive for legacy scripts or functions that are otherwise in sloppy mode; do not add a redundant directive merely to code that is already an ES module.
 
 ---
 
@@ -60,9 +60,7 @@ When you use `"use strict"`, it helps you write cleaner code, such as preventing
 1. **Error prevention**: Strict mode prevents common errors such as:
    - Using undeclared variables.
    - Assigning values to non-writable properties.
-   - Using non-existent properties or variables.
    - Deleting undeletable properties.
-   - Using reserved keywords as identifiers.
    - Duplicating parameter names in functions.
 2. **Improved security**: Strict mode helps in writing more secure code by:
    - Preventing the use of deprecated features like `arguments.caller` and `arguments.callee`.
@@ -201,7 +199,7 @@ In most modern code, no. Strict mode is now the default in several places:
 
 - **ES modules** are automatically strict. Anything imported with `import`/`export`, served as `<script type="module">`, or compiled by Vite, webpack, or Rollup runs in strict mode without the directive.
 - **Class bodies** (and methods inside them) are strict, even when the surrounding code is not.
-- **Most build tools** (Babel, TypeScript with `target: ES2015+`) emit code that is either modules or class-wrapped, so it is strict by default.
+- **Build output** may be strict when a tool preserves or emits ES modules or inserts a directive, but this depends on the configured module format. A JavaScript target such as ES2015 does not by itself guarantee strict mode.
 
 The directive still matters in a few places:
 

@@ -4,7 +4,7 @@ title: What are the potential issues caused by hoisting?
 
 ## TL;DR
 
-Hoisting can lead to unexpected behavior in JavaScript because variable and function declarations are moved to the top of their containing scope during the compilation phase. This can result in `undefined` values for variables if they are used before their declaration and can cause confusion with function declarations and expressions. For example:
+JavaScript creates bindings before executing a scope's statements, but initializes different declaration forms differently. An early read of `var` produces `undefined`; an early read of `let`, `const`, or `class` throws because the binding is in the temporal dead zone; and function declarations are already callable. These differences—not literal source-code movement—can produce confusing bugs.
 
 ```js live
 console.log(a); // undefined
@@ -20,7 +20,7 @@ let b = 10;
 
 ### Variables being `undefined`
 
-When using `var`, the variable is hoisted to the top of its scope but not initialized. This means you can reference the variable before its declaration, but it will be `undefined` until the assignment is executed.
+When using `var`, the binding is created and initialized to `undefined` during scope setup. It retains that value until the assignment executes.
 
 ```js live
 console.log(a); // undefined
@@ -38,7 +38,7 @@ let b = 10;
 
 ### Function declarations vs. function expressions
 
-Function declarations are hoisted entirely, meaning you can call the function before its declaration. However, function expressions are not hoisted in the same way, leading to potential `TypeError` if called before they are defined.
+Function declarations are initialized with their function during scope setup. A function expression is created only when its expression runs, so a `var` that will later receive a function still contains `undefined` beforehand and calling it throws `TypeError`.
 
 ```js live
 foo(); // Works fine

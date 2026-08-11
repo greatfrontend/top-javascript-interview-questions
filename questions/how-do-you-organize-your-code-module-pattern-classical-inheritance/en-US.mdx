@@ -5,70 +5,77 @@ subtitle: Do you use module pattern, classical inheritance, something else?
 
 ## TL;DR
 
-I organize my code by following a modular approach, using a clear folder structure, and adhering to coding standards and best practices. I separate concerns by dividing code into different layers such as components, services, and utilities. I also use naming conventions and documentation to ensure code readability and maintainability.
+Organize code around product capabilities and dependency boundaries, not one universal folder template. Give each module a small public API, keep volatile infrastructure behind adapters, colocate code that changes together, and make dependency direction explicit. Prefer composition and plain functions/objects; use classes and inheritance only when an actual subtype relationship and shared contract make them clearer.
+
+Start simple and refactor when change patterns reveal a boundary. Deep “controllers/services/utils/helpers” layers can scatter one feature across the repository just as easily as one giant file can couple everything together.
 
 ---
 
-## How do you organize your code?
+## A feature-oriented shape
 
-### Modular approach
+For an application with checkout and account capabilities:
 
-I follow a modular approach to break down the application into smaller, reusable pieces. This helps in managing the codebase more efficiently and makes it easier to maintain and scale.
-
-### Folder structure
-
-I use a clear and consistent folder structure to organize my code. Here is a common structure for a React project:
-
-```
+```text
 src/
-|-- components/
-|   |-- Header/
-|   |   |-- Header.js
-|   |   |-- Header.css
-|   |-- Footer/
-|   |   |-- Footer.js
-|   |   |-- Footer.css
-|-- services/
-|   |-- apiService.js
-|-- utils/
-|   |-- helpers.js
-|-- App.js
-|-- index.js
+├── app/
+│   ├── start-app.js
+│   └── routes.js
+├── checkout/
+│   ├── calculate-total.js
+│   ├── checkout-controller.js
+│   ├── checkout-view.js
+│   ├── checkout.test.js
+│   └── index.js
+├── account/
+│   ├── load-profile.js
+│   ├── profile-view.js
+│   └── index.js
+└── infrastructure/
+    ├── http-client.js
+    └── storage.js
 ```
 
-### Separation of concerns
+`checkout/index.js` can export only the entry points other features are allowed to use. Internal helpers remain replaceable without every caller importing their file paths.
 
-I separate concerns by dividing the code into different layers:
+## Separate policy from platform details
 
-- **Components**: UI elements that are reusable and self-contained
-- **Services**: Functions that handle data fetching and business logic
-- **Utilities**: Helper functions and constants that can be used across the application
+Keep business rules independent from fetch, DOM, storage, and frameworks where practical:
 
-### Naming conventions
+```js
+export function calculateTotal(items, discountPolicy) {
+  const subtotal = items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+  return discountPolicy(subtotal);
+}
+```
 
-I use consistent naming conventions to improve code readability:
+An adapter can load items from HTTP and pass them to this function. That makes the rule testable without implying that every collaborator must be mocked or split into its own class.
 
-- **Files and folders**: Use camelCase or kebab-case for file and folder names
-- **Components**: Use PascalCase for React component names
-- **Variables and functions**: Use camelCase for variable and function names
+## Choose abstractions from the problem
 
-### Documentation
+- **ES modules** define file-level public and private bindings and are the default code-sharing mechanism.
+- **Functions and composition** fit transformations, policies, and injected behavior.
+- **Classes** fit objects with identity, invariants, and a meaningful lifecycle.
+- **Inheritance** fits substitutable types with a stable “is-a” relationship; composition is usually safer for optional behavior.
+- **Events or observers** fit one-to-many notifications, but require ownership, ordering, error, and cleanup rules.
 
-I document my code to make it easier for others (and myself) to understand:
+Do not add a pattern because its name sounds architectural. State the problem it solves and the cost it introduces.
 
-- **Comments**: Add comments to explain complex logic or important sections of the code
-- **README**: Include a README file with instructions on how to set up and run the project
+## Practical rules
 
-### Coding standards and best practices
+- Colocate tests, styles, schemas, and small helpers with the feature they verify or support.
+- Keep shared code narrowly named. A growing `utils` directory often hides unrelated dependencies.
+- Prevent circular dependencies and avoid importing another feature's internals.
+- Validate data at external boundaries and expose domain-shaped values internally.
+- Keep configuration and secrets outside browser bundles; module privacy is not a security boundary.
+- Document architectural decisions and public APIs, not line-by-line behavior already visible in code.
+- Let formatting, linting, type checking, and tests enforce mechanical conventions.
 
-I adhere to coding standards and best practices to ensure code quality:
-
-- **Linting**: Use tools like ESLint to enforce coding standards
-- **Formatting**: Use tools like Prettier to maintain consistent code formatting
-- **Testing**: Write unit tests and integration tests to ensure code reliability
+As the system grows, use dependency rules or workspace/package boundaries where they prevent demonstrated coupling. Splitting code into packages too early adds publishing, versioning, and tooling overhead.
 
 ## Further reading
 
-- [JavaScript Coding Standards](https://github.com/airbnb/javascript)
-- [How to Write Clean Code](https://www.freecodecamp.org/news/how-to-write-clean-code/)
-- [Effective JavaScript Documentation](https://jsdoc.app/)
+- [MDN: JavaScript modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)
+- [Node.js: Packages](https://nodejs.org/api/packages.html)

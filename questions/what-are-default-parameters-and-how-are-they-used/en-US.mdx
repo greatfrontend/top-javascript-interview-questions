@@ -4,7 +4,7 @@ title: What are default parameters and how are they used?
 
 ## TL;DR
 
-Default parameters in JavaScript allow you to set default values for function parameters if no value or `undefined` is passed. This helps avoid `undefined` values and makes your code more robust. You can define default parameters by assigning a value to the parameter in the function definition.
+Default parameters supply a value when an argument is omitted or explicitly `undefined`; they do not apply to `null`, `0`, `false`, or `''`. The expression is evaluated at call time, so it can use earlier parameters and create a fresh object per call. Use defaults for genuine optional arguments, but validate values separately when `null` or another sentinel is invalid.
 
 ```js live
 function greet(name = 'Guest') {
@@ -77,6 +77,21 @@ console.log(add(5, 10)); // Output: 15
 ```
 
 In this example, the default value for `b` is an expression that depends on the value of `a`. If no arguments are passed, `a` is `0` and `b` is `1`. If only `a` is passed, `b` is `a + 1`. If both `a` and `b` are passed, the provided values are used.
+
+### Common traps
+
+```js live
+function createOptions(options = {}) {
+  return options;
+}
+
+console.log(createOptions()); // {}
+console.log(createOptions(undefined)); // {}
+console.log(createOptions(null)); // null; the default is not used
+console.log(createOptions() === createOptions()); // false; a fresh object each call
+```
+
+Default parameters have their own parameter scope. A later parameter is unavailable to an earlier default, and referencing it before initialization throws a `ReferenceError`.
 
 ## Further reading
 

@@ -4,7 +4,7 @@ title: Explain the concept of a callback function in asynchronous operations
 
 ## TL;DR
 
-A callback function is a function passed as an argument to another function, which is then invoked inside the outer function to complete some kind of routine or action. In asynchronous operations, callbacks are used to handle tasks that take time to complete, such as network requests or file I/O, without blocking the execution of the rest of the code. For example:
+A callback is a function passed to another API to invoke later or during its operation. In asynchronous APIs, the contract must define when and how often it runs, how errors are reported, and how to cancel or unsubscribe. Scheduling a callback lets the current stack continue, but the callback's own JavaScript still occupies the thread when it eventually runs.
 
 ```js live
 function fetchData(callback) {
@@ -27,8 +27,8 @@ A callback function is a function that is passed as an argument to another funct
 
 ### Synchronous vs. asynchronous callbacks
 
-- **Synchronous callbacks** are executed immediately within the function they are passed to. They are blocking, and the code execution waits for them to complete.
-- **Asynchronous callbacks** are executed after a certain event or operation has been completed. They are non-blocking and allow the code execution to continue while waiting for the operation to finish.
+- **Synchronous callbacks** run before the receiving function returns, as with an `Array.prototype.map()` callback.
+- **Asynchronous callbacks** run in a later task or API-defined turn, as with timers and many Node.js I/O callbacks. The operation can wait without blocking JavaScript, but a CPU-heavy callback can still block its thread.
 
 ### Example of a synchronous callback
 
@@ -91,6 +91,21 @@ fetchData((error, data) => {
   }
 });
 ```
+
+The error-first convention is common in Node.js callback APIs, but DOM event listeners use event objects and different APIs define different contracts. Guard against callbacks that can fire repeatedly, and retain the same function reference when cleanup requires it:
+
+```js
+function handleResize() {
+  layoutDashboard();
+}
+
+window.addEventListener('resize', handleResize);
+
+// When the dashboard is disposed:
+window.removeEventListener('resize', handleResize);
+```
+
+Use Promises for a single future result when they make composition and error propagation clearer. Use callbacks or event subscriptions for repeated notifications, streaming, or APIs that already expose that contract.
 
 ## Further reading
 

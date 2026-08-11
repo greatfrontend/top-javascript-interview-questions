@@ -4,7 +4,7 @@ title: What are some popular JavaScript testing frameworks?
 
 ## TL;DR
 
-Some popular JavaScript testing frameworks include Jest, Mocha, Jasmine, and Cypress. Jest is known for its simplicity and integration with React. Mocha is highly flexible and often used with other libraries like Chai for assertions. Jasmine is a behavior-driven development framework that requires no additional libraries. Cypress is an end-to-end testing framework that provides a great developer experience.
+Choose by test layer and runtime rather than popularity alone. Jest and Vitest are batteries-included choices for unit and integration tests; Mocha is a configurable runner often paired with separate assertion and mocking libraries; Jasmine is an all-in-one BDD framework. Playwright and Cypress automate real browsers for end-to-end and component tests. Node.js also ships a built-in `node:test` runner. DOM-testing libraries such as Testing Library complement a runner rather than replacing it.
 
 ---
 
@@ -12,7 +12,7 @@ Some popular JavaScript testing frameworks include Jest, Mocha, Jasmine, and Cyp
 
 ### Jest
 
-Jest is a testing framework developed by Facebook, primarily used for testing React applications. It is known for its simplicity and ease of use.
+Jest is an OpenJS Foundation project originally developed at Facebook. It is a general JavaScript testing framework and remains common in React applications.
 
 - It comes with a built-in test runner, assertion library, and mocking support
 - It has a zero-configuration setup, making it easy to get started
@@ -104,6 +104,19 @@ test('adds 1 + 2 to equal 3', () => {
 });
 ```
 
+### Playwright
+
+Playwright is a browser automation and end-to-end testing framework with Chromium, Firefox, and WebKit support. It is a strong option when cross-browser behavior, multiple pages, downloads, permissions, or network control matter.
+
+```js
+import { expect, test } from '@playwright/test';
+
+test('shows the page title', async ({ page }) => {
+  await page.goto('https://example.com');
+  await expect(page).toHaveTitle(/Example Domain/);
+});
+```
+
 ## Further reading
 
 - [Jest documentation](https://jestjs.io/docs/getting-started)
@@ -111,3 +124,5 @@ test('adds 1 + 2 to equal 3', () => {
 - [Jasmine documentation](https://jasmine.github.io/pages/getting_started.html)
 - [Cypress documentation](https://docs.cypress.io/guides/overview/why-cypress)
 - [Vitest documentation](https://vitest.dev/guide/)
+- [Playwright documentation](https://playwright.dev/docs/intro)
+- [Node.js test runner](https://nodejs.org/api/test.html)

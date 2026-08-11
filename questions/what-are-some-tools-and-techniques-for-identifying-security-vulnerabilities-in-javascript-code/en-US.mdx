@@ -4,78 +4,74 @@ title: What are some tools and techniques for identifying security vulnerabiliti
 
 ## TL;DR
 
-To identify security vulnerabilities in JavaScript code, you can use static code analysis tools like ESLint with security plugins, dynamic analysis tools like OWASP ZAP, and dependency checkers like npm audit. Manual code reviews and adhering to secure coding practices are also essential techniques.
+Use complementary layers: threat modeling and manual review for design flaws; linters and static analysis for risky data flows and APIs; dependency and secret scanning for supply-chain exposure; authorization-focused tests; and dynamic tools such as OWASP ZAP or Burp Suite against an authorized running environment. No scanner proves an application secure. Prioritize findings by exploitability and impact, verify them manually, and retest the fix.
+
+Do not run active scans against systems you do not own or have permission to test. Use controlled test data and avoid placing real credentials in scan configuration or reports.
 
 ---
 
-## Tools and techniques for identifying security vulnerabilities in JavaScript code
+## Start with the application's threats
 
-### Static code analysis tools
+Inventory assets, entry points, trust boundaries, roles, and third-party integrations. For a document-sharing feature, ask concrete questions:
 
-Static code analysis tools examine your code without executing it. They can identify potential security vulnerabilities by analyzing the code structure and patterns.
+- Can one user change an ID and read another user's document?
+- Is untrusted text inserted into an HTML, URL, CSS, SQL, or shell context?
+- Can an uploaded file execute or expose private metadata?
+- Can a cross-site request perform a state-changing action?
+- Are secrets or private responses shipped to the browser or logs?
 
-- **ESLint**: A popular linting tool for JavaScript that can be extended with security-focused plugins like `eslint-plugin-security` to catch common security issues.
+This tells you which automated and manual checks matter. A dependency scan cannot find a missing ownership check in application code.
 
-  ```bash
-  npm install eslint eslint-plugin-security --save-dev
-  ```
+## Static analysis and linting
 
-  ```js
-  // .eslintrc.json
-  {
-    "plugins": ["security"],
-    "extends": ["plugin:security/recommended"]
-  }
-  ```
+Linters and static application security testing can flag patterns such as dynamic code execution, unsafe DOM sinks, weak randomness, path traversal, and unsafely constructed queries. Examples include ESLint security plugins, Semgrep, CodeQL, and commercial SAST platforms.
 
-- **SonarQube**: A platform that provides continuous inspection of code quality and security vulnerabilities. It supports JavaScript and integrates with various CI/CD pipelines.
+Treat a rule match as a lead, not a confirmed vulnerability. Tune rules to the codebase, review suppressions, and keep analysis in CI so new findings are visible in the change that introduced them.
 
-### Dynamic analysis tools
+## Dependencies, provenance, and secrets
 
-Dynamic analysis tools test your application while it is running to identify security vulnerabilities.
+- Package-manager audits, Dependabot, Renovate, Snyk, or similar services match dependency versions to known advisories.
+- Lockfiles and an SBOM make the resolved dependency graph reviewable.
+- Secret scanners detect credentials committed to source, history, build output, and configuration.
 
-- **OWASP ZAP (Zed Attack Proxy)**: An open-source tool for finding security vulnerabilities in web applications. It can be used to perform automated scans and manual testing.
+A reported vulnerable package may be unreachable in your application, while an unreported malicious or compromised package may still be dangerous. Verify the dependency path, affected behavior, available patch, and runtime exposure. If a real secret was committed, remove it from use and rotate it; deleting the current file is not enough.
 
-  ```bash
-  zap.sh -daemon -port 8080 -config api.disablekey=true
-  ```
+## Dynamic and interactive testing
 
-- **Burp Suite**: A comprehensive platform for web application security testing. It includes tools for scanning, crawling, and exploiting vulnerabilities.
+OWASP ZAP and Burp Suite inspect a running web application and can crawl, proxy, fuzz, and scan requests. Run active attacks only against an explicitly authorized environment that can tolerate the traffic and data mutations. Authenticate as several roles and test object-level and function-level authorization manually; scanners often cannot infer the intended access policy.
 
-### Dependency checkers
+Browser developer tools are also valuable for checking CSP violations, cookie attributes, CORS behavior, exposed source maps, storage, and actual request data.
 
-Dependency checkers analyze the third-party libraries and packages your project depends on to identify known vulnerabilities.
+## Security tests and review
 
-- **npm audit**: A built-in tool for npm that checks for vulnerabilities in your project's dependencies.
+Turn important boundaries into repeatable tests:
 
-  ```bash
-  npm audit
-  ```
+```js
+test('a member cannot read another workspace document', async () => {
+  const response = await request(app)
+    .get('/documents/private-document')
+    .set('Authorization', memberToken);
 
-- **Snyk**: A tool that continuously monitors your dependencies for vulnerabilities and provides fixes.
-  ```bash
-  snyk test
-  ```
+  expect(response.status).toBe(404);
+});
+```
 
-### Manual code reviews
+Review authentication, authorization, parameterized queries, context-aware output handling, file handling, redirects, outbound requests, cryptography, error disclosure, logging, and rate limits. Input validation is useful, but there is no universal “sanitize” operation: SQL binding, HTML sanitization, output encoding, and shell avoidance are different controls.
 
-Manual code reviews involve developers examining each other's code to identify potential security issues. This technique is effective because it draws on human intuition and experience.
+## A practical workflow
 
-### Secure coding practices
-
-Adhering to secure coding practices can help prevent security vulnerabilities from being introduced in the first place.
-
-- **Input validation**: Always validate and sanitize user inputs to prevent injection attacks.
-- **Output encoding**: Encode data before rendering it to prevent cross-site scripting (XSS) attacks.
-- **Use HTTPS**: Ensure that your application uses HTTPS to encrypt data in transit.
-- **Principle of least privilege**: Grant the minimum necessary permissions to users and services.
+1. Define the threat and reproduce the suspected issue safely.
+2. Confirm whether the input crosses a trust boundary and reaches a sensitive sink or action.
+3. Assess affected users, required privileges, and realistic impact.
+4. Fix the control at the trusted boundary, not only in browser code.
+5. Add a regression test and rerun the relevant static, dependency, or dynamic check.
+6. Record accepted risk and time-bound exceptions rather than silently suppressing findings.
 
 ## Further reading
 
-- [OWASP Top Ten](https://owasp.org/www-project-top-ten/)
-- [ESLint](https://eslint.org/)
-- [SonarQube](https://www.sonarqube.org/)
+- [OWASP Web Security Testing Guide](https://owasp.org/www-project-web-security-testing-guide/)
+- [OWASP Code Review Guide](https://owasp.org/www-project-code-review-guide/)
 - [OWASP ZAP](https://www.zaproxy.org/)
-- [Burp Suite](https://portswigger.net/burp)
-- [npm audit](https://docs.npmjs.com/cli/v7/commands/npm-audit)
-- [Snyk](https://snyk.io/)
+- [Burp Suite documentation](https://portswigger.net/burp/documentation)
+- [npm audit](https://docs.npmjs.com/cli/commands/npm-audit)
+- [GitHub CodeQL documentation](https://docs.github.com/en/code-security/code-scanning/introduction-to-code-scanning/about-code-scanning-with-codeql)

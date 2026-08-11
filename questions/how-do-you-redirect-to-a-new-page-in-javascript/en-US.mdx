@@ -4,7 +4,9 @@ title: How do you redirect to a new page in JavaScript?
 
 ## TL;DR
 
-To redirect to a new page in JavaScript, you can use the `window.location` object. The most common methods are `window.location.href` and `window.location.replace()`. For example:
+For a browser navigation, use `location.assign(url)` (or assign `location.href`) when Back should return to the current page, and `location.replace(url)` when the current entry should be replaced, such as after completing a one-time login step. Prefer an HTTP redirect when the server already knows the destination; it works without JavaScript and avoids loading a page only to navigate away.
+
+Validate destinations derived from query parameters against trusted same-origin paths or an explicit origin allowlist to prevent open redirects.
 
 ```js
 // Using window.location.href
@@ -52,7 +54,7 @@ window.location.reload();
 
 ### Using `window.history.pushState()`
 
-For more advanced use cases, such as single-page applications (SPAs), you can use the `window.history.pushState()` method. This method allows you to change the URL without reloading the page.
+For a single-page application, `window.history.pushState()` changes the displayed same-origin URL and adds a history entry without loading a new document. It is not a redirect: application code must render the new route and handle `popstate` for Back and Forward navigation.
 
 ```js
 window.history.pushState({}, '', '/new-page');

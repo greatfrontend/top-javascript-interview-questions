@@ -4,7 +4,7 @@ title: What is `Object.preventExtensions()` for?
 
 ## TL;DR
 
-`Object.preventExtensions()` is a method in JavaScript that prevents new properties from being added to an object. However, it does not affect the deletion or modification of existing properties. This method is useful when you want to ensure that an object remains in a certain shape and no additional properties can be added to it.
+`Object.preventExtensions(object)` makes that object non-extensible: new own properties cannot be added and its prototype cannot be changed, while existing properties may still be changed or deleted according to their descriptors. The operation is shallow and irreversible for that object. In strict mode, invalid additions throw; otherwise ordinary assignment may fail silently.
 
 ```js live
 const obj = { name: 'John' };
@@ -71,7 +71,7 @@ console.log(Object.isExtensible(obj)); // false
 ### Use cases
 
 - **Immutable object structure**: When you want to ensure that the structure of an object remains unchanged, you can use `Object.preventExtensions()`.
-- **Security**: Preventing extensions can be useful in scenarios where you want to avoid accidental or malicious addition of properties to an object.
+- **Defensive API design**: It can catch accidental shape changes in strict-mode code. It is not a security boundary: existing writable values and nested objects remain mutable, and code may keep references to other sensitive state.
 
 ## Further reading
 

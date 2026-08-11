@@ -4,7 +4,7 @@ title: What are design patterns and why are they useful?
 
 ## TL;DR
 
-Design patterns are reusable solutions to common problems in software design. They provide a template for how to solve a problem that can be used in many different situations. They are useful because they help developers avoid common pitfalls, improve code readability, and make it easier to maintain and scale applications.
+Design patterns are named, reusable design approaches to recurring problems and tradeoffs. They are communication tools and starting points, not code templates or guarantees of maintainability, performance, or scale. Apply one when the problem and forces are actually present; a direct function, object, or module is often clearer than introducing pattern-shaped abstractions preemptively.
 
 ---
 
@@ -28,7 +28,7 @@ Design patterns are typically categorized into three main types:
 2. **Maintainability**: They help in writing code that is easier to understand, maintain, and extend.
 3. **Scalability**: Design patterns can help in designing systems that are scalable and can handle growth in complexity.
 4. **Communication**: They provide a common vocabulary for developers, making it easier to discuss and share design ideas.
-5. **Best practices**: They encapsulate best practices and industry standards, helping developers avoid common pitfalls.
+5. **Tradeoff awareness**: A pattern gives teams a known set of consequences and alternatives to discuss.
 
 ### Example: Singleton pattern
 
@@ -55,6 +55,8 @@ console.log(instance1 === instance2); // true
 ```
 
 In this example, the `Singleton` class ensures that only one instance of the class is created. Any subsequent calls to create a new instance will return the existing instance.
+
+The example also shows why patterns need judgment: returning an existing object from a constructor is surprising, hides shared mutable state, and only enforces uniqueness in that JavaScript realm. A normal module export or explicit dependency may be simpler. Evaluate a pattern by the problem it solves, its failure modes, and how easily the team can test and change it.
 
 ## Further reading
 

@@ -4,7 +4,9 @@ title: How do you import and export modules in JavaScript?
 
 ## TL;DR
 
-In JavaScript, you can import and export modules using the `import` and `export` statements. To export a module, you can use `export` before a function, variable, or class, or use `export default` for a single default export. To import a module, you use the `import` statement followed by the name of the exported module and the path to the module file.
+ECMAScript modules use `export` to define a module's public bindings and `import` to consume them. Named imports must match exported names; a module can also have one default export whose importer chooses the local name. Static imports are resolved before the module executes and are best for normal dependencies. Use `import()` when a dependency is genuinely conditional or should be loaded on demand.
+
+Resolution depends on the host. Browsers need module scripts and URL-like specifiers (unless an import map is used); Node.js uses its ESM and package-resolution rules; bundlers may support additional aliases. An import working in one environment does not guarantee it resolves in another.
 
 ```js
 // Exporting a module
@@ -85,8 +87,31 @@ myModule.myFunction(); // This is my function
 console.log(myModule.myVariable); // 42
 ```
 
+## Dynamic imports
+
+`import()` returns a Promise for the module namespace and can defer optional code:
+
+```js
+async function openEditor() {
+  const { createEditor } = await import('./editor.js');
+  return createEditor(document.querySelector('#editor'));
+}
+```
+
+Handle loading errors and avoid splitting tiny dependencies without measuring the request and execution tradeoff.
+
+## Runtime behavior and common traps
+
+- In a browser, load the entry with `<script type="module" src="./main.js"></script>`. Relative imports normally include the file extension because they are URLs.
+- Imports are live, read-only views of exported bindings. The exporting module can update a `let` binding; importers see the new value but cannot assign to the import.
+- A module's top-level code normally executes once per resolved module instance. Avoid surprising side effects merely from importing a utility.
+- Cyclic imports are allowed, but reading a binding before its initialization can fail. Refactor cycles that depend on execution order.
+- A default export is not inherently better than named exports. Named exports can make auto-imports and refactors clearer when a module exposes several values.
+- Do not place secrets in a browser module. Bundling or minification cannot make shipped credentials private.
+
 ## Further reading
 
 - [MDN Web Docs: import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
 - [MDN Web Docs: export](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export)
-- [JavaScript Modules: A Beginner’s Guide](https://www.sitepoint.com/understanding-es6-modules/)
+- [MDN Web Docs: Dynamic import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import)
+- [Node.js: ECMAScript modules](https://nodejs.org/api/esm.html)

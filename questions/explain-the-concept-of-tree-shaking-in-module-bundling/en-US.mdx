@@ -4,7 +4,7 @@ title: Explain the concept of tree shaking in module bundling
 
 ## TL;DR
 
-Tree shaking is a technique used in module bundling to eliminate dead code, which is code that is never used or executed. This helps to reduce the final bundle size and improve application performance. It works by analyzing the dependency graph of the code and removing any unused exports. Tools like Webpack and Rollup support tree shaking when using ES6 module syntax (`import` and `export`).
+Tree shaking is a bundler optimization that uses static module structure plus side-effect analysis to omit code proven unreachable from the bundle's entry points. ES module `import`/`export` syntax makes this analysis possible, but it does not guarantee removal: top-level side effects, dynamic access, package metadata, transpilation, and bundler configuration all affect the result. Verify the production bundle rather than assuming every unused export disappears.
 
 ---
 
@@ -40,8 +40,9 @@ In this example, the `subtract` function is never used in `main.js`. A tree-shak
 
 ### Requirements for tree shaking
 
-1. **ES6 module syntax**: Tree shaking relies on the static structure of ES6 module syntax (`import` and `export`). CommonJS modules (`require` and `module.exports`) are not statically analyzable and thus not suitable for tree shaking.
-2. **Bundler support**: The bundler you are using must support tree shaking. Both Webpack and Rollup have built-in support for tree shaking.
+1. **Static module structure**: ES module `import` and `export` declarations are designed for static analysis. Some tools can partially analyze common CommonJS patterns, but dynamic `require()` usage limits reliable elimination.
+2. **Side-effect information**: The bundler must know whether evaluating a module or expression has observable effects. Package metadata such as `sideEffects`, pure annotations, and production minification can matter.
+3. **Bundler configuration and output**: Transpiling ESM to CommonJS too early or using incompatible settings can prevent tree shaking. Inspect the generated production bundle.
 
 ### Tools that support tree shaking
 
@@ -51,7 +52,7 @@ In this example, the `subtract` function is never used in `main.js`. A tree-shak
 ### Benefits of tree shaking
 
 - **Reduced bundle size**: By removing unused code, the final bundle size is reduced, leading to faster load times.
-- **Improved performance**: Smaller bundles mean less code to parse and execute, which can improve the performance of your application.
+- **Potentially improved performance**: Smaller bundles can reduce transfer, parse, and execution work, though the real effect depends on what was removed and how the bundle is delivered.
 
 ## Further reading
 

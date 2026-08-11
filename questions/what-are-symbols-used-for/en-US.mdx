@@ -4,7 +4,7 @@ title: What are `Symbol`s used for in JavaScript?
 
 ## TL;DR
 
-`Symbol`s in JavaScript are a primitive data type introduced in ES6 (ECMAScript 2015). They are unique and immutable identifiers that are primarily used for object property keys to avoid name collisions. These values can be created using the `Symbol(...)` function, and each `Symbol` value is guaranteed to be unique, even if they have the same key/description. `Symbol` properties are not enumerable in `for...in` loops or `Object.keys()`, making them suitable for creating private/internal object state.
+`Symbol`s are primitive values commonly used as collision-resistant object property keys and protocol hooks such as `Symbol.iterator`. Each call to `Symbol(description)` creates a distinct value, while `Symbol.for(key)` uses a shared registry. Symbol-keyed properties are skipped by `for...in`, `Object.keys()`, and JSON serialization, but they are not private: code can retrieve them with `Object.getOwnPropertySymbols()` or `Reflect.ownKeys()`.
 
 ```js live
 let sym1 = Symbol();
@@ -63,7 +63,7 @@ console.log(obj[sym]); // "value"
 ## `Symbol`s are not enumerable
 
 - `Symbol` properties are not included in `for...in` loops or `Object.keys()`.
-- This makes them suitable for creating private/internal object state.
+- This can hide implementation details from ordinary string-key iteration, but it does not provide privacy.
 - Use `Object.getOwnPropertySymbols(obj)` to get all symbol properties on an object.
 
 ```js live
@@ -134,7 +134,7 @@ console.log(Object.prototype.toString.call(myObj)); // "[object MyCustomObject]"
 
 ## Summary
 
-`Symbol`s are useful in JavaScript for creating unique object properties and customizing object behavior. They provide a way to create non-enumerable properties that prevent accidental access or modification, which is helpful in large-scale applications and libraries.
+`Symbol`s are useful for collision-resistant object properties and for customizing built-in protocols. Symbol-keyed properties are not necessarily non-enumerable—their property descriptor can have `enumerable: true`—but string-key enumeration APIs still skip them. Use class `#private` fields or closures when true access control is required.
 
 ## Further reading
 

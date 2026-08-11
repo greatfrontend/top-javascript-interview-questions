@@ -4,55 +4,69 @@ title: What tools and techniques do you use for debugging JavaScript code?
 
 ## TL;DR
 
-Some of the most commonly used tools and techniques for debugging JavaScript:
+Reproduce the failure reliably, reduce it to the smallest useful scenario, form a specific hypothesis, and inspect the program at the boundary where expected and actual behavior diverge. Use breakpoints and the call stack for control flow, the Network panel for request failures, source maps for transformed code, the Performance and Memory panels for measured performance problems, and framework-specific tools only when the failure is inside that framework's state or render model.
 
-- JavaScript language
-  - `console` methods (e.g. `console.log()`, `console.error()`, `console.warn()`, `console.table()`)
-  - `debugger` statement
-- Breakpoints (browser or IDE)
-- JavaScript frameworks
-  - [React Devtools](https://github.com/facebook/react/tree/main/packages/react-devtools)
-  - [Redux Devtools](https://github.com/gaearon/redux-devtools)
-  - [Vue Devtools](https://github.com/vuejs/vue-devtools)
-- Browser developer tools
-  - **Chrome DevTools**: The most widely used tool for debugging JavaScript. It provides a rich set of features including the ability to set breakpoints, inspect variables, view the call stack, and more.
-  - **Firefox Developer Tools**: Similar to Chrome DevTools with its own set of features for debugging.
-  - **Safari Web Inspector**: Provides tools for debugging on Safari.
-  - **Edge Developer Tools**: Similar to Chrome DevTools, as Edge is now Chromium-based.
-- Network requests
-  - **Postman**: Useful for debugging API calls.
-  - **Fiddler**: Helps capture and inspect HTTP/HTTPS traffic.
-  - **Charles Proxy**: Another tool for intercepting and debugging network calls.
+Prefer a debugger, conditional breakpoint, or logpoint over scattering permanent `console.log()` calls. Preserve the failing input and add a regression test after finding the cause.
 
 ---
 
-## Debugging JavaScript
+## A practical debugging workflow
 
-Here are common tools and techniques developers frequently use for debugging JavaScript code.
+Suppose clicking “Save” sometimes shows an old value:
 
-### `console` methods
+1. **Reproduce it** with exact steps and record the browser, input, account state, and timing.
+2. **Inspect the boundary** in the Network panel. Did the expected request run? Was its payload current? What status and response came back?
+3. **Pause execution** in the click handler or request wrapper. Inspect local variables, closures, and the call stack rather than logging only the final value.
+4. **Use a conditional breakpoint** such as `draft.id === failingId` when the code runs too often.
+5. **Follow asynchronous flow** with async stack traces and Promise rejection breakpoints. Check whether an older response overwrote a newer one.
+6. **Change one cause**—for example, abort the superseded request—and repeat the exact scenario.
+7. **Add a regression test** that resolves requests out of order so the race cannot return unnoticed.
 
-- `console.log()`: The most basic way to inspect values, variables, and data structures at various points in your code.
-- `console.error()`: Outputs errors to the console, often with more detailed stack traces.
-- `console.warn()`: Displays warnings.
-- `console.table()`: Formats data (especially arrays of objects) in a readable table.
-- `console.time()` and `console.timeEnd()`: Measure the execution time of code blocks.
+This separates a UI-state bug from a request, server, or race-condition bug before changing code.
 
-### `debugger` statement
+## Browser developer tools
 
-- Pauses code execution at the line where `debugger;` is placed.
-- Allows you to step through code line by line, inspect variables, and understand the flow of execution.
+### Sources and debugger
 
-### Breakpoints
+- Line, conditional, DOM, event-listener, and exception breakpoints pause at useful moments.
+- Step over, into, and out while inspecting scopes, watches, and the call stack.
+- Logpoints print an expression without editing and redeploying source code.
+- Source maps connect bundled or transpiled output to authored files. Verify that the deployed map matches the deployed bundle; a stale map sends debugging to the wrong line.
+- `debugger;` is useful when the pause condition is easiest to express in code, but remove it before shipping.
 
-- Set breakpoints directly in the Sources panel of your browser's developer tools or IDE (e.g. VS Code) to pause execution at specific lines of code without modifying your source code.
+### Console
 
-### Network tab
+Use `console.error()`, `console.table()`, `console.trace()`, and grouped or labeled logs to answer a question. Logging objects can be misleading because some consoles show their later state when expanded; log a snapshot when the value at that moment matters.
 
-- Monitor network requests made by your JavaScript code (e.g., AJAX calls, fetching data).
-- Inspect request headers, responses, timing, and identify potential issues.
+Never log access tokens, passwords, full payment data, or unnecessary personal information. Remove noisy diagnostic logging or place it behind an appropriate debug mechanism.
 
-### Performance tab
+### Network and Application panels
 
-- Profile your JavaScript code to identify performance bottlenecks.
-- Analyze CPU usage, memory allocation, and rendering times.
+Inspect URL, method, headers, request payload, status, response, initiator, timing, redirects, cache behavior, and CORS messages. Use the Application panel for cookies, storage, service workers, and cache state. “Works after clearing site data” is evidence of a state or versioning problem, not a complete fix.
+
+### Performance and Memory panels
+
+Use the Performance panel when a recorded interaction is slow or janky and the Memory panel when retained memory grows across repeated actions. Do not use timestamps around arbitrary code as proof that one implementation is globally faster; profile the user-visible scenario.
+
+## Runtime and framework tools
+
+Node.js supports inspector-based breakpoints, CPU profiles, heap snapshots, diagnostic reports, and `--trace-*` options for specific runtime problems. React DevTools, Vue Devtools, and Redux DevTools can inspect component or store state, but they complement rather than replace browser and network debugging.
+
+For production-only failures, use structured logs, error reporting, request or trace IDs, and version metadata to correlate the client symptom with server work. Treat source maps, traces, heap snapshots, and logs as potentially sensitive artifacts.
+
+## Common debugging mistakes
+
+- Changing several things before reproducing the bug again.
+- Catching and ignoring an error, which removes the stack and converts a clear failure into stale state.
+- Debugging minified output without the matching source map.
+- Assuming a request succeeded because `fetch()` fulfilled; HTTP error responses still produce a `Response`.
+- Adding a delay that hides a race instead of controlling ordering or cancellation.
+- Fixing only the observed input without identifying the violated invariant.
+
+## Further reading
+
+- [Chrome DevTools: JavaScript debugging](https://developer.chrome.com/docs/devtools/javascript)
+- [Chrome DevTools: Network panel](https://developer.chrome.com/docs/devtools/network)
+- [Chrome DevTools: Performance panel](https://developer.chrome.com/docs/devtools/performance)
+- [Chrome DevTools: Memory panel](https://developer.chrome.com/docs/devtools/memory)
+- [Node.js: Debugging](https://nodejs.org/en/learn/getting-started/debugging)

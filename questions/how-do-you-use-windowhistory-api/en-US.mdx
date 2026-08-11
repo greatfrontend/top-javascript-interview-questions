@@ -4,7 +4,7 @@ title: How do you use `window.history` API?
 
 ## TL;DR
 
-The `window.history` API allows you to manipulate the browser's session history. You can use `history.pushState()` to add a new entry to the history stack, `history.replaceState()` to modify the current entry, and `history.back()`, `history.forward()`, and `history.go()` to navigate through the history. For example, `history.pushState({page: 1}, "title 1", "?page=1")` adds a new entry to the history.
+The History API lets an application add or replace same-origin session-history entries without reloading the document. `pushState()` adds an entry, `replaceState()` updates the current entry, and `back()`, `forward()`, and `go()` traverse history. Changing history does not fetch or render content for you: update the UI and listen for `popstate` so the browser Back and Forward buttons restore the correct view.
 
 ---
 
@@ -69,7 +69,7 @@ history.go(0);
 
 ### Example
 
-Here's a simple example demonstrating the use of `pushState` and `replaceState`:
+Here is the core routing shape for a small single-page application:
 
 ```html
 <!doctype html>
@@ -79,33 +79,50 @@ Here's a simple example demonstrating the use of `pushState` and `replaceState`:
     <title>History API Example</title>
   </head>
   <body>
-    <button id="pushStateBtn">Push State</button>
-    <button id="replaceStateBtn">Replace State</button>
-    <button id="backBtn">Back</button>
-    <button id="forwardBtn">Forward</button>
+    <nav>
+      <a href="/products" data-route>Products</a>
+      <a href="/cart" data-route>Cart</a>
+    </nav>
+    <main id="app"></main>
 
     <script>
-      document.getElementById('pushStateBtn').addEventListener('click', () => {
-        history.pushState({ page: 1 }, 'title 1', '?page=1');
+      const app = document.querySelector('#app');
+
+      function render(url) {
+        app.textContent = `Current route: ${url.pathname}`;
+      }
+
+      document.addEventListener('click', (event) => {
+        const link = event.target.closest('a[data-route]');
+        if (!link || event.defaultPrevented || event.button !== 0) return;
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+          return;
+        }
+
+        const url = new URL(link.href);
+        if (url.origin !== location.origin) return;
+
+        event.preventDefault();
+        history.pushState({ route: url.pathname }, '', url);
+        render(url);
       });
 
-      document
-        .getElementById('replaceStateBtn')
-        .addEventListener('click', () => {
-          history.replaceState({ page: 2 }, 'title 2', '?page=2');
-        });
-
-      document.getElementById('backBtn').addEventListener('click', () => {
-        history.back();
-      });
-
-      document.getElementById('forwardBtn').addEventListener('click', () => {
-        history.forward();
-      });
+      window.addEventListener('popstate', () => render(new URL(location.href)));
+      render(new URL(location.href));
     </script>
   </body>
 </html>
 ```
+
+`pushState()` does not fire `popstate`; the code that pushes an entry renders immediately. `popstate` handles traversal to an existing entry.
+
+### Constraints and failure modes
+
+- The new URL must be same-origin or `pushState()` / `replaceState()` throws a `SecurityError`.
+- The state object must be serializable and should stay small. Store durable application data elsewhere and put only restoration hints in history state.
+- Direct navigation or refresh still reaches the server. An SPA server must serve an appropriate document for valid application routes and return real error responses for invalid ones.
+- Do not intercept modified clicks, downloads, external links, or links targeting another browsing context; users should keep normal browser behavior.
+- History traversal is asynchronous. Code should respond to `popstate` instead of assuming `back()` changes the document immediately.
 
 ## Further reading
 

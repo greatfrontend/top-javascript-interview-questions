@@ -4,7 +4,9 @@ title: Explain the concept of input validation and its importance in security
 
 ## TL;DR
 
-Input validation is the process of ensuring that user input is correct, safe, and meets the application's requirements. It is crucial for security because it helps prevent attacks like SQL injection, cross-site scripting (XSS), and other forms of data manipulation. By validating input, you ensure that only properly formatted data enters your system, reducing the risk of malicious data causing harm.
+Input validation checks that untrusted data has the expected type, format, length, range, and business meaning. Browser validation improves feedback, but every security boundary must validate on the trusted server because clients can bypass JavaScript and submit requests directly. Prefer allowlists and explicit schemas.
+
+Validation reduces malformed and abusive input, but it is not a universal injection defense. Continue to bind SQL parameters, encode output for its destination, sanitize intentionally allowed HTML, and enforce authorization independently.
 
 ---
 
@@ -47,7 +49,7 @@ Input validation is the process of verifying that the data provided by a user or
 
 ### Importance of input validation in security
 
-1. **Preventing SQL injection**: By validating and sanitizing input, you can prevent attackers from injecting malicious SQL code into your database queries.
+1. **Protecting data and application assumptions**: Validation rejects values the application cannot safely or meaningfully process. SQL injection is prevented primarily by parameterized queries; validation is defense in depth.
 
    ```js
    const username = req.body.username;
@@ -57,7 +59,7 @@ Input validation is the process of verifying that the data provided by a user or
    });
    ```
 
-2. **Preventing cross-site scripting (XSS)**: Input validation helps ensure that user input does not contain malicious scripts that could be executed in the browser.
+2. **Reducing unsafe content**: If an application intentionally accepts HTML, use a maintained HTML sanitizer with an allowlist. For ordinary text, render with a text sink such as `textContent`. XSS prevention still requires context-appropriate output handling because a value valid for one destination may be dangerous in another.
 
    ```js
    const sanitizeHtml = require('sanitize-html');
@@ -65,7 +67,7 @@ Input validation is the process of verifying that the data provided by a user or
    const sanitizedInput = sanitizeHtml(userInput);
    ```
 
-3. **Preventing buffer overflow attacks**: By validating the length of input data, you can prevent attackers from sending excessively large inputs that could cause buffer overflows and crash your application.
+3. **Limiting resource abuse**: Length and size limits can reject unexpectedly large payloads before they consume excessive CPU, memory, storage, or downstream service capacity.
 
 4. **Ensuring data integrity**: Input validation helps maintain the integrity of your data by ensuring that only properly formatted and expected data is processed and stored.
 
@@ -73,12 +75,14 @@ Input validation is the process of verifying that the data provided by a user or
 
 - Always validate input on the server side, even if you also validate on the client side
 - Use built-in validation functions and libraries where possible
-- Sanitize input to remove or escape potentially harmful characters
-- Implement whitelisting (allowing only known good input) rather than blacklisting (blocking known bad input)
+- Keep validation separate from context-specific output encoding or sanitization
+- Implement allowlisting (accepting a defined shape) rather than trying to enumerate every malicious string
+- Reject unexpected object properties and normalize data only when the application's comparison rules require it
 - Regularly update and review your validation rules to address new security threats
 
 ## Further reading
 
 - [OWASP Input Validation Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html)
+- [OWASP Cross Site Scripting Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
 - [MDN Web Docs: Client-side form validation](https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation)
 - [Sanitize-html library](https://www.npmjs.com/package/sanitize-html)

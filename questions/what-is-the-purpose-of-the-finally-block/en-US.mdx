@@ -4,7 +4,7 @@ title: What is the purpose of the `finally` block?
 
 ## TL;DR
 
-The `finally` block in JavaScript is used to execute code after a `try` and `catch` block, regardless of whether an error was thrown or caught. It ensures that certain cleanup or finalization code runs no matter what. For example:
+A `finally` block runs as control leaves its associated `try`/`catch`, whether that happens normally or through `return`, `throw`, `break`, or `continue`, making it useful for deterministic cleanup. Avoid returning or throwing from `finally`, because its completion overrides an earlier return value or error.
 
 ```js
 try {
@@ -49,6 +49,8 @@ fetchData();
 ### Guaranteeing execution
 
 The `finally` block guarantees that the code within it will execute after the `try` and `catch` blocks have finished. This is true even if a `return` statement is encountered in the `try` or `catch` blocks.
+
+If `finally` itself returns or throws, that new completion replaces the earlier one. This can accidentally swallow errors, so cleanup code should normally finish without changing control flow.
 
 ```js live
 function exampleFunction() {

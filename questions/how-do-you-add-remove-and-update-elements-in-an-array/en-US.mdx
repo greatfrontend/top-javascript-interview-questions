@@ -4,7 +4,7 @@ title: How do you add, remove, and update elements in an array?
 
 ## TL;DR
 
-To add elements to an array, you can use methods like `push`, `unshift`, or `splice`. To remove elements, you can use `pop`, `shift`, or `splice`. To update elements, you can directly access the array index and assign a new value.
+For in-place changes, use `push()` / `unshift()` to add, `pop()` / `shift()` to remove at the ends, `splice()` for arbitrary ranges, and index assignment to update. These mutate the original array. When callers rely on immutable updates, create a new array with spread, `slice()`, `filter()`, `map()`, `toSpliced()`, or `with()` instead. Choose based on ownership, not a universal performance rule.
 
 ```js live
 let arr = [1, 2, 3];
@@ -104,6 +104,25 @@ arr[1] = 5;
 console.log(arr); // [1, 5, 3]
 ```
 
+## Non-mutating alternatives
+
+```js live
+const original = ['a', 'b', 'c'];
+
+const appended = [...original, 'd'];
+const removed = original.filter((_, index) => index !== 1);
+const updated = original.with(1, 'B');
+const inserted = original.toSpliced(1, 0, 'new');
+
+console.log(original); // ['a', 'b', 'c']
+console.log(appended); // ['a', 'b', 'c', 'd']
+console.log(removed); // ['a', 'c']
+console.log(updated); // ['a', 'B', 'c']
+console.log(inserted); // ['a', 'new', 'b', 'c']
+```
+
+Spread and these copying methods are shallow: nested objects remain shared unless they are copied separately. Also remember that `splice()` returns the removed elements, while `toSpliced()` returns the new array.
+
 ## Further reading
 
 - [MDN Web Docs: Array.prototype.push](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push)
@@ -111,3 +130,5 @@ console.log(arr); // [1, 5, 3]
 - [MDN Web Docs: Array.prototype.splice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)
 - [MDN Web Docs: Array.prototype.pop](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop)
 - [MDN Web Docs: Array.prototype.shift](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/shift)
+- [MDN Web Docs: Array.prototype.with](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/with)
+- [MDN Web Docs: Array.prototype.toSpliced](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toSpliced)

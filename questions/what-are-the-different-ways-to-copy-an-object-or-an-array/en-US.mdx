@@ -4,7 +4,7 @@ title: What are the different ways to copy an object or an array?
 
 ## TL;DR
 
-To copy an object or an array in JavaScript, you can use several methods. For shallow copies, you can use the spread operator (`...`) or `Object.assign()`. For deep copies, you can use the built-in `structuredClone()`, `JSON.parse(JSON.stringify())`, or libraries like Lodash's `_.cloneDeep()`.
+Use spread syntax or `Object.assign()` for a shallow copy. Use `structuredClone()` for values supported by the structured clone algorithm, including nested arrays and objects, cycles, `Map`, `Set`, and many built-in types. A JSON stringify/parse round trip is only a lossy conversion for JSON-shaped data, not a general deep-clone algorithm. A library or domain-specific copy routine may be needed for custom classes and semantics.
 
 ```js live
 // Shallow copy of an array
@@ -68,7 +68,7 @@ console.log(deepCopyObject); // { a: 1, b: { c: 2 } }
 
 #### Using `JSON.parse(JSON.stringify())`
 
-This method is a simple way to create a deep copy of an object or an array. However, it has limitations, such as not handling functions, `undefined`, or circular references.
+This can copy JSON-shaped data, but it is lossy: it drops unsupported object properties such as functions, `undefined`, and symbols; converts dates through `toJSON()`; does not preserve `Map`, `Set`, prototypes, or special numeric values faithfully; throws for `BigInt` and cycles; and can invoke custom `toJSON()` behavior.
 
 ```js live
 const originalObject = { a: 1, b: { c: 2 } };
@@ -104,7 +104,7 @@ function deepCopy(obj) {
 
   const copy = {};
   for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
+    if (Object.hasOwn(obj, key)) {
       copy[key] = deepCopy(obj[key]);
     }
   }

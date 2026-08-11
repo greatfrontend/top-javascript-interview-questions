@@ -4,7 +4,7 @@ title: What are some techniques for reducing reflows and repaints?
 
 ## TL;DR
 
-To reduce reflows and repaints, you can minimize DOM manipulations, batch DOM changes, use CSS classes for style changes, avoid complex CSS selectors, and use `requestAnimationFrame` for animations. Additionally, consider using `will-change` for elements that will change frequently and avoid layout thrashing by reading and writing to the DOM separately.
+Measure rendering work first. Keep the DOM and affected layout area small, batch related mutations, group layout reads before writes, and schedule visual changes with `requestAnimationFrame()`. Prefer animating `transform` and `opacity` when appropriate. Use `will-change` only shortly before a known expensive change and remove it afterward; leaving it broadly enabled can waste memory and make performance worse.
 
 ---
 
@@ -21,7 +21,7 @@ Frequent changes to the DOM can cause multiple reflows and repaints. To minimize
 
 Grouping multiple DOM changes together can reduce the number of reflows and repaints:
 
-- Use `innerHTML` to update multiple elements at once
+- Build a detached subtree and replace or append it once. Use `innerHTML` only for trusted or correctly sanitized markup; performance is not a reason to create an XSS sink.
 - Use `requestAnimationFrame` to batch updates
 
 ### Use CSS classes for style changes
@@ -35,12 +35,9 @@ element.classList.add('text-center');
 console.log(element); // Notice that the class has been added.
 ```
 
-### Avoid complex CSS selectors
+### Keep style and layout scope manageable
 
-Complex selectors can slow down the rendering process:
-
-- Use simple and direct selectors
-- Avoid deep nesting
+Selector cost is usually secondary to the amount of DOM and layout affected by a change. Prefer clear selectors, contain independent regions where appropriate, and profile style recalculation before rewriting selectors solely for speed.
 
 ### Use `requestAnimationFrame` for animations
 
@@ -54,9 +51,9 @@ function animate() {
 requestAnimationFrame(animate);
 ```
 
-### Use `will-change` for frequently changing elements
+### Use `will-change` sparingly
 
-The `will-change` property can hint to the browser about which elements will change, allowing it to optimize rendering:
+The `will-change` property can ask the browser to prepare for a specific upcoming change. Apply it shortly before the change and remove it afterward; do not add it permanently to many elements.
 
 ```css
 .element {

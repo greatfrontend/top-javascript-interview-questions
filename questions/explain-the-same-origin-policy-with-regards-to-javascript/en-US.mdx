@@ -4,13 +4,13 @@ title: Explain the same-origin policy with regards to JavaScript
 
 ## TL;DR
 
-The same-origin policy is a security measure implemented in web browsers to prevent malicious scripts on one page from accessing data on another page. It ensures that web pages can only make requests to the same origin, where the origin is defined by the combination of the protocol, domain, and port. For example, a script from `http://example.com` cannot access data from `http://anotherdomain.com`.
+The same-origin policy limits how code from one origin can interact with resources from another origin. An origin is the tuple of scheme, host, and port. Browsers permit many cross-origin writes and embeds, such as form submissions, links, images, and scripts, but normally prevent a page from reading a cross-origin response or another origin's DOM. CORS lets a server opt specific origins into reading a response; it is not what makes the request itself possible.
 
 ---
 
 ## What is the same-origin policy?
 
-The same-origin policy is a critical security concept for web applications. It restricts how documents or scripts loaded from one origin can interact with resources from another origin. This policy helps to prevent malicious activities such as cross-site scripting (XSS) and cross-site request forgery (CSRF).
+The same-origin policy is a critical browser security boundary. It prevents a malicious site from reading sensitive data from another site using the victim's ambient credentials. It is not an XSS or CSRF defense by itself: XSS runs as the vulnerable site's origin, and cross-origin writes such as form submissions are one reason separate CSRF defenses are needed.
 
 ### Definition of origin
 
@@ -24,7 +24,7 @@ Two URLs have the same origin if and only if all three components (scheme, host,
 
 ### How it works
 
-When a web page makes a request to another URL, the browser checks if the request is to the same origin. If the request is to a different origin, the browser blocks the request unless the server explicitly allows it using mechanisms like Cross-Origin Resource Sharing (CORS).
+Cross-origin network requests are often sent, but JavaScript normally receives only an opaque or blocked result unless the request mode and the server's CORS response headers permit access. Some requests trigger a CORS preflight. Separately, the policy restricts script access to cross-origin windows and frames, exposing only a small set of operations such as `postMessage()`.
 
 ### Example
 
@@ -33,13 +33,14 @@ Consider the following example:
 - `http://example.com/page1` can access `http://example.com/page2` because they share the same origin.
 - `http://example.com/page1` cannot access `http://anotherdomain.com/page` because they have different origins.
 
-### Exceptions
+### Cross-origin mechanisms
 
-There are some exceptions to the same-origin policy, such as:
+Common mechanisms intentionally cross the origin boundary in controlled ways:
 
-- Cross-Origin Resource Sharing (CORS): A mechanism that allows servers to specify who can access their resources.
-- JSONP: A technique used to request data from a server residing in a different domain.
-- WebSockets: A protocol that allows for full-duplex communication channels over a single TCP connection.
+- **CORS**: Response headers through which a server grants selected origins access to a response.
+- **`postMessage()`**: Explicit cross-origin messaging between window objects, provided senders specify a target origin and receivers validate the sender.
+- **JSONP**: A legacy technique that loads cross-origin code through a `<script>` element. It is GET-only and executes the response as code, so CORS is preferred.
+- **WebSockets**: Use an opening handshake with an `Origin` header that the server must validate; they are not a general exemption from browser security checks.
 
 ### Code example
 
@@ -53,7 +54,7 @@ Here is a simple example demonstrating the same-origin policy:
     .then((response) => response.json())
     .then((data) => console.log(data));
 
-  // This will be blocked by the browser because the request is to a different origin
+  // The response is readable only if the other server allows this origin with CORS.
   fetch('http://anotherdomain.com/api/data')
     .then((response) => response.json())
     .then((data) => console.log(data))

@@ -4,58 +4,55 @@ title: What are the different types of testing in software development?
 
 ## TL;DR
 
-In software development, there are several types of testing to ensure the quality and functionality of the application. These include unit testing, integration testing, system testing, and acceptance testing. Unit testing focuses on individual components, integration testing checks the interaction between components, system testing evaluates the entire system, and acceptance testing ensures the software meets user requirements.
+Testing can be classified by scope, purpose, and execution style; the categories overlap. Common scopes are unit, component, integration, system/end-to-end, and acceptance testing. Common purposes include regression, smoke, contract, accessibility, performance, security, and usability testing. Tests may be automated or exploratory and can run against static code, an isolated process, or a production-like system.
+
+Choose types from the product's risks rather than trying to satisfy a universal pyramid. For an online checkout, test price rules at unit level, API/database contracts at integration level, critical purchase journeys end to end, and separately test accessibility, load behavior, and authorization.
 
 ---
 
-## Different types of testing in software development
+## Testing by scope
 
 ### Unit testing
 
-Unit testing involves testing individual components or functions of the software to ensure they work as expected. This type of testing is usually automated and written by developers.
+Exercises a small behavior with controlled dependencies. Unit tests are fast and make edge cases easy to cover, but cannot prove that modules or external systems integrate correctly.
 
 ```js
-// Example of a unit test using Jest
-function add(a, b) {
-  return a + b;
-}
-
-test('adds 1 + 2 to equal 3', () => {
-  expect(add(1, 2)).toBe(3);
+test('rejects a quantity below one', () => {
+  expect(() => calculateTotal({ price: 20, quantity: 0 })).toThrow();
 });
 ```
 
-### Integration testing
+### Component testing
 
-Integration testing focuses on the interaction between different components or modules of the software. It ensures that combined parts of the application work together as intended.
+Renders a UI component or starts one service with nearby dependencies. It checks behavior through a public interface without running the whole product. Testing Library, browser component runners, and service-level test harnesses are common choices depending on the component.
 
-```js
-// Example of an integration test using Jest and Supertest
-const request = require('supertest');
-const app = require('./app'); // Your Express app
+### Integration and contract testing
 
-test('GET /users returns a list of users', async () => {
-  const response = await request(app).get('/users');
-  expect(response.status).toBe(200);
-  expect(response.body).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining({ id: expect.any(Number) }),
-    ]),
-  );
-});
-```
+Integration tests verify that collaborators work together—for example, an HTTP route, serializer, and database. Contract tests verify that two independently deployed systems agree on request, response, or event shapes. These tests catch boundary errors that isolated mocks can miss.
 
-### System testing
+### System and end-to-end testing
 
-System testing evaluates the complete and integrated software system to verify that it meets the specified requirements. This type of testing is usually performed by QA teams.
+Exercises a complete application or journey through public interfaces. Browser tools such as Playwright and Cypress can verify navigation, rendering, and browser/server integration. Keep the suite focused: these tests require realistic state, take longer, and have more possible failure causes.
 
 ### Acceptance testing
 
-Acceptance testing, also known as user acceptance testing (UAT), is conducted to determine whether the software is ready for release. It ensures that the software meets the business requirements and is acceptable to the end-users.
+Checks whether the product satisfies agreed business or user requirements. Acceptance may be automated, performed manually by stakeholders, or both. It is a purpose, not a particular tool or team.
+
+## Testing by purpose
+
+- **Smoke tests** quickly establish that a build's critical surfaces start and respond.
+- **Regression tests** preserve behavior after a bug fix or change.
+- **Accessibility tests** combine automated rule checks with keyboard, screen-reader, zoom, contrast, and usability review; automation alone cannot prove accessibility.
+- **Performance tests** measure latency, throughput, resource use, or browser responsiveness under defined conditions.
+- **Security tests** include static analysis, dependency review, authorization tests, dynamic scanning, and threat-driven manual testing.
+- **Exploratory and usability tests** use human investigation to find confusing workflows and failures that predefined assertions may not anticipate.
+
+## Choosing a portfolio
+
+Ask what failure would be costly and which is the lowest layer that can detect it reliably. A tax formula needs many fast cases; a database migration needs real-database integration tests; login and checkout deserve a few production-like journeys. Also define who owns test data and cleanup, where tests run, and how failures will be diagnosed.
 
 ## Further reading
 
-- [Unit Testing - Wikipedia](https://en.wikipedia.org/wiki/Unit_testing)
-- [Integration Testing - Wikipedia](https://en.wikipedia.org/wiki/Integration_testing)
-- [System Testing - Wikipedia](https://en.wikipedia.org/wiki/System_testing)
-- [Acceptance Testing - Wikipedia](https://en.wikipedia.org/wiki/Acceptance_testing)
+- [Playwright: Best practices](https://playwright.dev/docs/best-practices)
+- [Testing Library: Guiding principles](https://testing-library.com/docs/guiding-principles)
+- [OWASP Web Security Testing Guide](https://owasp.org/www-project-web-security-testing-guide/)

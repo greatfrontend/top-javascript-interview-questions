@@ -4,7 +4,7 @@ title: Explain how JSONP works (and how it's not really Ajax)
 
 ## TL;DR
 
-JSONP (JSON with Padding) is a technique used to overcome the same-origin policy in web browsers, allowing you to request data from a server on a different domain. It works by dynamically creating a `<script>` tag and setting its `src` attribute to the URL of the data source. The server responds with a script that calls a predefined callback function with the data as its argument. Unlike Ajax, JSONP does not use the XMLHttpRequest object and is limited to GET requests.
+JSONP (JSON with Padding) is a legacy technique for reading cross-origin data by loading it as a classic `<script>`, a resource type the same-origin policy permits pages to embed. The server returns executable JavaScript that calls a predefined callback with the data. Unlike `XMLHttpRequest` or `fetch()`, JSONP only performs script-style GET requests and requires complete trust in the responding server. CORS is the modern alternative.
 
 ---
 
@@ -12,7 +12,7 @@ JSONP (JSON with Padding) is a technique used to overcome the same-origin policy
 
 ### What is JSONP?
 
-JSONP stands for JSON with Padding. It is a technique used to bypass the same-origin policy in web browsers, which restricts web pages from making requests to a different domain than the one that served the web page.
+JSONP stands for JSON with Padding. The same-origin policy generally restricts scripts from reading cross-origin responses, but classic scripts may be embedded from another origin. JSONP uses that embedding exception to deliver data as executable code.
 
 ### How JSONP works
 
@@ -63,7 +63,7 @@ handleResponse({
 
 ### Limitations of JSONP
 
-- **Security risks**: JSONP can expose your application to cross-site scripting (XSS) attacks if the external server is compromised or malicious.
+- **Security risks**: The response executes with the embedding page's privileges. A compromised or malicious endpoint can run arbitrary JavaScript, not merely return data.
 - **Limited to GET requests**: JSONP cannot be used for POST requests or other HTTP methods.
 - **Error handling**: JSONP lacks robust error handling mechanisms compared to Ajax.
 

@@ -4,79 +4,113 @@ title: What are the different ways to make an API call in JavaScript?
 
 ## TL;DR
 
-In JavaScript, you can make API calls using several methods. The most common ones are `XMLHttpRequest`, `fetch`, and third-party libraries like `Axios`. `XMLHttpRequest` is the traditional way but is more verbose. `fetch` is modern and returns promises, making it easier to work with. `Axios` is a popular third-party library that simplifies API calls and provides additional features.
+Use the built-in `fetch()` API for most new browser and modern Node.js code. It supports promises, streaming response bodies, and cancellation with `AbortController`, but rejects only for request failures—not for HTTP error statuses—so check `response.ok`. Use `XMLHttpRequest` when maintaining legacy browser code or when its upload-progress events are specifically required. Libraries such as Axios can add a shared client policy, interceptors, and conveniences; jQuery AJAX mainly remains relevant in existing jQuery applications.
+
+These are request clients. Server-Sent Events and WebSockets solve long-lived server push or two-way messaging and are not drop-in replacements for ordinary request-response calls.
 
 ---
 
-## Different ways to make an API call in JavaScript
+## Fetch API
 
-### XMLHttpRequest
+A practical wrapper should handle status codes, cancellation, and the expected response format:
 
-`XMLHttpRequest` is the traditional way to make API calls in JavaScript. It is more verbose and requires more code compared to modern methods.
+```js
+async function fetchUser(userId, { signal } = {}) {
+  const response = await fetch(`/api/users/${encodeURIComponent(userId)}`, {
+    headers: { Accept: 'application/json' },
+    signal,
+  });
 
-```js live
-const xhr = new XMLHttpRequest();
-xhr.open('GET', 'https://jsonplaceholder.typicode.com/todos/1', true);
-xhr.onreadystatechange = function () {
-  if (xhr.readyState === 4 && xhr.status === 200) {
-    console.log(JSON.parse(xhr.responseText));
+  if (!response.ok) {
+    throw new Error(`Could not load user (${response.status})`);
   }
-};
-xhr.send();
+
+  return response.json();
+}
+
+const controller = new AbortController();
+
+try {
+  const user = await fetchUser('42', { signal: controller.signal });
+  console.log(user);
+} catch (error) {
+  if (error.name !== 'AbortError') {
+    console.error(error);
+  }
+}
+
+// Call this when the screen is closed or a newer request supersedes this one.
+controller.abort();
 ```
 
-### Fetch API
+Cancellation stops work associated with this consumer where the platform can do so; it does not guarantee that the server rolls back work it already began. For writes, design server operations to be idempotent where retries are possible.
 
-`fetch` is a modern and more convenient way to make API calls. It returns a promise, making it easier to handle asynchronous operations.
+In browsers, cross-origin requests are governed by CORS and credentials default to same-origin behavior. Server-side `fetch()` is not protected by browser CORS, so server code must enforce its own outbound-request and response-size policies.
 
-```js live
-fetch('https://jsonplaceholder.typicode.com/todos/1')
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+## `XMLHttpRequest`
+
+`XMLHttpRequest` is callback and event based. It is still useful in legacy code and for upload progress, which ordinary `fetch()` upload bodies do not expose consistently across browsers:
+
+```js
+function uploadFile(file, onProgress) {
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/api/uploads');
+  xhr.responseType = 'json';
+
+  xhr.upload.addEventListener('progress', (event) => {
+    if (event.lengthComputable) onProgress(event.loaded / event.total);
+  });
+
+  xhr.addEventListener('load', () => {
+    if (xhr.status >= 200 && xhr.status < 300) {
+      console.log(xhr.response);
+    } else {
+      console.error(`Upload failed (${xhr.status})`);
     }
-    return response.json();
-  })
-  .then((data) => console.log(data))
-  .catch((error) =>
-    console.error('There was a problem with the fetch operation:', error),
-  );
+  });
+  xhr.addEventListener('error', () => console.error('Network error'));
+
+  const body = new FormData();
+  body.append('file', file);
+  xhr.send(body);
+
+  return () => xhr.abort();
+}
 ```
 
-### Axios
+## Axios and other client libraries
 
-`Axios` is a popular third-party library that simplifies making API calls. It provides additional features like interceptors, automatic JSON transformation, and more.
+Axios remains a useful option when a project benefits from one configured client for base URLs, interceptors, timeouts, serialization, or consistent behavior across its supported environments:
 
 ```js
-axios
-  .get('https://api.example.com/data')
-  .then((response) => console.log(response.data))
-  .catch((error) =>
-    console.error('There was a problem with the Axios request:', error),
-  );
+const api = axios.create({ baseURL: '/api', timeout: 10_000 });
+
+const response = await api.get('/users/42');
+console.log(response.data);
 ```
 
-### jQuery AJAX
+The tradeoff is another dependency and library-specific behavior. Check the versioned documentation rather than assuming it behaves exactly like `fetch()`. For example, Axios rejects non-success statuses by default, while `fetch()` normally fulfills with a `Response` for them.
 
-`jQuery` also provides an `ajax` method to make API calls. This method is less common in modern development but still used in some legacy projects.
+## jQuery AJAX
 
-```js
-$.ajax({
-  url: 'https://api.example.com/data',
-  method: 'GET',
-  success: function (data) {
-    console.log(data);
-  },
-  error: function (error) {
-    console.error('There was a problem with the jQuery AJAX request:', error);
-  },
-});
-```
+`$.ajax()` can be appropriate when the application already depends on jQuery. Adding jQuery solely to make requests is usually unnecessary in environments with `fetch()`.
+
+## Choosing among them
+
+Choose based on a requirement rather than age or syntax alone:
+
+- Start with `fetch()` for a new request-response client.
+- Keep `XMLHttpRequest` where upload progress or existing code depends on it.
+- Use a library when a shared, tested client policy justifies the dependency.
+- Use `EventSource` for one-way event streams and WebSocket for long-lived two-way messages.
+
+Regardless of client, handle authentication, status codes, response validation, timeouts or cancellation, retries, and sensitive logging deliberately. Never embed server secrets in browser JavaScript.
 
 ## Further reading
 
-- [MDN Web Docs: XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
-- [MDN Web Docs: Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
-- [Axios GitHub Repository](https://github.com/axios/axios)
-- [jQuery AJAX Documentation](https://api.jquery.com/jquery.ajax/)
-- [Practice 190+ JavaScript interview questions on GitHub](https://github.com/greatfrontend/top-javascript-interview-questions)
+- [MDN: Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+- [MDN: Using Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)
+- [MDN: `XMLHttpRequest`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest)
+- [MDN: `AbortController`](https://developer.mozilla.org/en-US/docs/Web/API/AbortController)
+- [Axios documentation](https://axios-http.com/docs/intro)
+- [jQuery `$.ajax()` documentation](https://api.jquery.com/jquery.ajax/)

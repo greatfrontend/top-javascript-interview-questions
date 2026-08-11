@@ -4,115 +4,81 @@ title: How do you validate form elements using the Constraint Validation API?
 
 ## TL;DR
 
-The Constraint Validation API provides a way to validate form elements in HTML. You can use properties like `validity`, `validationMessage`, and methods like `checkValidity()` and `setCustomValidity()`. For example, to check if an input is valid, you can use:
+Put basic rules in HTML (`required`, `type`, `min`, `max`, `minlength`, `maxlength`, and `pattern`), then use the Constraint Validation API for custom relationships and feedback. `checkValidity()` returns a boolean and fires `invalid` on invalid controls; `reportValidity()` also asks the browser to show its validation UI. A nonempty `setCustomValidity()` message keeps a control invalid, so clear it with `setCustomValidity('')` as soon as the value becomes valid.
 
-```js
-const input = document.querySelector('input');
-if (input.checkValidity()) {
-  console.log('Input is valid');
-} else {
-  console.log(input.validationMessage);
-}
-```
+Browser validation improves user experience, not security. Repeat all validation on the server because requests can bypass the form.
 
 ---
 
-## How do you validate form elements using the Constraint Validation API?
+## Key properties and methods
 
-### Introduction
+- `element.validity` is a `ValidityState` with flags such as `valueMissing`, `typeMismatch`, `rangeUnderflow`, and `patternMismatch`.
+- `element.validationMessage` contains the browser or custom message for the current failure.
+- `element.checkValidity()` checks constraints and returns `false` when invalid.
+- `element.reportValidity()` performs the check and displays the browser's validation feedback when possible.
+- `element.setCustomValidity(message)` sets an application-specific failure. Pass an empty string to clear it.
+- `form.noValidate` or the `novalidate` attribute disables interactive validation for that form, which is useful only when the application intentionally renders all feedback itself.
 
-The Constraint Validation API is a set of methods and properties available on form elements that allows you to perform validation checks and provide feedback to users. This API is built into HTML5 and provides a way to validate form inputs without needing to write custom JavaScript validation logic.
+## Practical example: matching password fields
 
-### Key properties and methods
-
-#### `checkValidity()`
-
-The `checkValidity()` method checks if an element meets all its validation constraints. It returns `true` if the element is valid and `false` otherwise.
-
-```js
-const input = document.querySelector('input');
-if (input.checkValidity()) {
-  console.log('Input is valid');
-} else {
-  console.log('Input is invalid');
-}
-```
-
-#### `reportValidity()`
-
-The `reportValidity()` method works like `checkValidity()` but also displays the browser's default validation message if the element is invalid.
-
-```js
-const input = document.querySelector('input');
-if (!input.reportValidity()) {
-  console.log('Input is invalid');
-}
-```
-
-#### `setCustomValidity()`
-
-The `setCustomValidity()` method allows you to set a custom validation message. If a custom message is set, the element will be considered invalid.
-
-```js
-const input = document.querySelector('input');
-input.setCustomValidity('This field is required');
-if (!input.checkValidity()) {
-  console.log(input.validationMessage); // Outputs: This field is required
-}
-```
-
-#### `validity`
-
-The `validity` property is an object that contains several boolean properties indicating the validity state of the element, such as `valid`, `valueMissing`, `typeMismatch`, etc.
-
-```js
-const input = document.querySelector('input');
-if (input.validity.valueMissing) {
-  console.log('Value is missing');
-}
-```
-
-#### `validationMessage`
-
-The `validationMessage` property returns the message that will be shown to the user if the element is invalid.
-
-```js
-const input = document.querySelector('input');
-if (!input.checkValidity()) {
-  console.log(input.validationMessage);
-}
-```
-
-### Example
-
-Here is a complete example that demonstrates how to use the Constraint Validation API to validate a form:
+HTML constraints handle each field, while JavaScript handles the relationship between them:
 
 ```html
-<form id="myForm">
-  <input type="text" id="username" required />
-  <input type="submit" value="Submit" />
+<form id="signup-form">
+  <label>
+    Email
+    <input name="email" type="email" required />
+  </label>
+  <label>
+    Password
+    <input
+      id="password"
+      name="password"
+      type="password"
+      minlength="12"
+      required />
+  </label>
+  <label>
+    Confirm password
+    <input id="confirm-password" type="password" required />
+  </label>
+  <button>Sign up</button>
 </form>
-
-<script>
-  const form = document.getElementById('myForm');
-  const username = document.getElementById('username');
-
-  form.addEventListener('submit', function (event) {
-    if (!username.checkValidity()) {
-      username.setCustomValidity('Username is required');
-      username.reportValidity();
-      event.preventDefault();
-    } else {
-      username.setCustomValidity(''); // Clear custom message
-    }
-  });
-</script>
 ```
 
-In this example, the form will not submit if the `username` input is empty, and a custom validation message will be displayed.
+```js
+const form = document.querySelector('#signup-form');
+const password = document.querySelector('#password');
+const confirmation = document.querySelector('#confirm-password');
+
+function validateConfirmation() {
+  confirmation.setCustomValidity(
+    confirmation.value === password.value ? '' : 'Passwords do not match',
+  );
+}
+
+form.addEventListener('input', validateConfirmation);
+
+form.addEventListener('submit', (event) => {
+  // Native interactive validation has already succeeded if this event fires.
+  event.preventDefault();
+  submitSignupForm(new FormData(form));
+});
+```
+
+The message is recalculated on every user edit. Code that changes either value programmatically should also call `validateConfirmation()`. A common bug is to call `setCustomValidity('Passwords do not match')` once and never clear it, leaving the control permanently invalid.
+
+For a normal submit button, browsers run interactive constraint validation before firing `submit`; if a control is invalid, the `submit` event does not fire. Call `form.reportValidity()` when application code initiates a custom submission attempt and needs the browser to display validation feedback.
+
+## Validation and accessible feedback
+
+Native controls and messages are a useful baseline. If you render custom messages, associate each message with its control, expose the invalid state (for example with `aria-invalid`), and move focus or provide a summary when submission fails. Do not rely on color alone.
+
+Some controls and constraints have special rules. For example, certain values set programmatically are not checked by every constraint in the same way as user input. Test the actual form behavior in supported browsers and always keep server validation authoritative.
 
 ## Further reading
 
-- [MDN Web Docs: Constraint Validation](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Constraint_validation)
-- [MDN Web Docs: HTMLFormElement.checkValidity()](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/checkValidity)
-- [MDN Web Docs: HTMLObjectElement.setCustomValidity()](https://developer.mozilla.org/en-US/docs/Web/API/HTMLObjectElement/setCustomValidity)
+- [MDN: Constraint validation](https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Constraint_validation)
+- [MDN: `HTMLFormElement.checkValidity()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement/checkValidity)
+- [MDN: `HTMLInputElement.setCustomValidity()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setCustomValidity)
+- [HTML Standard: Constraints](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#constraints)

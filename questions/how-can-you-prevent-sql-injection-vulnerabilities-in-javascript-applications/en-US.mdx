@@ -4,121 +4,86 @@ title: How can you prevent SQL injection vulnerabilities in JavaScript applicati
 
 ## TL;DR
 
-To prevent SQL injection vulnerabilities in JavaScript applications, always use parameterized queries or prepared statements instead of string concatenation to construct SQL queries. This ensures that user input is treated as data and not executable code. Additionally, use ORM libraries that handle SQL injection prevention for you, and always validate and sanitize user inputs.
+Keep untrusted values separate from SQL syntax by using parameterized queries or prepared statements on the server. Never build a query by concatenating request data. Validate input for business rules, but do not treat validation, escaping, an ORM, or a stored procedure as an automatic substitute for parameter binding. For SQL identifiers that cannot be parameterized, such as a requested sort column, map the request to a fixed allowlist.
+
+```js
+// Unsafe: input becomes part of the SQL program.
+const sql = `SELECT * FROM users WHERE email = '${request.body.email}'`;
+
+// Safe shape: the driver sends the value separately from the SQL text.
+const result = await database.query('SELECT * FROM users WHERE email = $1', [
+  request.body.email,
+]);
+```
 
 ---
 
-## How can you prevent SQL injection vulnerabilities in JavaScript applications?
+## The concrete threat
 
-### Use parameterized queries or prepared statements
+Suppose an attacker submits this email value:
 
-Parameterized queries or prepared statements ensure that user input is treated as data and not executable code. This is the most effective way to prevent SQL injection.
-
-#### Example using Node.js with the `mysql` library:
-
-```js
-const mysql = require('mysql');
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'password',
-  database: 'test',
-});
-
-const userId = 1;
-const query = 'SELECT * FROM users WHERE id = ?';
-
-connection.query(query, [userId], (error, results) => {
-  if (error) throw error;
-  console.log(results);
-});
+```text
+' OR '1'='1
 ```
 
-### Use ORM libraries
+String concatenation can turn it into executable query syntax:
 
-Object-Relational Mapping (ORM) libraries like Sequelize, TypeORM, or Mongoose (for MongoDB) abstract away SQL queries and handle SQL injection prevention internally.
-
-#### Example using Sequelize:
-
-```js
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('database', 'username', 'password', {
-  host: 'localhost',
-  dialect: 'mysql',
-});
-
-const User = sequelize.define('User', {
-  username: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-});
-
-User.findAll({
-  where: {
-    id: 1,
-  },
-}).then((users) => {
-  console.log(users);
-});
+```sql
+SELECT * FROM users WHERE email = '' OR '1'='1'
 ```
 
-### Validate and sanitize user inputs
+Parameterized queries make the database interpret the entire submitted string as one value, not as operators or SQL keywords.
 
-Always validate and sanitize user inputs to ensure they conform to expected formats and do not contain malicious code.
+## Use parameterized queries for values
 
-#### Example using `validator` library:
+The placeholder syntax varies by database and driver (`$1`, `?`, or named parameters), but the rule is the same:
 
 ```js
-const validator = require('validator');
+async function findUserByEmail(database, email) {
+  if (typeof email !== 'string' || email.length > 254) {
+    throw new TypeError('Invalid email');
+  }
 
-const userInput = 'someUserInput';
-if (validator.isAlphanumeric(userInput)) {
-  // Proceed with using the input
-} else {
-  // Handle invalid input
+  return database.query('SELECT id, email FROM users WHERE email = $1', [
+    email,
+  ]);
 }
 ```
 
-### Use stored procedures
+The length check enforces an application rule and can reduce abusive inputs; the bound parameter prevents the value from changing the query's structure. Both are useful, but they solve different problems.
 
-Stored procedures are precompiled SQL statements stored in the database. They can help prevent SQL injection by separating the SQL logic from user input.
+## Allowlist query structure
 
-#### Example:
-
-```sql
-CREATE PROCEDURE GetUserById(IN userId INT)
-BEGIN
-  SELECT * FROM users WHERE id = userId;
-END;
-```
-
-### Use security libraries and frameworks
-
-Use security libraries and frameworks that provide built-in protection against SQL injection.
-
-#### Example using Express.js with `express-validator`:
+Most drivers bind data values, not table names, column names, or keywords. If an API allows sorting, map the public option to a known SQL fragment instead of interpolating it directly:
 
 ```js
-const { body, validationResult } = require('express-validator');
+const SORT_COLUMNS = {
+  created: 'created_at',
+  name: 'display_name',
+};
 
-app.post(
-  '/user',
-  [body('username').isAlphanumeric(), body('email').isEmail()],
-  (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    // Proceed with safe input
-  },
+const sortColumn = SORT_COLUMNS[request.query.sort] ?? 'created_at';
+const result = await database.query(
+  `SELECT id, display_name FROM users ORDER BY ${sortColumn} DESC`,
 );
 ```
+
+Only developer-controlled values from the map reach the SQL text.
+
+## ORMs and stored procedures
+
+ORM query builders commonly bind values when you use their structured APIs. They can still expose raw-query or literal-SQL escape hatches; parameterize values there too. Stored procedures are safe only when they avoid constructing dynamic SQL from untrusted strings.
+
+## Defense in depth
+
+- Run database connections with the minimum privileges the application needs.
+- Avoid exposing database errors or query text to clients; log diagnostic details on the server with sensitive values redacted.
+- Test data-access code with adversarial inputs and review every raw SQL construction point.
+- Keep the driver and ORM supported and patched.
+
+Client-side JavaScript cannot enforce this boundary because an attacker can call the server directly. The server and database access layer must apply it to every untrusted input source, including HTTP requests, messages, imported files, and previously stored data.
 
 ## Further reading
 
 - [OWASP SQL Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html)
-- [Node.js MySQL Documentation](https://github.com/mysqljs/mysql)
-- [Sequelize Documentation](https://sequelize.org/)
-- [Express Validator Documentation](https://express-validator.github.io/docs/)
-- [Validator.js Documentation](https://github.com/validatorjs/validator.js)
+- [OWASP Query Parameterization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Query_Parameterization_Cheat_Sheet.html)

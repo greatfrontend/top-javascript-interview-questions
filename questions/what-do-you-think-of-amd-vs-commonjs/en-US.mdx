@@ -4,7 +4,9 @@ title: What do you think of CommonJS vs ESM?
 
 ## TL;DR
 
-JavaScript has evolved its module systems. ESM (ECMAScript Modules) using `import` / `export` is the official standard, natively supported in modern browsers and Node.js, designed for both synchronous and asynchronous use cases. CommonJS (CJS) using `require` / `module.exports` was the original standard for Node.js, primarily synchronous, and remains prevalent in the Node ecosystem. AMD (Asynchronous Module Definition) using `define` / `require` was an early system designed for asynchronous loading in browsers but is now largely obsolete, replaced by ESM.
+ECMAScript modules (ESM) are the JavaScript standard and the best default for new code intended for browsers, Node.js, or bundlers. Their static `import` / `export` structure provides live bindings and enables ahead-of-time dependency analysis; dynamic `import()` and top-level `await` cover asynchronous loading needs. CommonJS (CJS) is Node.js's older `require()` / `module.exports` system and remains important in existing packages and applications.
+
+Interop is runtime- and version-specific. In current Node.js, ESM can import CommonJS, while `require()` can load only eligible synchronous ESM graphs without top-level `await`. Define the package format explicitly with file extensions, `package.json` `type`, and `exports`, then test the packed artifact. AMD is now mainly historical or a legacy-maintenance concern.
 
 ---
 
@@ -74,7 +76,7 @@ export const someValue = 'hello';
 #### Loading mechanism
 
 - **CommonJS**: Synchronous (blocks until loaded).
-- **ESM**: Asynchronous-friendly (non-blocking in browsers).
+- **ESM**: Statically linked; browsers fetch module graphs asynchronously, and modules can use top-level `await`.
 
 #### Environment suitability
 
@@ -96,13 +98,22 @@ export const someValue = 'hello';
 #### CommonJS
 
 - Older Node.js projects or where sync loading is needed.
-- Default in Node.js unless configured for ESM.
+- Existing CommonJS packages and applications.
+- Files or package scopes explicitly marked as CommonJS. Modern Node.js also performs syntax detection for some ambiguous input, so packages should set `type` rather than depend on ambiguity.
 
 #### ESM
 
 - Modern web development (native browser support).
 - New Node.js projects, especially those needing async features or optimizations.
 - Code intended for both browser and server.
+
+### Practical interoperability notes
+
+- Relative ESM specifiers in browsers and Node.js use URL-style resolution and normally need explicit file extensions.
+- Importing a CommonJS module from ESM reliably exposes `module.exports` as the default export; named exports depend on Node.js static analysis and are not always available.
+- Current Node.js can synchronously `require()` an eligible ESM graph only when it has no top-level `await`. Use `import()` when the graph may be asynchronous or when supporting older Node.js versions.
+- Publishing separate ESM and CommonJS builds can create a “dual package” hazard where the same library is instantiated twice. Prefer one format when consumers allow it, or design and test conditional exports carefully.
+- ESM syntax enables tree-shaking analysis but does not guarantee unused code will be removed; side effects and bundler configuration still matter.
 
 ## Further reading
 

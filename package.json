@@ -13,8 +13,6 @@
   "main": "index.js",
   "scripts": {
     "gen": "tsx scripts/gen.ts",
-    "rank": "tsx scripts/rank.ts",
-    "i18n": "langnostic translate",
     "prepare": "vp config"
   },
   "dependencies": {
@@ -22,7 +20,6 @@
     "github-slugger": "^2.0.0",
     "globby": "^14.0.1",
     "gray-matter": "^4.0.3",
-    "langnostic": "^0.0.8",
     "lodash-es": "^4.17.21",
     "tsx": "^4.15.1"
   },

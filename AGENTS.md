@@ -87,9 +87,13 @@ For GitHub Actions, consider using [`voidzero-dev/setup-vp`](https://github.com/
 - [ ] Run `vp check` and `vp test` to validate changes.
 <!--VITE PLUS END-->
 
-## Authoring JavaScript question content (`questions/**`)
+## Repository role
 
-These guidelines apply when creating a new JavaScript question or substantially editing an existing question. Match the current repository structure and optimize for the question experience on GitHub, in the generated README, and in the GreatFrontEnd quiz renderer.
+This repository is an issues-only public mirror. GreatFrontEnd's main repository is the source of truth for question content; do not author question or generated README changes here. Use this repository's Issues to report content problems.
+
+## Canonical JavaScript content contract (reference only)
+
+These guidelines describe content mirrored from the canonical GFE source. Do not apply them by editing this repository; report requested changes through Issues.
 
 Treat these rules as normative for new questions and substantial rewrites. Preserve good legacy content that is outside the scope of the requested change; do not rewrite an answer solely for stylistic uniformity.
 
@@ -106,13 +110,17 @@ questions/<slug>/
 ```
 
 - Treat `en-US.mdx` as the source locale.
-- Use the translation workflow for localized content. Do not manually edit `*.langnostic.json` files.
+- Translations are managed in GFE and mirrored here. Do not manually edit `*.langnostic.json` files.
 - Keep the directory name, `metadata.json` slug, internal links, and asset paths consistent.
 - Register each question slug in the appropriate category and position in `data/questions.json`.
 - Follow the live metadata schema. Use `access`, not the legacy `premium` field, and use `basic`, `intermediate`, or `advanced` for `level`.
 - Treat `featured` and `ranking` as the controls for inclusion and ordering in the generated top-questions list.
 - Do not treat `published: true` as permission to leave incomplete or placeholder content.
 - Do not edit generated question content in `README.md` directly. Edit the source question and regenerate the README.
+
+### Exercises
+
+Exercises live only in GFE and are intentionally excluded from this public mirror. Never add or restore `questions/*/exercises` here.
 
 ### Answer structure
 
@@ -270,5 +278,5 @@ git diff --check
 
 - Review the generated `README.md` diff after `vp run gen`, especially the extracted TL;DR and question ordering.
 - The corpus tests enforce source/catalog consistency, TL;DR extraction, placeholder and callout rules, live-snippet syntax and bounded intervals, canonical JavaScript fences, and source-to-README synchronization.
-- Run the translation workflow only when localized content is intentionally in scope.
-- When editing this repository inside a GreatFrontEnd submodule checkout, also follow the parent repository's question-generation checks so the MDX is compiled through the consuming web app.
+- Run GFE's translation workflow only when localized content is intentionally in scope.
+- Canonical question changes must also pass GFE's question-generation and MDX compilation checks through the consuming web app.

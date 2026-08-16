@@ -16,6 +16,7 @@ type QuestionRecord = Readonly<{
   metadata: QuestionMetadata;
   source: string;
   tldr: string;
+  title: string;
 }>;
 
 const repoRoot = path.resolve(
@@ -36,6 +37,7 @@ function readQuestionRecords(): Array<QuestionRecord> {
         'metadata.json',
       );
       const source = fs.readFileSync(filePath, 'utf8');
+      const frontmatter = grayMatter(source).data as { title?: unknown };
       const metadata = JSON.parse(
         fs.readFileSync(metadataPath, 'utf8'),
       ) as QuestionMetadata;
@@ -50,6 +52,7 @@ function readQuestionRecords(): Array<QuestionRecord> {
         metadata,
         source,
         tldr: tldrMatch[1].trim(),
+        title: typeof frontmatter.title === 'string' ? frontmatter.title : '',
       };
     })
     .sort((a, b) => a.metadata.slug.localeCompare(b.metadata.slug));
@@ -84,25 +87,32 @@ function readCodeFences(
   return fences;
 }
 
-function readGeneratedBlocks(readme: string, marker: string): Array<string> {
-  const blocks: Array<string> = [];
+function readGeneratedSection(
+  readme: string,
+  startMarker: string,
+  endMarker: string,
+): string {
+  const start = readme.indexOf(startMarker);
+  const end = readme.indexOf(endMarker, start + startMarker.length);
+  if (start < 0 || end < 0) {
+    throw new Error(`Missing generated README section: ${startMarker}`);
+  }
+
+  return readme.slice(start + startMarker.length, end);
+}
+
+function countOccurrences(source: string, value: string): number {
+  let count = 0;
   let cursor = 0;
 
   while (true) {
-    const start = readme.indexOf(marker, cursor);
-    if (start < 0) break;
-
-    const contentStart = start + marker.length;
-    const end = readme.indexOf(marker, contentStart);
-    if (end < 0) {
-      throw new Error(`Unpaired README marker: ${marker}`);
+    const index = source.indexOf(value, cursor);
+    if (index < 0) {
+      return count;
     }
-
-    blocks.push(readme.slice(contentStart, end).trim());
-    cursor = end + marker.length;
+    count += 1;
+    cursor = index + value.length;
   }
-
-  return blocks;
 }
 
 const questionRecords = readQuestionRecords();
@@ -125,10 +135,9 @@ describe('question corpus', () => {
   test('keeps ready-quality source structure and rich content valid', () => {
     const problems: Array<string> = [];
 
-    for (const { filePath, source, tldr } of questionRecords) {
+    for (const { filePath, source, tldr, title } of questionRecords) {
       const relativePath = path.relative(repoRoot, filePath);
-      const frontmatter = grayMatter(source).data as { title?: unknown };
-      if (typeof frontmatter.title !== 'string' || frontmatter.title === '') {
+      if (title === '') {
         problems.push(`${relativePath}: missing frontmatter title`);
       }
       if (/\bTODO\b|\bWork-in-progress\b|TODO_REPLACE_[A-Z_]+/i.test(source)) {
@@ -225,25 +234,37 @@ describe('question corpus', () => {
 
   test('keeps every generated README answer synchronized', () => {
     const readme = fs.readFileSync(path.join(repoRoot, 'README.md'), 'utf8');
+    const generatedAnswers = [
+      readGeneratedSection(
+        readme,
+        '<!-- QUESTIONS:TOP:START -->',
+        '<!-- QUESTIONS:TOP:END -->',
+      ),
+      readGeneratedSection(
+        readme,
+        '<!-- QUESTIONS:ALL:START -->',
+        '<!-- QUESTIONS:ALL:END -->',
+      ),
+    ].join('\n');
     const problems: Array<string> = [];
 
-    for (const { metadata, tldr } of questionRecords) {
-      const marker = `<!-- Update here: /questions/${metadata.slug}/en-US.mdx -->`;
-      const blocks = readGeneratedBlocks(readme, marker);
-      const expectedBlockCount = metadata.featured ? 2 : 1;
-      const expectedContent = normalizeTldrForReadme(tldr);
+    if (readme.includes('<!-- Update here:')) {
+      problems.push('README contains a stale direct-edit marker');
+    }
 
-      if (blocks.length !== expectedBlockCount) {
+    for (const { metadata, tldr, title } of questionRecords) {
+      const expectedBlockCount = metadata.featured ? 2 : 1;
+      const expectedContent = normalizeTldrForReadme(tldr).trim();
+      const generatedBlockStart = `### ${title}\n\n${expectedContent}\n\n<br>\n`;
+      const blockCount = countOccurrences(
+        generatedAnswers,
+        generatedBlockStart,
+      );
+
+      if (blockCount !== expectedBlockCount) {
         problems.push(
-          `${metadata.slug}: expected ${expectedBlockCount} README block(s), found ${blocks.length}`,
+          `${metadata.slug}: expected ${expectedBlockCount} README block(s), found ${blockCount}`,
         );
-      }
-      for (const block of blocks) {
-        if (block !== expectedContent) {
-          problems.push(
-            `${metadata.slug}: generated TL;DR differs from source`,
-          );
-        }
       }
     }
 

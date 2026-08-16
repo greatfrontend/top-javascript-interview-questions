@@ -5,7 +5,6 @@ import path from 'path';
 import grayMatter from 'gray-matter';
 import util from 'util';
 import { QuestionFrontmatter, QuestionItem, QuestionMetadata } from './types';
-import { GITHUB_ORG, GITHUB_REPO } from './constants';
 import questionsAll from '../data/questions.json';
 import url from 'node:url';
 import {
@@ -131,15 +130,11 @@ function formatQuestion(
 ) {
   return `### ${qn.title}
 
-<!-- Update here: /questions/${qn.metadata.slug}/${qn.locale}.mdx -->
-
 ${qn.content
   .split('\n')
   // Add indentation.
   // .map((line) => '    ' + line)
   .join('\n')}
-
-<!-- Update here: /questions/${qn.metadata.slug}/${qn.locale}.mdx -->
 
 <br>
     ${
@@ -149,9 +144,7 @@ ${qn.content
 `
         : ''
     }
-[Back to top ↑](#${tableOfContentsAnchor}) &nbsp;&nbsp;/&nbsp;&nbsp; [✏️ Edit answer](https://github.com/${GITHUB_ORG}/${GITHUB_REPO}/edit/main/questions/${
-    qn.metadata.slug
-  }/${qn.locale}.mdx)
+[Back to top ↑](#${tableOfContentsAnchor})
 
 <br>
 `;

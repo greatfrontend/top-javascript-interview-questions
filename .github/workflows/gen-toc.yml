@@ -1,10 +1,13 @@
-name: Generate table of contents
+name: Validate generated table of contents
 
 on:
   pull_request:
   push:
     branches:
       - main
+
+permissions:
+  contents: read
 
 jobs:
   gen-toc:
@@ -13,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.head_ref }}
+          persist-credentials: false
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -21,19 +24,8 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
       - name: Generate table of contents
-        run: npm run gen
-      - name: 'Commit changes if required'
-        run: |
-          if ! git diff --quiet README.md; then
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git config user.name "GitHub Actions"
-            git add README.md
-            git commit -m "[auto] regenerate table of contents"
-            git push
-            echo "[info] Table of contents updated and committed."
-          else
-            echo "[info] No changes to table of contents."
-          fi
-        working-directory: ${{ github.workspace }}
+        run: pnpm run gen
+      - name: Verify generated table of contents is current
+        run: git diff --exit-code -- README.md

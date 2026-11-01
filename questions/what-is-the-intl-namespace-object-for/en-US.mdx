@@ -14,11 +14,9 @@ console.log(formatter.format(date)); // Locale-formatted calendar date
 
 ---
 
-## What is the `Intl` namespace object for?
-
 The `Intl` namespace object in JavaScript is a part of the ECMAScript Internationalization API, which provides language-sensitive string comparison, number formatting, and date and time formatting. This is particularly useful for applications that need to support multiple languages and regions.
 
-### Language-sensitive string comparison
+## Language-sensitive string comparison
 
 The `Intl.Collator` object is used for comparing strings in a locale-aware manner. This is useful for sorting strings in a way that is consistent with the conventions of a particular language.
 
@@ -27,7 +25,7 @@ const collator = new Intl.Collator('de-DE');
 console.log(collator.compare('ä', 'z')); // Outputs a negative number because 'ä' comes before 'z' in German
 ```
 
-### Number formatting
+## Number formatting
 
 The `Intl.NumberFormat` object is used for formatting numbers according to the conventions of a specific locale. This includes formatting for currency, percentages, and plain numbers.
 
@@ -40,7 +38,7 @@ const formatter = new Intl.NumberFormat('de-DE', {
 console.log(formatter.format(number)); // German-formatted EUR amount
 ```
 
-### Date and time formatting
+## Date and time formatting
 
 The `Intl.DateTimeFormat` object is used for formatting dates and times according to the conventions of a specific locale.
 
@@ -54,7 +52,7 @@ const formatter = new Intl.DateTimeFormat('en-GB', {
 console.log(formatter.format(date)); // British English long date
 ```
 
-### Plural rules
+## Plural rules
 
 The `Intl.PluralRules` object is used to get the plural form of a number in a specific locale. This is useful for correctly pluralizing words in different languages.
 
@@ -66,7 +64,7 @@ console.log(pluralRules.select(2)); // Outputs 'other'
 
 `Intl.PluralRules` returns a category; the application still provides translated message forms. English-style `count === 1 ? singular : plural` logic does not generalize to every language.
 
-### Practical considerations
+## Practical considerations
 
 ```js live
 const formatter = new Intl.DateTimeFormat('en-GB', {

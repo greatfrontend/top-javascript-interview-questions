@@ -26,17 +26,15 @@ myModule.publicMethod(); // Logs: I am private
 
 ---
 
-## What is the Module pattern and how does it help with encapsulation?
-
-### Introduction to the Module pattern
+## Introduction to the Module pattern
 
 The Module pattern is a design pattern used in JavaScript to create modules of code that are self-contained. It uses closures to create private and public members, allowing for better organization and encapsulation of code.
 
-### How the Module pattern works
+## How the Module pattern works
 
 The Module pattern typically involves an immediately-invoked function expression (IIFE) that returns an object. This object contains methods and properties that are exposed as the public API of the module. Inside the IIFE, you can define private variables and functions that are not accessible from outside the module.
 
-### Example of the Module pattern
+## Example of the Module pattern
 
 Here is a simple example of the Module pattern:
 
@@ -65,21 +63,21 @@ In this example:
 - `privateVar` and `privateMethod` are private members and cannot be accessed directly from outside the module.
 - `publicMethod` is a public member and can be accessed from outside the module. It can interact with the private members.
 
-### Benefits of using the Module pattern
+## Benefits of using the Module pattern
 
-#### Encapsulation
+### Encapsulation
 
 The Module pattern helps in encapsulating code by hiding the internal implementation details and exposing only the necessary parts. This makes the code more modular and easier to maintain.
 
-#### Avoiding global namespace pollution
+### Avoiding global namespace pollution
 
 By using the Module pattern, you can avoid polluting the global namespace with variables and functions. This reduces the risk of naming collisions and makes the code more robust.
 
-#### Separation of concerns
+### Separation of concerns
 
-The Module pattern promotes a clean separation of concerns by allowing you to group related functionality together. This makes the code more organized and easier to understand.
+The Module pattern groups related functions behind one public object so callers use a defined interface.
 
-### Conclusion
+## Conclusion
 
 The IIFE Module pattern remains relevant in legacy scripts and embedded code that cannot use a module loader. In modern applications, prefer ES modules for file boundaries and dependency analysis:
 

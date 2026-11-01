@@ -117,7 +117,7 @@ To **reset** an input back to its attribute, set the property back to the attrib
 
 ## Other attributes that diverge from their properties
 
-The `value` attribute is the most-cited example, but several other attributes have a meaningfully different DOM property. Each of these comes up regularly in real bugs.
+Several other attribute/property pairs also behave differently, as the following examples show.
 
 ### `checked` on checkboxes and radios
 
@@ -194,7 +194,7 @@ You read individual rules from the property (`element.style.fontSize`) but canno
 Frameworks set properties in some places and attributes in others, and knowing which they choose explains a class of "this attribute won't update" bugs.
 
 - **React** sets DOM properties when a matching one exists, so `<input value={x}>` updates the property, not the attribute. This is why `defaultValue` exists: it is the way to set the underlying attribute. The same pattern applies to `defaultChecked` on checkboxes.
-- **Vue 3** intelligently chooses between property and attribute for each binding. For standard interactive elements (such as `value` on `<input>`, `<select>`, and `<progress>`), it sets the DOM property. You can force one or the other with the `.prop` and `.attr` modifiers on `v-bind`.
+- **Vue 3** chooses between property and attribute for each binding. For standard interactive elements (such as `value` on `<input>`, `<select>`, and `<progress>`), it sets the DOM property. You can force one or the other with the `.prop` and `.attr` modifiers on `v-bind`.
 - **Custom elements** declared with attributes need `attributeChangedCallback` and `observedAttributes` to react to attribute changes. Properties do not go through that path.
 
 If you ever see a React form where setting `<input value={state}>` works fine, but inspecting the rendered DOM shows the `value="..."` attribute stuck at the old value, that is not a bug. The attribute is intentionally the initial-value marker; the property is what reflects the live state.

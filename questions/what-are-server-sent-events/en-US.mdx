@@ -94,8 +94,6 @@ sequenceDiagram
 
 SSE is server-to-client only; client-to-server messages still use another HTTP request or a bidirectional protocol such as WebSocket.
 
-## What are Server-Sent Events?
-
 Server-Sent Events (SSE) is a standard that allows a server to push updates to a web client over a single, long-lived HTTP connection. It enables real-time updates without the client having to constantly poll the server for new data.
 
 ## How SSE works
@@ -214,7 +212,7 @@ http
 
 ## SSE vs WebSockets vs long polling
 
-Most interview discussions of SSE start with the WebSockets comparison. To pick the right tool, you also need to know how SSE compares to the older long-polling pattern it largely replaced.
+Compare SSE with both WebSockets and long polling when choosing how the server sends updates to the client.
 
 | Property | Long Polling | Server-Sent Events | WebSockets |
 | --- | --- | --- | --- |
@@ -246,7 +244,7 @@ Beyond AI, SSE fits most "server has new data, push it to the user" use cases:
 - Live status pages and dashboards for build status or server health.
 - Stock tickers and sports scores, where the client does not push data back.
 
-When the use case is "client subscribes, server sends updates", SSE is usually simpler than WebSockets: you get auto-reconnect, message IDs, and HTTP/2 multiplexing for free.
+For server-to-client updates, `EventSource` provides automatic reconnection and last-event-ID handling. The server must retain and replay events for resumption; HTTP/2 multiplexing depends on connection support.
 
 ## Production gotchas with SSE
 
@@ -263,7 +261,7 @@ A few practical issues to be aware of:
 
 ## Summary
 
-Server-sent events provide an efficient and straightforward way to push updates from a server to a client in real-time. They are well-suited for applications that require continuous data streams but do not need full bidirectional communication, including the common pattern of streaming LLM responses. With built-in support in modern browsers, SSE is a reliable choice for many real-time web applications.
+Server-sent events carry a stream of server-to-client text events over HTTP. Use SSE for updates that do not require a bidirectional channel, such as streaming LLM responses.
 
 ## Further reading
 

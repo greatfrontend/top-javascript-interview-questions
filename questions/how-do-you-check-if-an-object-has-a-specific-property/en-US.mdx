@@ -22,9 +22,7 @@ if (Object.hasOwn(obj, 'key')) {
 
 ---
 
-## How do you check if an object has a specific property?
-
-### Using the `in` operator
+## Using the `in` operator
 
 The `in` operator checks if a property exists in an object, including properties in the object's prototype chain.
 
@@ -36,7 +34,7 @@ if ('key' in obj) {
 }
 ```
 
-### Using `hasOwnProperty`
+## Using `hasOwnProperty`
 
 The legacy `hasOwnProperty` method checks if a property exists directly on the object, not in its prototype chain. Calling it directly is safe only when you know the object's prototype and properties are controlled.
 
@@ -48,7 +46,7 @@ if (obj.hasOwnProperty('key')) {
 }
 ```
 
-### Using `Object.hasOwn()`
+## Using `Object.hasOwn()`
 
 `Object.hasOwn()` (introduced in ES2022) is the recommended way to check for own properties. Unlike `obj.hasOwnProperty()`, it works on objects created with `Object.create(null)` (which have no prototype) and on objects that override the `hasOwnProperty` method.
 
@@ -66,12 +64,12 @@ console.log(Object.hasOwn(bare, 'key')); // true
 // bare.hasOwnProperty('key') would throw: bare.hasOwnProperty is not a function
 ```
 
-### Differences between `in` and `Object.hasOwn()`
+## Differences between `in` and `Object.hasOwn()`
 
 - The `in` operator checks for both own and inherited properties.
 - `Object.hasOwn()` checks only for own properties.
 
-### Example with inherited properties
+## Example with inherited properties
 
 ```js live
 const parentObj = { inheritedKey: 'inheritedValue' };

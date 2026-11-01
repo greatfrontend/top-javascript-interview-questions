@@ -33,7 +33,7 @@ Polyfills in JavaScript are pieces of code (usually JavaScript) that provide mod
 
 ## How polyfills work
 
-Polyfills detect if a feature or API is missing in a browser and provide a custom implementation of that feature using existing JavaScript capabilities. This allows developers to write code using the latest JavaScript features and APIs without worrying about browser compatibility issues.
+Polyfills detect a missing feature or API and supply an implementation using capabilities available in the browser. Compatibility depends on which behaviors the polyfill can implement in the target environment.
 
 For example, an application can conditionally load a maintained `ResizeObserver` fallback before starting code that needs it:
 

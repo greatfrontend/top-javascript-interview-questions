@@ -4,7 +4,7 @@ title: What are the potential issues caused by hoisting?
 
 ## TL;DR
 
-JavaScript creates bindings before executing a scope's statements, but initializes different declaration forms differently. An early read of `var` produces `undefined`; an early read of `let`, `const`, or `class` throws because the binding is in the temporal dead zone; and function declarations are already callable. These differences—not literal source-code movement—can produce confusing bugs.
+JavaScript creates bindings before executing a scope's statements, but initializes different declaration forms differently. An early read of `var` produces `undefined`; an early read of `let`, `const`, or `class` throws because the binding is in the temporal dead zone; and function declarations are already callable. These differences (not literal source-code movement) can produce confusing bugs.
 
 ```js live
 console.log(a); // undefined

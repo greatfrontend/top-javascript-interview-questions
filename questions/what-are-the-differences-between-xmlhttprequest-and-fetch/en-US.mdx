@@ -40,7 +40,7 @@ xhr.send();
 
 `xhr` is an instance of the `XMLHttpRequest` class. The `open` method is used to specify the request method, URL, and whether the request should be asynchronous. The `onload` event is used to handle the response, and the `send` method is used to send the request.
 
-`fetch()` provides a more straightforward and intuitive way of making HTTP requests. It is `Promise`-based and returns a promise that resolves with the response or rejects with an error. The basic syntax for making a GET request using `fetch()` is as follows:
+`fetch()` returns a promise that fulfills with a `Response` or rejects on a request failure. A basic GET request looks like this:
 
 ```js live
 fetch('https://jsonplaceholder.typicode.com/todos/1')

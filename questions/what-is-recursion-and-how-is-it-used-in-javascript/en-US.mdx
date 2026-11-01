@@ -41,16 +41,14 @@ flowchart TD
 
 A missing or unreachable base case keeps adding frames until the runtime throws a stack-overflow error.
 
-## What is recursion and how is it used in JavaScript?
-
-### Definition of recursion
+## Definition of recursion
 
 Recursion is a technique in programming where a function calls itself in order to solve a problem. This approach is particularly useful for problems that can be divided into smaller, similar sub-problems. The key components of a recursive function are:
 
 - **Base case**: The condition under which the function stops calling itself, preventing an infinite loop.
 - **Recursive case**: The part of the function where it calls itself with a modified argument, moving towards the base case.
 
-### Example: Calculating factorial
+## Example: Calculating factorial
 
 The factorial of a number `n` (denoted as `n!`) is the product of all positive integers less than or equal to `n`. It can be defined recursively as:
 
@@ -74,7 +72,7 @@ function factorial(n) {
 console.log(factorial(4)); // Output: 24
 ```
 
-### Example: Fibonacci sequence
+## Example: Fibonacci sequence
 
 The Fibonacci sequence is another classic example of recursion. Each number in the sequence is the sum of the two preceding ones, usually starting with 0 and 1. The sequence can be defined recursively as:
 
@@ -100,7 +98,7 @@ function fibonacci(n) {
 console.log(fibonacci(6)); // Output: 8
 ```
 
-### Tail recursion
+## Tail recursion
 
 Tail recursion is a form where the recursive call is the last operation. The ECMAScript specification defines proper tail calls in strict mode, but support is not consistent across widely used JavaScript engines. Do not rely on tail-call optimization to prevent stack overflow in portable application code.
 
@@ -127,7 +125,7 @@ function factorialIterative(n) {
 }
 ```
 
-### Use cases for recursion
+## Use cases for recursion
 
 - **Tree traversal**: Recursion is often used to traverse tree structures, such as the DOM or binary trees.
 - **Divide and conquer algorithms**: Algorithms like quicksort and mergesort use recursion to divide the problem into smaller sub-problems.

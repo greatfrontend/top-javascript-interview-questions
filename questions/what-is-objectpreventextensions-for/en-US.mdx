@@ -16,11 +16,9 @@ console.log(obj.age); // undefined
 
 ---
 
-## What is `Object.preventExtensions()` for?
-
 `Object.preventExtensions()` is a method in JavaScript that is used to prevent new properties from being added to an object. This method is part of the ECMAScript 5 specification and is useful for maintaining the integrity of an object by ensuring that its structure cannot be altered by adding new properties.
 
-### Syntax
+## Syntax
 
 ```js
 Object.preventExtensions(obj);
@@ -28,13 +26,13 @@ Object.preventExtensions(obj);
 
 - `obj`: The object which should be made non-extensible.
 
-### Behavior
+## Behavior
 
 - Once an object is made non-extensible, you cannot add new properties to it.
 - Existing properties can still be modified or deleted.
 - The method returns the object that was passed to it.
 
-### Example
+## Example
 
 ```js live
 const obj = { name: 'John' };
@@ -50,7 +48,7 @@ delete obj.name; // This will work, as existing properties can be deleted
 console.log(obj.name); // undefined
 ```
 
-### Checking if an object is extensible
+## Checking if an object is extensible
 
 You can check if an object is extensible using the `Object.isExtensible()` method.
 
@@ -62,13 +60,13 @@ Object.preventExtensions(obj);
 console.log(Object.isExtensible(obj)); // false
 ```
 
-### Comparison with `Object.seal()` and `Object.freeze()`
+## Comparison with `Object.seal()` and `Object.freeze()`
 
 - `Object.preventExtensions()`: Prevents adding new properties. Existing properties can still be modified, configured, or deleted.
 - `Object.seal()`: Prevents adding new properties and marks existing properties as non-configurable, so they cannot be deleted. Their values can still be changed.
 - `Object.freeze()`: Prevents adding new properties, prevents deleting existing properties, and makes existing properties read-only (a shallow freeze).
 
-### Use cases
+## Use cases
 
 - **Immutable object structure**: When you want to ensure that the structure of an object remains unchanged, you can use `Object.preventExtensions()`.
 - **Defensive API design**: It can catch accidental shape changes in strict-mode code. It is not a security boundary: existing writable values and nested objects remain mutable, and code may keep references to other sensitive state.

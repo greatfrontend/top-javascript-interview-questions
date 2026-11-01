@@ -63,7 +63,7 @@ An `async` function still runs synchronously until its first suspension point; i
 
 ## Synchronous vs asynchronous functions
 
-In JavaScript, synchronous and asynchronous functions are fundamental to understanding how code execution is managed, especially when handling operations like I/O tasks, API calls, and other time-consuming processes.
+Synchronous calls complete on the current stack; asynchronous APIs arrange for later completion of operations such as I/O and network requests.
 
 ## Synchronous functions
 
@@ -124,7 +124,7 @@ Asynchronous APIs let the host wait for operations such as network or file I/O w
    console.log('End of program'); // This will be printed before the fetch callback
    ```
 
-2. **User input and events**: Handling user input events, such as clicks, key presses, or mouse movements, is inherently asynchronous. The application needs to respond to these events without blocking the main thread, ensuring a smooth user experience.
+2. **User input and events**: Input handlers run when the browser dispatches events such as clicks, key presses, or mouse movements. Keep handlers brief so later input and rendering can proceed.
 
    ```js
    const button = document.getElementById('myButton');

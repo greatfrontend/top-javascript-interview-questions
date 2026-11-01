@@ -96,7 +96,7 @@ fetchData((data) => {
 
 ### Handling errors in callbacks
 
-When dealing with asynchronous operations, it's important to handle errors properly. A common pattern is to use the first argument of the callback function to pass an error object, if any.
+Some callback APIs report failure through an error object passed as the first argument.
 
 ```js live
 function fetchData(callback) {

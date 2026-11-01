@@ -27,18 +27,16 @@ console.log(result); // Output: 6
 
 ---
 
-## What is currying and how does it work?
-
-### Definition
+## Definition
 
 Currying is a functional programming technique where a function with multiple arguments is decomposed into a sequence of functions, each taking a single argument. This allows for the partial application of functions, enabling more flexible and reusable code.
 
-### How it works
+## How it works
 
 1. **Transformation**: A function that takes multiple arguments is transformed into a series of nested functions, each taking one argument.
 2. **Partial application**: You can call the curried function with fewer arguments than it expects, and it will return a new function that takes the remaining arguments.
 
-### Example in JavaScript
+## Example in JavaScript
 
 Here's a simple example to illustrate currying in JavaScript:
 
@@ -68,13 +66,13 @@ const result = addOneAndTwo(3);
 console.log(result); // Output: 6
 ```
 
-### Benefits of currying
+## Benefits of currying
 
 1. **Reusability**: Curried functions can be reused with different sets of arguments.
 2. **Partial application**: You can create new functions by fixing some arguments of the original function.
-3. **Function composition**: Currying makes it easier to compose functions, leading to more readable and maintainable code.
+3. **Function composition**: Supplying configuration arguments to a curried function can produce unary functions for a pipeline.
 
-### Practical example
+## Practical example
 
 Consider a function that calculates the volume of a rectangular prism:
 
@@ -99,7 +97,7 @@ const result = volumeWithLength5AndWidth4(3);
 console.log(result); // Output: 60
 ```
 
-### Currying with arrow functions
+## Currying with arrow functions
 
 You can also use arrow functions to make the syntax more concise:
 

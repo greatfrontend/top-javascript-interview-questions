@@ -4,7 +4,7 @@ title: What are the benefits of using currying and partial application?
 
 ## TL;DR
 
-Currying transforms a function with multiple arguments into a sequence of functions, each taking a single argument. This allows for more flexible and reusable code. Partial application, on the other hand, allows you to fix a few arguments of a function and generate a new function. Both techniques help in creating more modular and maintainable code.
+Currying transforms a function with multiple arguments into a sequence of functions, each taking a single argument. Partial application fixes some arguments and returns a new function that accepts the remaining arguments. Both let later calls reuse arguments supplied earlier.
 
 ---
 
@@ -18,7 +18,6 @@ Currying is a technique where a function with multiple arguments is transformed 
 
 - **Function reusability**: Currying allows you to create specialized functions from general ones by fixing some arguments.
 - **Code readability**: It can make the code more readable and expressive by breaking down complex functions into simpler ones.
-- **Functional programming**: Currying is a core concept in functional programming, which can lead to more predictable and testable code.
 
 #### Example
 

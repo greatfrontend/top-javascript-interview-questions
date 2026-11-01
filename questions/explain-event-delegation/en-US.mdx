@@ -132,7 +132,7 @@ In this example, a single input event listener is attached to the form element. 
 
 ## More real-world delegation patterns
 
-Beyond the simple list-item example, three patterns show up constantly in production code.
+The following examples cover form updates, row actions, and editable cells.
 
 ### Form-wide delegated change handler
 
@@ -286,7 +286,7 @@ The common claim is "delegation is faster because there are fewer listeners." Th
 
 - **Listener count is often not the bottleneck.** Modern browsers handle many listeners efficiently, so measure the actual page rather than relying on a fixed listener-count rule.
 - **Memory is the meaningful win.** Each direct listener creates a closure that holds references to its enclosing scope. With 10,000 rows, that is 10,000 closures kept alive, which can become noticeable. One delegated listener is one closure.
-- **Dynamic content is the structural win.** With direct listeners, you have to attach (and detach) listeners on every DOM mutation, which is easy to leak. Delegation just works for elements added later, and that is the main reason most code uses it.
+- **Dynamic descendants:** One ancestor listener can handle matching descendants added later, avoiding per-item listener registration and cleanup.
 - **Delegation is not always faster at runtime.** A delegated handler runs `event.target.closest(...)` on every event, which is cheap but not free. For a small fixed number of elements with stable handlers, attaching directly is fine and arguably cleaner.
 
 Use delegation for memory, dynamic content, and code simplicity, not because direct listeners are inherently slow.

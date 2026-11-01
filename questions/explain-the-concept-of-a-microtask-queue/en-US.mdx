@@ -4,7 +4,7 @@ title: Explain the concept of a microtask queue
 
 ## TL;DR
 
-The microtask queue holds callbacks such as promise reactions, `queueMicrotask()` callbacks, and `MutationObserver` notifications. At a microtask checkpoint—normally after the current task or callback finishes and the JavaScript stack is empty—the runtime drains the queue before it may render and select another task. Microtasks queued by other microtasks are drained in the same checkpoint, so recursively adding them can starve rendering and other work.
+The microtask queue holds callbacks such as promise reactions, `queueMicrotask()` callbacks, and `MutationObserver` notifications. At a microtask checkpoint (normally after the current task or callback finishes and the JavaScript stack is empty) the runtime drains the queue before it may render and select another task. Microtasks queued by other microtasks are drained in the same checkpoint, so recursively adding them can starve rendering and other work.
 
 ---
 

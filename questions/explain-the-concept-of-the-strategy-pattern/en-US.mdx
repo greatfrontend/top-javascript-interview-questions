@@ -4,7 +4,7 @@ title: Explain the concept of the Strategy pattern
 
 ## TL;DR
 
-The Strategy pattern defines interchangeable implementations behind the same contract, letting the caller select behavior without accumulating a large conditional. JavaScript strategies can be plain functions or objects; separate classes are not required. It is useful when multiple algorithms are real extension points, such as pricing or retry policies. Prefer a simple `if` or `switch` when there are only a few stable branches—the pattern otherwise adds indirection without useful flexibility.
+The Strategy pattern defines interchangeable implementations behind the same contract, letting the caller select behavior without accumulating a large conditional. JavaScript strategies can be plain functions or objects; separate classes are not required. It is useful when multiple algorithms are real extension points, such as pricing or retry policies. Prefer a simple `if` or `switch` when there are only a few stable branches; the pattern otherwise adds indirection without useful flexibility.
 
 ```js live
 class Context {

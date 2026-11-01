@@ -83,7 +83,7 @@ As a result of stopping event propagation, only the `parent` event listener will
 
 ## Predict the output: capture, target, bubble in order
 
-The complete event flow is the part candidates most often get wrong. The same `click` event passes through every ancestor on the way down (capture), arrives at the target, then walks back up (bubble). Here is the full sequence in one runnable example:
+The same `click` event travels down the event path during capture, reaches the target, and then bubbles through its ancestors. The example below shows the sequence:
 
 ```js live
 const grandparent = document.createElement('div');
@@ -149,7 +149,7 @@ In practice, the capture phase is the right tool for three specific situations:
 
 2. **Pre-empting child handlers** for analytics or feature gates. The capture phase runs before any child's bubble handler, so a region-wide "intercept clicks" listener can record the click (or block the action with `stopPropagation()`) before component code sees it.
 
-3. **Modal libraries that need first-look at clicks.** A modal dialog often listens at the document level with `capture: true` for outside-click dismissal. Using the bubble phase would let inner handlers call `stopPropagation()` and accidentally prevent the modal from closing.
+3. **Observing clicks before descendant handlers.** A modal dialog may use a document listener with `capture: true` for outside-click dismissal. A descendant bubble listener calling `stopPropagation()` cannot prevent that capture listener from observing the click.
 
 ## `stopPropagation()` in capture vs bubble
 

@@ -1,7 +1,14 @@
 {
   "slug": "what-is-a-closure-and-how-why-would-you-use-one",
   "languages": [],
-  "companies": ["amazon", "linkedin", "microsoft", "salesforce", "bytedance"],
+  "companies": [
+    "amazon",
+    "linkedin",
+    "microsoft",
+    "salesforce",
+    "bytedance",
+    "kayak"
+  ],
   "access": "free",
   "duration": 5,
   "published": true,

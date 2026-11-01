@@ -84,7 +84,7 @@ getFirstData()
 
 ### Makes it easy to write sequential asynchronous code that is readable with `.then()`.
 
-In the above code example, we use the `.then()` method to chain these Promises together, allowing the code to execute sequentially. It provides a cleaner and more manageable way to handle asynchronous operations in JavaScript.
+The example returns each dependent Promise from a `.then()` handler, making the next step wait for that operation to complete.
 
 ### Makes it easy to write parallel asynchronous code with `Promise.all()`.
 
@@ -126,7 +126,7 @@ Promise.all([getData1(), getData2(), getData3()])
 
 ### Easier error handling with `.catch()` and guaranteed cleanup with `.finally()`
 
-Promises make error handling more straightforward by allowing you to catch errors at the end of a chain using `.catch()`, instead of manually checking for errors in every callback. This leads to cleaner and more maintainable code.
+A `.catch()` at the end of a chain handles rejections propagated through that chain, avoiding a separate error check in every callback.
 
 Additionally, `.finally()` lets you run code after the Promise settles, whether it succeeded or failed, which is great for cleanup tasks like hiding spinners or resetting UI states.
 

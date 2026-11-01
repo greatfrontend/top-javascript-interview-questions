@@ -40,7 +40,7 @@ console.log(immutableObject); // Output: { name: 'John', age: 30 }
 
 ## Immutability
 
-Immutability is a core principle in functional programming but it has lots to offer to object-oriented programs as well.
+Immutable values can be shared without callers modifying their state.
 
 ### Mutable objects
 
@@ -99,7 +99,7 @@ A common confusion / misunderstanding is that declaring a variable using `const`
 - For primitive values (numbers, strings, booleans), `const` makes the value immutable since primitives are immutable by nature.
 - For non-primitive values like objects and arrays, `const` only prevents reassigning a new object/array to the variable, but the properties/elements of the existing object/array can still be modified.
 
-`Object.freeze()` prevents changes to an object's own property descriptors and makes it non-extensible. It does not recursively freeze referenced objects, and it cannot prevent state changes that are not represented by ordinary own properties—for example, calling a mutating method on a frozen `Map` still changes the map's internal data.
+`Object.freeze()` prevents changes to an object's own property descriptors and makes it non-extensible. It does not recursively freeze referenced objects, and it cannot prevent state changes that are not represented by ordinary own properties, for example, calling a mutating method on a frozen `Map` still changes the map's internal data.
 
 ```js live
 // Using const
@@ -203,7 +203,7 @@ This approach is the highest level of immutability that you can attain for an ob
 let immutableObject = Object.freeze({});
 ```
 
-Freezing an object prevents adding or removing own properties and restricts changes to their descriptors. It preserves existing enumerability and the prototype, while setting configurability—and, for data properties, writability—to `false`. It returns the passed object and does not create a copy.
+Freezing an object prevents adding or removing own properties and restricts changes to their descriptors. It preserves existing enumerability and the prototype, while setting configurability (and, for data properties, writability) to `false`. It returns the passed object and does not create a copy.
 
 `Object.freeze()` makes the object immutable. However, it is not necessarily constant. While `Object.freeze` prevents modifications to the object itself and its direct properties, nested objects within the frozen object can still be modified.
 

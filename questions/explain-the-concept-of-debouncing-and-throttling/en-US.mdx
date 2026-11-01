@@ -156,7 +156,7 @@ In one line: debounce coalesces a burst of calls into one call at the end; throt
 
 ## Leading and trailing edges
 
-Production implementations of debounce and throttle (such as Lodash's) accept `leading` and `trailing` flags. The basic implementations above are trailing-only debounce and leading-only throttle, which is why they often surprise candidates in interviews.
+Production implementations of debounce and throttle (such as Lodash's) accept `leading` and `trailing` flags. The examples above use trailing-only debounce and leading-only throttle.
 
 | Function | `leading` default | `trailing` default | Behavior |
 | --- | --- | --- | --- |
@@ -233,7 +233,7 @@ Only `2` is logged, once. The first two calls are cancelled by `clearTimeout`, a
 
 ### Throttle drops the trailing call
 
-This is one of the most common debounce/throttle interview bugs. The basic throttle from earlier looks correct, but has a subtle problem:
+The basic throttle above drops the final call when it arrives during the cooldown:
 
 ```js live
 function throttle(fn, limit) {

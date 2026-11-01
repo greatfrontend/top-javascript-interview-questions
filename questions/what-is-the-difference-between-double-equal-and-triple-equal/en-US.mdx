@@ -4,15 +4,15 @@ title: What is the difference between `==` and `===` in JavaScript?
 
 ## TL;DR
 
-`==` is the abstract equality operator while `===` is the strict equality operator. `==` performs type coercion before comparing, following the Abstract Equality Comparison algorithm defined in the ECMAScript specification. `===` does not perform coercion and returns `false` whenever the operand types differ. `===` is generally preferred in application code because it eliminates a class of bugs caused by unexpected coercion. The most common exception is `x == null`, which checks for both `null` and `undefined` in a single comparison.
+`==` is the abstract equality operator while `===` is the strict equality operator. `==` first checks the operand types. When they match, it compares the values without type coercion, just like `===`. When the types differ, it follows the Abstract Equality Comparison algorithm, which may convert one or both operands. `===` never performs type coercion and returns `false` whenever the operand types differ. `===` is generally preferred in application code because it eliminates a class of bugs caused by unexpected coercion. The most common exception is `x == null`, which checks for both `null` and `undefined` in a single comparison.
 
 | Operator | `==` | `===` |
 | --- | --- | --- |
 | Name | Loose (abstract) equality operator | Strict equality operator |
-| Type coercion | Yes — per the Abstract Equality Comparison algorithm | No |
-| Comparison behavior | Types may be coerced before the value comparison | Types are compared first |
+| Type coercion | May occur when operand types differ | No |
+| Comparison behavior | Same types: strict equality; different types: follow the abstract equality rules | Different types: `false`; same types: compare without coercion |
 
-> **Don't confuse `=` with `==` and `===`.** `=` is the [assignment operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Assignment) — it sets a variable's value (`x = 5`) and does not compare anything.
+> **Don't confuse `=` with `==` and `===`.** `=` is the [assignment operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Assignment) and sets a variable's value (`x = 5`); it does not compare anything.
 
 ---
 
@@ -45,9 +45,9 @@ Four properties of the algorithm that are not apparent from a truth table alone:
 
 `==` dispatches to three type-conversion routines defined in ECMA-262 §7.1:
 
-- **[`ToPrimitive(input, hint)`](https://tc39.es/ecma262/#sec-toprimitive)** — returns the input unchanged if it is already a primitive. Otherwise invokes `input[Symbol.toPrimitive](hint)`, then falls back to `valueOf()` and `toString()`. If none returns a primitive, a `TypeError` is thrown.
-- **[`ToNumber(argument)`](https://tc39.es/ecma262/#sec-tonumber)** — `undefined` becomes `NaN`; `null` becomes `+0`; `true` and `false` become `1` and `+0`; strings are parsed with whitespace trimming, with the empty string becoming `0`; Symbols and BigInts throw `TypeError`; objects are first reduced via `ToPrimitive(argument, "number")` and the result is recursed on.
-- **[`ToString(argument)`](https://tc39.es/ecma262/#sec-tostring)** — `undefined` becomes `"undefined"`; `null` becomes `"null"`; Booleans become `"true"` and `"false"`; Numbers use `Number::toString`; Symbols throw `TypeError`; objects are first reduced via `ToPrimitive(argument, "string")`.
+- **[`ToPrimitive(input, hint)`](https://tc39.es/ecma262/#sec-toprimitive)**: returns the input unchanged if it is already a primitive. Otherwise invokes `input[Symbol.toPrimitive](hint)`, then falls back to `valueOf()` and `toString()`. If none returns a primitive, a `TypeError` is thrown.
+- **[`ToNumber(argument)`](https://tc39.es/ecma262/#sec-tonumber)**: `undefined` becomes `NaN`; `null` becomes `+0`; `true` and `false` become `1` and `+0`; strings are parsed with whitespace trimming, with the empty string becoming `0`; Symbols and BigInts throw `TypeError`; objects are first reduced via `ToPrimitive(argument, "number")` and the result is recursed on.
+- **[`ToString(argument)`](https://tc39.es/ecma262/#sec-tostring)**: `undefined` becomes `"undefined"`; `null` becomes `"null"`; Booleans become `"true"` and `"false"`; Numbers use `Number::toString`; Symbols throw `TypeError`; objects are first reduced via `ToPrimitive(argument, "string")`.
 
 ## Examples
 
@@ -95,7 +95,7 @@ Walking through:
 3. Step 5: `'[object Object]' == 0` calls `ToNumber('[object Object]')`, which produces `NaN`.
 4. Step 1 with `NaN == 0`: strict equality returns `false`.
 
-This differs from `[] == false` because the two objects have different `toString` results. This case is a frequent source of incorrect output in AI-generated explanations that treat all objects as equivalent to `[]` for coercion purposes.
+This differs from `[] == false` because the two objects have different `toString` results.
 
 ### `null` and `undefined`
 
@@ -108,7 +108,7 @@ console.log(null >= 0); // true
 
 - `null == undefined` is `true` by the special case in step 2.
 - `null == 0` is `false` because no step in `==` converts `null` to `0`.
-- `null == false` is `false` for the same reason — `false` becomes `0`, but `null` is not coerced, and step 13 returns `false`.
+- `null == false` is `false` for the same reason, `false` becomes `0`, but `null` is not coerced, and step 13 returns `false`.
 - `null >= 0` is `true` because relational operators do not use the Abstract Equality algorithm. They apply `ToNumber` directly, converting `null` to `0`, producing `0 >= 0`.
 
 A consequence: the three expressions `null >= 0`, `null <= 0`, and `null != 0` are all `true` simultaneously.
@@ -138,7 +138,7 @@ Two Symbols are loosely equal only if they are the same value (step 1). A Symbol
 
 ## Common misconceptions
 
-The following statements appear frequently in documentation, teaching material, and responses generated by large language models, but are incorrect:
+The following statements about equality are incorrect:
 
 1. **`{} == false` is `true`:** It is `false`. `{}` coerces to `'[object Object]'`, which coerces to `NaN`, which is not equal to `0`.
 2. **`[] == ![]` is `false`:** It is `true`. `![]` is `false`, and `[] == false` follows the coercion steps to `true`.

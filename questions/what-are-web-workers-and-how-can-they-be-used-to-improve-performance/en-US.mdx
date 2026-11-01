@@ -35,13 +35,11 @@ onmessage = function (event) {
 
 ---
 
-## What are Web Workers and how can they be used to improve performance?
+## Introduction to Web Workers
 
-### Introduction to Web Workers
+Web Workers run JavaScript on a separate thread, allowing tasks such as heavy computations or I/O to proceed while the main thread handles input and rendering.
 
-Web Workers provide a way to run JavaScript in the background, separate from the main execution thread. This allows for performing tasks like heavy computations or I/O operations without blocking the user interface, leading to a smoother user experience.
-
-### Creating a Web Worker
+## Creating a Web Worker
 
 To create a Web Worker, you use the `Worker` constructor and pass the URL of the JavaScript file that contains the worker code.
 
@@ -49,11 +47,11 @@ To create a Web Worker, you use the `Worker` constructor and pass the URL of the
 const worker = new Worker('worker.js');
 ```
 
-### Communication between main script and Web Worker
+## Communication between main script and Web Worker
 
 Communication between the main script and the Web Worker is done using the `postMessage` method and the `onmessage` event handler.
 
-#### Main script
+### Main script
 
 ```js
 // main.js
@@ -68,7 +66,7 @@ worker.onmessage = function (event) {
 };
 ```
 
-#### Worker script
+### Worker script
 
 ```js
 // worker.js
@@ -79,9 +77,9 @@ onmessage = function (event) {
 };
 ```
 
-### Use cases for Web Workers
+## Use cases for Web Workers
 
-#### Heavy computations
+### Heavy computations
 
 Web Workers can be used to perform heavy computations without blocking the main thread. For example, processing large datasets or performing complex mathematical operations.
 
@@ -98,7 +96,7 @@ function heavyComputation(data) {
 }
 ```
 
-#### Data processing
+### Data processing
 
 Web Workers can be used to process large amounts of data, such as parsing large JSON files or processing images.
 
@@ -115,7 +113,7 @@ function processData(data) {
 }
 ```
 
-### Limitations of Web Workers
+## Limitations of Web Workers
 
 - Web Workers do not have access to the DOM, so they cannot directly manipulate the user interface.
 - They have a separate scope from the main script, so you need to pass data back and forth using `postMessage`.
@@ -124,7 +122,7 @@ function processData(data) {
 - Errors and Promise rejections inside the worker need explicit reporting and handling.
 - Browser Web Workers and Node.js `worker_threads` solve similar problems but have different globals and APIs.
 
-### Transferring large data
+## Transferring large data
 
 When the main thread no longer needs a buffer, transfer it:
 
@@ -137,7 +135,7 @@ console.log(buffer.byteLength); // 0: ownership moved to the worker
 
 The transfer avoids copying that buffer, but the sender can no longer use it. Shared memory with `SharedArrayBuffer` requires careful synchronization and, in browsers, appropriate cross-origin isolation headers.
 
-### Lifecycle and cancellation
+## Lifecycle and cancellation
 
 `terminate()` stops the worker immediately and does not run a graceful cleanup callback. For cooperative cancellation or cleanup, send a cancellation message and design the worker to stop between chunks, then terminate it as a final fallback. Include a request ID in messages when several jobs can be in flight so late results are not applied to the wrong UI state.
 

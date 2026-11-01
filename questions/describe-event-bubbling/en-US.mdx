@@ -6,7 +6,7 @@ title: Describe event bubbling in JavaScript and browsers
 
 Event bubbling is a DOM event propagation mechanism where an event (e.g. a click) starts at the target element and bubbles up to the root of the document. This allows ancestor elements to also respond to the event.
 
-Event bubbling is essential for event delegation, where a single event handler manages events for multiple child elements, enhancing performance and code simplicity. While convenient, failing to manage event propagation properly can lead to unintended behavior, such as multiple handlers firing for a single event.
+Event bubbling lets one ancestor listener handle events from multiple descendants. An event can trigger handlers on both the target and its ancestors, so account for propagation when attaching listeners.
 
 ---
 
@@ -97,7 +97,7 @@ parent.addEventListener('click', (event) => {
 
 ## Benefits
 
-- **Cleaner code:** Reduced number of event listeners improves code readability and maintainability.
+- **Fewer registrations:** One ancestor listener can replace separate listeners on each child.
 - **Efficient event handling:** Minimizes performance overhead by attaching fewer listeners.
 - **Flexibility:** Allows handling events happening on child elements without directly attaching listeners to them.
 
@@ -109,7 +109,7 @@ parent.addEventListener('click', (event) => {
 
 ## Use cases
 
-Here are some practical ways to use event bubbling to write better code.
+The examples below use bubbling to handle product actions and nested elements.
 
 ### Reducing code with event delegation
 

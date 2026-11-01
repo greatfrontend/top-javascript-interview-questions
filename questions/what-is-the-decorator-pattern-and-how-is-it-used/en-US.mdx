@@ -38,21 +38,19 @@ console.log(myCarWithGPS.drive()); // "Driving with GPS"
 
 ---
 
-## What is the Decorator pattern and how is it used?
-
-### Definition
+## Definition
 
 The Decorator pattern is a structural design pattern that allows you to dynamically add behavior and responsibilities to objects without modifying their code. This pattern creates a set of decorator classes that are used to wrap concrete components.
 
-### Use cases
+## Use cases
 
 - **Adding functionalities**: When you need to add functionalities to objects without altering their structure.
-- **Flexible and reusable code**: When you want to create flexible and reusable code by composing behaviors.
+- **Combining behaviors**: Add independent optional behaviors to selected objects without changing their classes.
 - **Single Responsibility Principle**: When you want to adhere to the Single Responsibility Principle by dividing functionalities into different classes.
 
-### Implementation in JavaScript
+## Implementation in JavaScript
 
-#### Using classes
+### Using classes
 
 In JavaScript, the Decorator pattern can be implemented using classes. Here is an example:
 
@@ -92,7 +90,7 @@ const myCarWithGPSAndSunroof = new SunroofDecorator(myCarWithGPS);
 console.log(myCarWithGPSAndSunroof.drive()); // "Driving with GPS with Sunroof"
 ```
 
-#### Using higher-order functions
+### Using higher-order functions
 
 Another way to implement the Decorator pattern in JavaScript is by using higher-order functions:
 
@@ -122,13 +120,13 @@ myCar = sunroofDecorator(myCar);
 console.log(myCar.drive()); // "Driving with GPS with Sunroof"
 ```
 
-### Advantages
+## Advantages
 
 - **Open/Closed Principle**: Classes are open for extension but closed for modification.
 - **Flexible**: Allows for the dynamic composition of behaviors.
 - **Reusable**: Decorators can be reused across different objects.
 
-### Disadvantages
+## Disadvantages
 
 - **Complexity**: Can lead to a large number of small classes or functions.
 - **Debugging**: Can be harder to debug due to the added layers of abstraction.

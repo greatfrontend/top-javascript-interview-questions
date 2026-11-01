@@ -45,7 +45,7 @@ Collection timing is intentionally nondeterministic, so resource cleanup should 
 
 ## Garbage collection in JavaScript
 
-Garbage collection in JavaScript is an automatic process managed by the JavaScript engine, designed to reclaim memory occupied by objects that are no longer needed. This helps prevent memory leaks and optimizes the use of available memory. Here's an overview of how garbage collection works in JavaScript:
+The JavaScript engine automatically reclaims memory occupied by unreachable objects. Objects that remain reachable can still retain memory longer than the application needs.
 
 ### Memory management basics
 

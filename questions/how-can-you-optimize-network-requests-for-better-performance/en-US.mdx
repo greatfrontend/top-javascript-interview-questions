@@ -8,9 +8,7 @@ Measure real traffic, then reduce transferred bytes, avoid unnecessary or duplic
 
 ---
 
-## How can you optimize network requests for better performance?
-
-### Minimize the number of requests
+## Minimize the number of requests
 
 Avoid requests that do not contribute to the current experience, while preserving useful cache and code-splitting boundaries:
 
@@ -18,28 +16,28 @@ Avoid requests that do not contribute to the current experience, while preservin
 - **Load on demand**: Split code and media by route or feature so users do not download work they do not need.
 - **Inline only tiny critical assets**: Inlining removes a request but also prevents independent caching and increases the containing resource, so measure the tradeoff.
 
-### Use caching
+## Use caching
 
 Caching can reduce the need to make network requests for resources that have not changed:
 
 - **HTTP caching**: Use `Cache-Control` and `ETag` headers to control how and when resources are cached by the browser.
 - **Service workers**: Implement service workers to cache assets and API responses, allowing your app to work offline and load faster on subsequent visits.
 
-### Compress data
+## Compress data
 
 Reducing the size of the data being transferred can speed up network requests:
 
 - **Gzip/Brotli compression**: Enable Gzip or Brotli compression on your server to compress HTML, CSS, and JavaScript files.
 - **Minification**: Minify CSS, JavaScript, and HTML files to remove unnecessary characters and reduce file size.
 
-### Use modern web technologies
+## Use modern web technologies
 
 Modern web technologies can help optimize network performance:
 
 - **HTTP/2 or HTTP/3**: Multiplexing and compressed headers reduce the cost of concurrent requests. Browser support for HTTP/2 server push was removed, so use preload or `Link` hints only for resources proven to be critical.
 - **CDNs**: Use Content Delivery Networks (CDNs) to serve static assets from locations closer to the user, reducing latency.
 
-### Optimize images
+## Optimize images
 
 Images often account for a large portion of the data transferred:
 
@@ -47,7 +45,7 @@ Images often account for a large portion of the data transferred:
 - **Image formats**: Use modern image formats like WebP or AVIF, which offer better compression than traditional formats like JPEG or PNG.
 - **Lazy loading**: Implement lazy loading to defer loading images until they are needed.
 
-### Reduce payload size
+## Reduce payload size
 
 Reducing the amount of data sent in each request can improve performance:
 

@@ -18,9 +18,7 @@ console.log(john.age); // 30
 
 ---
 
-## How do you create a constructor function?
-
-### Defining a constructor function
+## Defining a constructor function
 
 A constructor function in JavaScript is a regular function that is used to create objects. By convention, the name of the constructor function starts with a capital letter to distinguish it from regular functions.
 
@@ -31,7 +29,7 @@ function Person(name, age) {
 }
 ```
 
-### Using the `this` keyword
+## Using the `this` keyword
 
 Within the constructor function, the `this` keyword is used to refer to the object that will be created. Properties and methods can be assigned to `this`.
 
@@ -47,7 +45,7 @@ function Person(name, age) {
 }
 ```
 
-### Creating an instance
+## Creating an instance
 
 To create an instance of the object, use the `new` keyword followed by the constructor function.
 
@@ -66,7 +64,7 @@ const john = new Person('John', 30);
 john.greet(); // Output: Hello, my name is John and I am 30 years old.
 ```
 
-### Adding methods to the prototype
+## Adding methods to the prototype
 
 To save memory, it's a good practice to add methods to the constructor's prototype instead of defining them inside the constructor function.
 
@@ -84,7 +82,7 @@ const jane = new Person('Jane', 25);
 jane.greet(); // Output: Hello, my name is Jane and I am 25 years old.
 ```
 
-### Checking the instance type
+## Checking the instance type
 
 You can check if an object is an instance of a constructor function using the `instanceof` operator.
 

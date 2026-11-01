@@ -38,9 +38,7 @@ flowchart LR
 
 A slow image can delay `load` without delaying `DOMContentLoaded`; asynchronous scripts have separate timing rules.
 
-## Difference between document `load` event and document `DOMContentLoaded` event
-
-### `DOMContentLoaded` event
+## `DOMContentLoaded` event
 
 The `DOMContentLoaded` event fires after the initial HTML has been parsed and deferred and module scripts have run. It does not directly wait for images, subframes, or stylesheets. However, deferred scripts wait for blocking stylesheets, and `DOMContentLoaded` waits for those scripts, so stylesheets can delay it indirectly.
 
@@ -50,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 ```
 
-### `load` event
+## `load` event
 
 The window `load` event fires when the document and its dependent resources, such as stylesheets, eagerly loaded images, scripts, and subframes, have finished loading. Lazily loaded resources do not hold it up. Use it only for work that actually requires those resources, such as reading intrinsic image dimensions.
 
@@ -60,7 +58,7 @@ window.addEventListener('load', function () {
 });
 ```
 
-### Key differences
+## Key differences
 
 - **Timing**: `DOMContentLoaded` fires earlier than `load`. `DOMContentLoaded` occurs after the HTML is fully parsed, while `load` waits for all resources to be loaded.
 - **Use cases**: Use `DOMContentLoaded` for tasks that only require the DOM to be ready, such as attaching event listeners or manipulating the DOM. Use `load` for tasks that depend on all resources being fully loaded, such as image-dependent layout calculations.

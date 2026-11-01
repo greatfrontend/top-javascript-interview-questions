@@ -41,13 +41,11 @@ flowchart TD
 
 Always use a specific `targetOrigin` when sending sensitive data and verify both `event.origin` and, when possible, `event.source` when receiving.
 
-## How do `<iframe>` on a page communicate?
+## Using the `postMessage` API
 
-### Using the `postMessage` API
+The `postMessage` API lets iframes communicate with each other or with their parent page across origins. Senders must restrict the target origin, and receivers must validate the sender and message data.
 
-The `postMessage` API is the most common and secure way for iframes to communicate with each other or with their parent page. This method allows for cross-origin communication, which is essential for modern web applications.
-
-#### Sending a message
+### Sending a message
 
 To send a message from the parent page to the iframe, you can use the `postMessage` method. Here’s an example:
 
@@ -59,7 +57,7 @@ iframe.contentWindow.postMessage('Hello from parent', 'https://widget.example');
 
 The second argument is the origin the receiving window must have for the message to be delivered. Avoid `'*'` when the destination has a known origin, because the frame can navigate to an unexpected origin between obtaining the window reference and sending the message.
 
-#### Receiving a message
+### Receiving a message
 
 To receive a message in the iframe, you need to add an event listener for the `message` event:
 
@@ -74,7 +72,7 @@ window.addEventListener('message', (event) => {
 
 The `event` object contains the `data` property, which holds the message sent by the parent page.
 
-### Security considerations
+## Security considerations
 
 When using `postMessage`, it's crucial to consider security:
 
@@ -82,7 +80,7 @@ When using `postMessage`, it's crucial to consider security:
 - **Validate the sender**: Check `event.origin` and, where possible, `event.source`. `targetOrigin` protects the receiver; it does not authenticate messages arriving at your listener.
 - **Validate the message**: Treat `event.data` as untrusted input and validate its type and fields before using it.
 
-### Example with target origin
+## Example with target origin
 
 Here’s an example with a specified target origin:
 

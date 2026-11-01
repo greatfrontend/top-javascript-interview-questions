@@ -347,15 +347,15 @@ In JavaScript, `let`, `var`, and `const` are all keywords used to declare variab
 
 ### What is the difference between `==` and `===` in JavaScript?
 
-`==` is the abstract equality operator while `===` is the strict equality operator. `==` performs type coercion before comparing, following the Abstract Equality Comparison algorithm defined in the ECMAScript specification. `===` does not perform coercion and returns `false` whenever the operand types differ. `===` is generally preferred in application code because it eliminates a class of bugs caused by unexpected coercion. The most common exception is `x == null`, which checks for both `null` and `undefined` in a single comparison.
+`==` is the abstract equality operator while `===` is the strict equality operator. `==` first checks the operand types. When they match, it compares the values without type coercion, just like `===`. When the types differ, it follows the Abstract Equality Comparison algorithm, which may convert one or both operands. `===` never performs type coercion and returns `false` whenever the operand types differ. `===` is generally preferred in application code because it eliminates a class of bugs caused by unexpected coercion. The most common exception is `x == null`, which checks for both `null` and `undefined` in a single comparison.
 
 | Operator | `==` | `===` |
 | --- | --- | --- |
 | Name | Loose (abstract) equality operator | Strict equality operator |
-| Type coercion | Yes — per the Abstract Equality Comparison algorithm | No |
-| Comparison behavior | Types may be coerced before the value comparison | Types are compared first |
+| Type coercion | May occur when operand types differ | No |
+| Comparison behavior | Same types: strict equality; different types: follow the abstract equality rules | Different types: `false`; same types: compare without coercion |
 
-> **Don't confuse `=` with `==` and `===`.** `=` is the [assignment operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Assignment) — it sets a variable's value (`x = 5`) and does not compare anything.
+> **Don't confuse `=` with `==` and `===`.** `=` is the [assignment operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Assignment) and sets a variable's value (`x = 5`); it does not compare anything.
 
 <br>
     
@@ -367,7 +367,7 @@ In JavaScript, `let`, `var`, and `const` are all keywords used to declare variab
 
 ### What is the event loop in JavaScript runtimes?
 
-The event loop is the host runtime's scheduling mechanism for coordinating JavaScript jobs, asynchronous operations, and—in browsers—rendering. A simplified browser turn works like this:
+The event loop is the host runtime's scheduling mechanism for coordinating JavaScript jobs, asynchronous operations, and (in browsers) rendering. A simplified browser turn works like this:
 
 1. The host runs one task, such as initial script evaluation, a timer callback, or an input-event callback. Function calls made by that task use the JavaScript agent's call stack.
 2. Timers, networking, and other host APIs continue outside the currently executing JavaScript stack. When work becomes ready, the host queues a task or settles a promise, which queues its reactions as microtasks.
@@ -408,14 +408,14 @@ However, do note that:
 
 ### Explain how `this` works in JavaScript
 
-There's no simple explanation for `this`; it is one of the most confusing concepts in JavaScript because its behavior differs from many other programming languages. The one-liner explanation of the `this` keyword is that it is a dynamic reference to the context in which a function is executed.
+For ordinary functions, `this` depends on the call form and any explicit binding. Arrow functions inherit `this` from their enclosing scope.
 
 A longer explanation is that `this` follows these rules:
 
 1. If the `new` keyword is used when calling the function, meaning the function was used as a function constructor, the `this` inside the function is the newly-created object instance.
 2. If `this` is used in a `class` `constructor`, the `this` inside the `constructor` is the newly-created object instance.
 3. If `apply()`, `call()`, or `bind()` is used to call/create a function, `this` inside the function is the object that is passed in as the argument.
-4. If a function is called as a method (e.g. `obj.method()`) — `this` is the object that the function is a property of.
+4. If a function is called as a method (e.g. `obj.method()`); `this` is the object that the function is a property of.
 5. If a function is invoked as a free function invocation, meaning it was invoked without any of the conditions present above, `this` is the global object. In the browser, the global object is the `window` object. If in strict mode (`'use strict';`), `this` will be `undefined` instead of the global object.
 6. If multiple of the above rules apply, the rule that is higher wins and will set the `this` value.
 7. If the function is an ES2015 arrow function, it ignores all the rules above and receives the `this` value of its surrounding scope at the time it is created.
@@ -466,7 +466,7 @@ All of these ways (`<script>`, `<script async>`, and `<script defer>`) are used 
 - `<script async>` downloads the script asynchronously, in parallel with parsing the HTML. Executes the script as soon as it is available, potentially interrupting the HTML parsing. Multiple `<script async>` tags do not wait for each other and execute in no particular order.
 - `<script defer>` downloads the script asynchronously, in parallel with parsing the HTML. However, the execution of the script is deferred until HTML parsing is complete, in the order they appear in the HTML.
 
-Here's a table summarizing the 4 ways of loading `<script>`s in an HTML document. Modern apps almost always use modules, which deserve their own row.
+The table compares four ways to load scripts, including module scripts:
 
 | Feature | `<script>` | `<script async>` | `<script defer>` | `<script type="module">` |
 | --- | --- | --- | --- | --- |
@@ -531,8 +531,6 @@ console.log(add.apply(null, [1, 2])); // 3
 - **Binding `this` value to preserve context**: The primary purpose of `bind` is to bind the `this` value of a function to a specific object. When you call `func.bind(thisArg)`, it creates a new function with the same body as `func`, but with `this` permanently bound to `thisArg`.
 - **Partial application of arguments**: `bind` also allows you to pre-specify arguments for the new function. Any arguments passed to `bind` after `thisArg` will be prepended to the arguments list when the new function is called.
 - **Method borrowing**: `bind` allows you to borrow methods from one object and apply them to another object, even if they were not originally designed to work with that object.
-
-The `bind` method is particularly useful in scenarios where you need to ensure that a function is called with a specific `this` context, such as in event handlers, callbacks, or method borrowing.
 
 <br>
     
@@ -943,7 +941,7 @@ It's much more verbose to use inheritance in ES5, and the ES2015 version is easi
 
 Event bubbling is a DOM event propagation mechanism where an event (e.g. a click) starts at the target element and bubbles up to the root of the document. This allows ancestor elements to also respond to the event.
 
-Event bubbling is essential for event delegation, where a single event handler manages events for multiple child elements, enhancing performance and code simplicity. While convenient, failing to manage event propagation properly can lead to unintended behavior, such as multiple handlers firing for a single event.
+Event bubbling lets one ancestor listener handle events from multiple descendants. An event can trigger handlers on both the target and its ancestors, so account for propagation when attaching listeners.
 
 <br>
     
@@ -1379,7 +1377,7 @@ array.forEach((number, index) => {
 
 **Using `for...of`**
 
-This method is the newest and most convenient way to iterate over arrays. It automatically iterates over each element without requiring you to manage the index.
+`for...of` iterates array values without requiring an explicit index variable.
 
 ```js live
 const numbers = [1, 2, 3, 4, 5];
@@ -2223,7 +2221,7 @@ var bar = function () {
 
 ### What are the potential issues caused by hoisting?
 
-JavaScript creates bindings before executing a scope's statements, but initializes different declaration forms differently. An early read of `var` produces `undefined`; an early read of `let`, `const`, or `class` throws because the binding is in the temporal dead zone; and function declarations are already callable. These differences—not literal source-code movement—can produce confusing bugs.
+JavaScript creates bindings before executing a scope's statements, but initializes different declaration forms differently. An early read of `var` produces `undefined`; an early read of `let`, `const`, or `class` throws because the binding is in the temporal dead zone; and function declarations are already callable. These differences (not literal source-code movement) can produce confusing bugs.
 
 ```js live
 console.log(a); // undefined
@@ -2241,7 +2239,7 @@ let b = 10;
 
 ### How can you avoid problems related to hoisting?
 
-Use `const` by default and `let` when reassignment is required, keep declarations close to their first use, and never read a binding before it is initialized. `let` and `const` are still hoisted—their bindings exist from the start of the block—but they remain in the temporal dead zone until evaluation reaches the declaration. Static-analysis rules such as `no-use-before-define` and `no-undef` catch the risky patterns.
+Use `const` by default and `let` when reassignment is required, keep declarations close to their first use, and never read a binding before it is initialized. `let` and `const` are still hoisted (their bindings exist from the start of the block) but they remain in the temporal dead zone until evaluation reaches the declaration. Static-analysis rules such as `no-use-before-define` and `no-undef` catch the risky patterns.
 
 ```js live
 // Use let or const
@@ -2264,15 +2262,15 @@ myFunction(); // Output: 'Hello, world!'
 
 ### What is the difference between `==` and `===` in JavaScript?
 
-`==` is the abstract equality operator while `===` is the strict equality operator. `==` performs type coercion before comparing, following the Abstract Equality Comparison algorithm defined in the ECMAScript specification. `===` does not perform coercion and returns `false` whenever the operand types differ. `===` is generally preferred in application code because it eliminates a class of bugs caused by unexpected coercion. The most common exception is `x == null`, which checks for both `null` and `undefined` in a single comparison.
+`==` is the abstract equality operator while `===` is the strict equality operator. `==` first checks the operand types. When they match, it compares the values without type coercion, just like `===`. When the types differ, it follows the Abstract Equality Comparison algorithm, which may convert one or both operands. `===` never performs type coercion and returns `false` whenever the operand types differ. `===` is generally preferred in application code because it eliminates a class of bugs caused by unexpected coercion. The most common exception is `x == null`, which checks for both `null` and `undefined` in a single comparison.
 
 | Operator | `==` | `===` |
 | --- | --- | --- |
 | Name | Loose (abstract) equality operator | Strict equality operator |
-| Type coercion | Yes — per the Abstract Equality Comparison algorithm | No |
-| Comparison behavior | Types may be coerced before the value comparison | Types are compared first |
+| Type coercion | May occur when operand types differ | No |
+| Comparison behavior | Same types: strict equality; different types: follow the abstract equality rules | Different types: `false`; same types: compare without coercion |
 
-> **Don't confuse `=` with `==` and `===`.** `=` is the [assignment operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Assignment) — it sets a variable's value (`x = 5`) and does not compare anything.
+> **Don't confuse `=` with `==` and `===`.** `=` is the [assignment operator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Assignment) and sets a variable's value (`x = 5`); it does not compare anything.
 
 <br>
     
@@ -2341,7 +2339,7 @@ array.forEach((number, index) => {
 
 **Using `for...of`**
 
-This method is the newest and most convenient way to iterate over arrays. It automatically iterates over each element without requiring you to manage the index.
+`for...of` iterates array values without requiring an explicit index variable.
 
 ```js live
 const numbers = [1, 2, 3, 4, 5];
@@ -2983,17 +2981,17 @@ console.log(deepCopyObject); // { a: 1, b: 2 }
 A shallow copy duplicates the top-level properties of an object, but nested objects are still referenced. A deep copy duplicates all levels of an object, creating entirely new instances of nested objects. `Object.assign()` and the spread operator (`...`) create shallow copies. `structuredClone()` is the modern built-in for deep copies. `JSON.parse(JSON.stringify())` and Lodash's `_.cloneDeep` are other common approaches, each with different tradeoffs around which values they can faithfully clone.
 
 ```js live
-// Shallow copy — nested object is shared
+// Shallow copy: nested object is shared
 let obj1 = { a: 1, b: { c: 2 } };
 let shallowCopy = { ...obj1 };
 shallowCopy.b.c = 3;
-console.log(obj1.b.c); // 3 — original mutated too
+console.log(obj1.b.c); // 3, original mutated too
 
-// Deep copy — fully independent
+// Deep copy: fully independent
 let obj2 = { a: 1, b: { c: 2 } };
 let deepCopy = structuredClone(obj2);
 deepCopy.b.c = 4;
-console.log(obj2.b.c); // 2 — original unchanged
+console.log(obj2.b.c); // 2, original unchanged
 ```
 
 <br>
@@ -3256,7 +3254,7 @@ console.log(isEmpty(obj)); // true
 
 ### What is the event loop in JavaScript runtimes?
 
-The event loop is the host runtime's scheduling mechanism for coordinating JavaScript jobs, asynchronous operations, and—in browsers—rendering. A simplified browser turn works like this:
+The event loop is the host runtime's scheduling mechanism for coordinating JavaScript jobs, asynchronous operations, and (in browsers) rendering. A simplified browser turn works like this:
 
 1. The host runs one task, such as initial script evaluation, a timer callback, or an input-event callback. Function calls made by that task use the JavaScript agent's call stack.
 2. Timers, networking, and other host APIs continue outside the currently executing JavaScript stack. When work becomes ready, the host queues a task or settles a promise, which queues its reactions as microtasks.
@@ -3488,7 +3486,7 @@ fetch('https://api.example.com/data') // This request will fail (example domain)
 
 ### Explain the concept of a microtask queue
 
-The microtask queue holds callbacks such as promise reactions, `queueMicrotask()` callbacks, and `MutationObserver` notifications. At a microtask checkpoint—normally after the current task or callback finishes and the JavaScript stack is empty—the runtime drains the queue before it may render and select another task. Microtasks queued by other microtasks are drained in the same checkpoint, so recursively adding them can starve rendering and other work.
+The microtask queue holds callbacks such as promise reactions, `queueMicrotask()` callbacks, and `MutationObserver` notifications. At a microtask checkpoint (normally after the current task or callback finishes and the JavaScript stack is empty) the runtime drains the queue before it may render and select another task. Microtasks queued by other microtasks are drained in the same checkpoint, so recursively adding them can starve rendering and other work.
 
 <br>
     
@@ -3996,14 +3994,14 @@ myFunction();
 
 ### Explain how `this` works in JavaScript
 
-There's no simple explanation for `this`; it is one of the most confusing concepts in JavaScript because its behavior differs from many other programming languages. The one-liner explanation of the `this` keyword is that it is a dynamic reference to the context in which a function is executed.
+For ordinary functions, `this` depends on the call form and any explicit binding. Arrow functions inherit `this` from their enclosing scope.
 
 A longer explanation is that `this` follows these rules:
 
 1. If the `new` keyword is used when calling the function, meaning the function was used as a function constructor, the `this` inside the function is the newly-created object instance.
 2. If `this` is used in a `class` `constructor`, the `this` inside the `constructor` is the newly-created object instance.
 3. If `apply()`, `call()`, or `bind()` is used to call/create a function, `this` inside the function is the object that is passed in as the argument.
-4. If a function is called as a method (e.g. `obj.method()`) — `this` is the object that the function is a property of.
+4. If a function is called as a method (e.g. `obj.method()`); `this` is the object that the function is a property of.
 5. If a function is invoked as a free function invocation, meaning it was invoked without any of the conditions present above, `this` is the global object. In the browser, the global object is the `window` object. If in strict mode (`'use strict';`), `this` will be `undefined` instead of the global object.
 6. If multiple of the above rules apply, the rule that is higher wins and will set the `this` value.
 7. If the function is an ES2015 arrow function, it ignores all the rules above and receives the `this` value of its surrounding scope at the time it is created.
@@ -4023,8 +4021,6 @@ For an in-depth explanation, do check out [Arnav Aggrawal's article on Medium](h
 - **Binding `this` value to preserve context**: The primary purpose of `bind` is to bind the `this` value of a function to a specific object. When you call `func.bind(thisArg)`, it creates a new function with the same body as `func`, but with `this` permanently bound to `thisArg`.
 - **Partial application of arguments**: `bind` also allows you to pre-specify arguments for the new function. Any arguments passed to `bind` after `thisArg` will be prepended to the arguments list when the new function is called.
 - **Method borrowing**: `bind` allows you to borrow methods from one object and apply them to another object, even if they were not originally designed to work with that object.
-
-The `bind` method is particularly useful in scenarios where you need to ensure that a function is called with a specific `this` context, such as in event handlers, callbacks, or method borrowing.
 
 <br>
     
@@ -4161,7 +4157,7 @@ In a browser, events go through three phases: capturing, target, and bubbling. D
 
 Event bubbling is a DOM event propagation mechanism where an event (e.g. a click) starts at the target element and bubbles up to the root of the document. This allows ancestor elements to also respond to the event.
 
-Event bubbling is essential for event delegation, where a single event handler manages events for multiple child elements, enhancing performance and code simplicity. While convenient, failing to manage event propagation properly can lead to unintended behavior, such as multiple handlers firing for a single event.
+Event bubbling lets one ancestor listener handle events from multiple descendants. An event can trigger handlers on both the target and its ancestors, so account for propagation when attaching listeners.
 
 <br>
     
@@ -4297,7 +4293,7 @@ All of these ways (`<script>`, `<script async>`, and `<script defer>`) are used 
 - `<script async>` downloads the script asynchronously, in parallel with parsing the HTML. Executes the script as soon as it is available, potentially interrupting the HTML parsing. Multiple `<script async>` tags do not wait for each other and execute in no particular order.
 - `<script defer>` downloads the script asynchronously, in parallel with parsing the HTML. However, the execution of the script is deferred until HTML parsing is complete, in the order they appear in the HTML.
 
-Here's a table summarizing the 4 ways of loading `<script>`s in an HTML document. Modern apps almost always use modules, which deserve their own row.
+The table compares four ways to load scripts, including module scripts:
 
 | Feature | `<script>` | `<script async>` | `<script defer>` | `<script type="module">` |
 | --- | --- | --- | --- | --- |
@@ -4349,7 +4345,7 @@ Here's a table summarizing the 3 client storage mechanisms.
 
 ### How do you make an HTTP request using the Fetch API?
 
-To make an HTTP request, call `fetch()`, which returns a promise for a `Response`. Fetch rejects for failures such as malformed URLs, network errors, CORS failures, and aborts—not for HTTP statuses such as 404 or 500—so check `response.ok` (or `response.status`) before reading the body.
+To make an HTTP request, call `fetch()`, which returns a promise for a `Response`. Fetch rejects for failures such as malformed URLs, network errors, CORS failures, and aborts (not for HTTP statuses such as 404 or 500) so check `response.ok` (or `response.status`) before reading the body.
 
 ```js live
 fetch('https://jsonplaceholder.typicode.com/todos/1')
@@ -4391,7 +4387,7 @@ fetch('https://jsonplaceholder.typicode.com/posts', {
 
 ### What are the different ways to make an API call in JavaScript?
 
-Use the built-in `fetch()` API for most new browser and modern Node.js code. It supports promises, streaming response bodies, and cancellation with `AbortController`, but rejects only for request failures—not for HTTP error statuses—so check `response.ok`. Use `XMLHttpRequest` when maintaining legacy browser code or when its upload-progress events are specifically required. Libraries such as Axios can add a shared client policy, interceptors, and conveniences; jQuery AJAX mainly remains relevant in existing jQuery applications.
+Use the built-in `fetch()` API for most new browser and modern Node.js code. It supports promises, streaming response bodies, and cancellation with `AbortController`, but rejects only for request failures (not for HTTP error statuses) so check `response.ok`. Use `XMLHttpRequest` when maintaining legacy browser code or when its upload-progress events are specifically required. Libraries such as Axios can add a shared client policy, interceptors, and conveniences; jQuery AJAX mainly remains relevant in existing jQuery applications.
 
 These are request clients. Server-Sent Events and WebSockets solve long-lived server push or two-way messaging and are not drop-in replacements for ordinary request-response calls.
 
@@ -4803,7 +4799,7 @@ In this example, the server sends a "Hello from server" message initially, and t
 
 ### What are Progressive Web Applications (PWAs)?
 
-Progressive Web Applications (PWAs) are web applications enhanced with capabilities such as installation, offline behavior, background work, and notifications. Which capabilities are available—and the exact installation criteria—vary by browser and operating system. A web app manifest supplies installation metadata, service workers commonly provide offline and push behavior, and powerful features require a secure context.
+Progressive Web Applications (PWAs) are web applications enhanced with capabilities such as installation, offline behavior, background work, and notifications. Which capabilities are available (and the exact installation criteria) vary by browser and operating system. A web app manifest supplies installation metadata, service workers commonly provide offline and push behavior, and powerful features require a secure context.
 
 <br>
     
@@ -4813,7 +4809,7 @@ Progressive Web Applications (PWAs) are web applications enhanced with capabilit
 
 ### What are modules and why are they useful?
 
-Modules are reusable pieces of code that can be imported and exported between different files in a project. They help in organizing code, making it more maintainable and scalable. By using modules, you can avoid global namespace pollution and manage dependencies more effectively. In JavaScript, you can use `import` and `export` statements to work with modules.
+Modules provide file-level scope and explicit dependencies for sharing code without adding globals. In JavaScript ES modules, use `import` and `export` statements to share values between files.
 
 ```js
 // myModule.js
@@ -4952,7 +4948,7 @@ Interop is runtime- and version-specific. In current Node.js, ESM can import Com
 
 ### What are the different types of errors in JavaScript?
 
-Errors can be classified by when they appear—parse-time syntax errors, runtime exceptions, and logical errors that produce the wrong result. JavaScript also provides built-in exception classes such as `SyntaxError`, `ReferenceError`, `TypeError`, `RangeError`, `URIError`, and `AggregateError`. The class describes the failure category; application code can define domain-specific subclasses.
+Errors can be classified by when they appear, parse-time syntax errors, runtime exceptions, and logical errors that produce the wrong result. JavaScript also provides built-in exception classes such as `SyntaxError`, `ReferenceError`, `TypeError`, `RangeError`, `URIError`, and `AggregateError`. The class describes the failure category; application code can define domain-specific subclasses.
 
 Handle only errors you can recover from or translate at that boundary. Preserve unexpected errors and their causes, and use tests and debugging tools for logical errors that do not throw.
 
@@ -5109,7 +5105,7 @@ console.log(add5(10)); // Outputs 15
 
 ### What are the benefits of using currying and partial application?
 
-Currying transforms a function with multiple arguments into a sequence of functions, each taking a single argument. This allows for more flexible and reusable code. Partial application, on the other hand, allows you to fix a few arguments of a function and generate a new function. Both techniques help in creating more modular and maintainable code.
+Currying transforms a function with multiple arguments into a sequence of functions, each taking a single argument. Partial application fixes some arguments and returns a new function that accepts the remaining arguments. Both let later calls reuse arguments supplied earlier.
 
 <br>
     
@@ -5491,7 +5487,7 @@ Choose by test layer and runtime rather than popularity alone. Jest and Vitest a
 
 ### How do you write unit tests for JavaScript code?
 
-Choose a small behavioral unit, provide controlled inputs and dependencies, execute it, and assert its observable result or side effect. Cover representative success, boundary, and failure cases. Keep tests deterministic and independent, but do not mock every collaborator merely to make a test “unit sized”—an integration test may give more confidence when several modules form one behavior.
+Choose a small behavioral unit, provide controlled inputs and dependencies, execute it, and assert its observable result or side effect. Cover representative success, boundary, and failure cases. Keep tests deterministic and independent, but do not mock every collaborator merely to make a test “unit sized”; an integration test may give more confidence when several modules form one behavior.
 
 Vitest, Jest, Mocha with an assertion library, and Node.js's built-in test runner are current options. The runner matters less than tests that explain the contract and fail for meaningful regressions.
 
@@ -5513,7 +5509,7 @@ Test-driven development (TDD) is a short feedback cycle: write one failing test 
 
 ### What are mocks and stubs and how are they used in testing?
 
-A **stub** supplies controlled behavior, such as making a payment client return an approved response. A **spy** records calls. A **mock** often combines configured behavior with interaction expectations, although libraries use these terms differently. Use them at slow, nondeterministic, destructive, or unavailable boundaries—not to duplicate every implementation detail. Over-mocking can produce tests that pass while the real modules no longer work together.
+A **stub** supplies controlled behavior, such as making a payment client return an approved response. A **spy** records calls. A **mock** often combines configured behavior with interaction expectations, although libraries use these terms differently. Use them at slow, nondeterministic, destructive, or unavailable boundaries, not to duplicate every implementation detail. Over-mocking can produce tests that pass while the real modules no longer work together.
 
 <br>
     
@@ -5535,7 +5531,7 @@ Vitest, Jest, and Mocha all support Promise-returning and `async` tests. Callbac
 
 ### What are some best practices for writing maintainable and effective tests in JavaScript?
 
-Write tests around observable behavior and important risks. Give each test a name that describes the scenario and outcome, make failures easy to diagnose, control nondeterministic boundaries, and clean up all mutated state. Use real collaborators when they are fast and deterministic; mock only boundaries where control or isolation adds value. Explicit expected values are useful documentation—avoid duplicating production logic to calculate the expected result.
+Write tests around observable behavior and important risks. Give each test a name that describes the scenario and outcome, make failures easy to diagnose, control nondeterministic boundaries, and clean up all mutated state. Use real collaborators when they are fast and deterministic; mock only boundaries where control or isolation adds value. Explicit expected values are useful documentation, avoid duplicating production logic to calculate the expected result.
 
 <br>
     
@@ -5707,7 +5703,7 @@ console.log(myCarWithGPS.drive()); // "Driving with GPS"
 
 ### Explain the concept of the Strategy pattern
 
-The Strategy pattern defines interchangeable implementations behind the same contract, letting the caller select behavior without accumulating a large conditional. JavaScript strategies can be plain functions or objects; separate classes are not required. It is useful when multiple algorithms are real extension points, such as pricing or retry policies. Prefer a simple `if` or `switch` when there are only a few stable branches—the pattern otherwise adds indirection without useful flexibility.
+The Strategy pattern defines interchangeable implementations behind the same contract, letting the caller select behavior without accumulating a large conditional. JavaScript strategies can be plain functions or objects; separate classes are not required. It is useful when multiple algorithms are real extension points, such as pricing or retry policies. Prefer a simple `if` or `switch` when there are only a few stable branches; the pattern otherwise adds indirection without useful flexibility.
 
 ```js live
 class Context {
@@ -5926,7 +5922,7 @@ Do not run active scans against systems you do not own or have permission to tes
 
 ### How can you implement secure authentication and authorization in JavaScript applications?
 
-Use a proven identity provider or framework rather than inventing an authentication protocol. Protect credentials with HTTPS; use phishing-resistant passkeys or properly hashed passwords with MFA where appropriate; establish a short-lived server-side session or carefully validated token; and keep browser session credentials in `HttpOnly`, `Secure`, appropriately scoped cookies when possible. Enforce authorization on every server-side operation using the application's actual permission model—never rely on hidden UI or client-side role checks. Cookie-based sessions also need CSRF defenses such as `SameSite` plus a CSRF token where necessary.
+Use a proven identity provider or framework rather than inventing an authentication protocol. Protect credentials with HTTPS; use phishing-resistant passkeys or properly hashed passwords with MFA where appropriate; establish a short-lived server-side session or carefully validated token; and keep browser session credentials in `HttpOnly`, `Secure`, appropriately scoped cookies when possible. Enforce authorization on every server-side operation using the application's actual permission model, never rely on hidden UI or client-side role checks. Cookie-based sessions also need CSRF defenses such as `SameSite` plus a CSRF token where necessary.
 
 <br>
     
@@ -6085,7 +6081,7 @@ There is no universal runtime performance advantage or penalty. Inspect the emit
 
 Almost never in new application code. During HTML parsing, `document.write()` injects markup into the input stream; after the document has loaded, it can implicitly call `document.open()` and replace the page. Its behavior in deferred or asynchronous scripts is problematic, it is an injection sink for untrusted strings, and browsers may intervene in slow-network cases.
 
-You may encounter it in legacy scripts or tightly controlled parser-time snippets. Replace it with normal HTML, DOM creation methods, or explicit script loading. Use the console and debugger—not `document.write()`—for debugging.
+You may encounter it in legacy scripts or tightly controlled parser-time snippets. Replace it with normal HTML, DOM creation methods, or explicit script loading. Use the console and debugger (not `document.write()`) for debugging.
 
 <br>
     

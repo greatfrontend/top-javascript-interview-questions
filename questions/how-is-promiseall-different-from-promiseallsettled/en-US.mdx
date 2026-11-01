@@ -27,13 +27,11 @@ flowchart TD
 
 Use `all()` when every result is required for success; use `allSettled()` when every outcome must be inspected independently.
 
-## How is `Promise.all()` different from `Promise.allSettled()`?
-
-### `Promise.all()`
+## `Promise.all()`
 
 `Promise.all()` takes an iterable of promises and returns a single promise that resolves when all of the input promises have resolved. If any of the input promises reject, the returned promise immediately rejects with the reason of the first promise that rejected.
 
-#### Example
+### Example
 
 ```js live
 const promise1 = Promise.resolve(3);
@@ -53,7 +51,7 @@ Promise.all([promise1, promise2, promise3])
 
 In this example, `Promise.all()` resolves with an array of results `[3, 42, 'foo']` because all promises resolve successfully.
 
-#### Failure case
+### Failure case
 
 ```js live
 const promise1 = Promise.resolve(3);
@@ -73,11 +71,11 @@ Promise.all([promise1, promise2, promise3])
 
 In this example, `Promise.all()` rejects immediately with the reason `'error'` because `promise2` rejects.
 
-### `Promise.allSettled()`
+## `Promise.allSettled()`
 
 `Promise.allSettled()` takes an iterable of promises and returns a single promise that resolves when all of the input promises have settled (either resolved or rejected). The returned promise resolves with an array of objects that each describe the outcome of each promise.
 
-#### Example
+### Example
 
 ```js live
 const promise1 = Promise.resolve(3);
@@ -96,7 +94,7 @@ Promise.allSettled([promise1, promise2, promise3]).then((results) => {
 
 In this example, `Promise.allSettled()` resolves with an array of result objects, each indicating the status and value of the promises.
 
-#### Failure case
+### Failure case
 
 ```js live
 const promise1 = Promise.resolve(3);
@@ -171,7 +169,7 @@ const slow = (label, ms) =>
 })();
 ```
 
-`Promise.all()` accepts already-running promises and waits for the slowest. `[await ..., await ...]` evaluates left-to-right and only kicks off the next call after the previous one resolves. The latter is one of the most common production performance bugs.
+In this example, both calls have started before `Promise.all()` receives their promises. `[await ..., await ...]` evaluates left-to-right, so the second call starts only after the first fulfills.
 
 ### `Promise.allSettled()` does not reject on per-promise failures
 
@@ -191,7 +189,7 @@ const slow = (label, ms) =>
 })();
 ```
 
-You will almost never put `Promise.allSettled()` inside a `try/catch` for the inner promises, since it does not throw on their rejections. To check for failures, filter on `status === 'rejected'` after the fact. (The returned promise can still reject if the input itself is invalid — for example, a non-iterable will produce a `TypeError`.)
+You will almost never put `Promise.allSettled()` inside a `try/catch` for the inner promises, since it does not throw on their rejections. To check for failures, filter on `status === 'rejected'` after the fact. (The returned promise can still reject if the input itself is invalid, for example, a non-iterable will produce a `TypeError`.)
 
 ## Further reading
 

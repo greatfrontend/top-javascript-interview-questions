@@ -4,7 +4,7 @@ title: What are mocks and stubs and how are they used in testing?
 
 ## TL;DR
 
-A **stub** supplies controlled behavior, such as making a payment client return an approved response. A **spy** records calls. A **mock** often combines configured behavior with interaction expectations, although libraries use these terms differently. Use them at slow, nondeterministic, destructive, or unavailable boundaries—not to duplicate every implementation detail. Over-mocking can produce tests that pass while the real modules no longer work together.
+A **stub** supplies controlled behavior, such as making a payment client return an approved response. A **spy** records calls. A **mock** often combines configured behavior with interaction expectations, although libraries use these terms differently. Use them at slow, nondeterministic, destructive, or unavailable boundaries, not to duplicate every implementation detail. Over-mocking can produce tests that pass while the real modules no longer work together.
 
 ---
 
@@ -74,7 +74,7 @@ This test uses the function as both a stub and a spy; it is commonly called a mo
 
 ## When to use them
 
-Good boundaries include payment/email providers, the clock, randomness, filesystem access, and failure responses that are hard to trigger reliably. Prefer a lightweight real implementation when it is fast and deterministic—for example, a real parser or in-memory data structure.
+Good boundaries include payment/email providers, the clock, randomness, filesystem access, and failure responses that are hard to trigger reliably. Prefer a lightweight real implementation when it is fast and deterministic, for example, a real parser or in-memory data structure.
 
 Avoid asserting every internal call sequence. Those tests become coupled to refactoring and can hide integration defects. Add contract or integration tests around important adapters so the fake behavior stays aligned with the real dependency.
 

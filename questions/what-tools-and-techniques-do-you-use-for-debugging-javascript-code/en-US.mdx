@@ -19,7 +19,7 @@ Suppose clicking “Save” sometimes shows an old value:
 3. **Pause execution** in the click handler or request wrapper. Inspect local variables, closures, and the call stack rather than logging only the final value.
 4. **Use a conditional breakpoint** such as `draft.id === failingId` when the code runs too often.
 5. **Follow asynchronous flow** with async stack traces and Promise rejection breakpoints. Check whether an older response overwrote a newer one.
-6. **Change one cause**—for example, abort the superseded request—and repeat the exact scenario.
+6. **Change one cause** (for example, abort the superseded request) and repeat the exact scenario.
 7. **Add a regression test** that resolves requests out of order so the race cannot return unnoticed.
 
 This separates a UI-state bug from a request, server, or race-condition bug before changing code.

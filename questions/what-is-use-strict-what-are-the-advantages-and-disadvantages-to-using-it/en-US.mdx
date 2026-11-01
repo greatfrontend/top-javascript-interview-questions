@@ -31,7 +31,7 @@ ES modules and class bodies are already strict. Use the directive for legacy scr
 
 `"use strict"` is a directive introduced in ECMAScript 5 (ES5) that signals to the JavaScript engine that the code it surrounds should be executed in "strict mode". Strict mode imposes stricter parsing and error handling rules, making your code more secure and less error-prone.
 
-When you use `"use strict"`, it helps you write cleaner code, such as preventing you from using undeclared variables. It can also make your code more secure because it disallows some potentially insecure actions.
+Strict mode throws for assignments to undeclared variables and changes several otherwise silent failures into errors.
 
 ## How to use strict mode
 
@@ -119,7 +119,7 @@ When you use `"use strict"`, it helps you write cleaner code, such as preventing
 
 ## Predict the output: common strict mode gotchas
 
-These are the four most common interview "gotchas" around strict mode. Try predicting the output before running each.
+Predict the output of these four strict-mode examples before running them.
 
 ### 1. Accidental globals
 
@@ -131,7 +131,7 @@ f();
 console.log(x); // 5: sloppy mode silently created a global
 ```
 
-In strict mode, that same code throws a `ReferenceError` because creating implicit globals is forbidden. This is the single most-cited reason to use strict mode.
+In strict mode, that same assignment throws a `ReferenceError` instead of creating an implicit global.
 
 ```js live
 'use strict';

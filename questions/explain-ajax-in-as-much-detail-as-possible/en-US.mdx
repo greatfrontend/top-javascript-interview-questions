@@ -110,11 +110,11 @@ In modern browsers, AJAX is done using the `fetch()` API instead of `XMLHttpRequ
      .catch((error) => console.error('Error:', error));
    ```
 
-4. **Asynchronous nature**: The `fetch` API is asynchronous, allowing the browser to continue executing other tasks while waiting for the server response. This prevents blocking the main thread and provides a better user experience. The `then()` and `catch()` callbacks are put onto the microtask queue when executed as part of the [event loop](/questions/quiz/what-is-event-loop-what-is-the-difference-between-call-stack-and-task-queue).
+4. **Asynchronous nature**: The `fetch` API lets the browser perform other work while waiting for the server response. Its `then()` and `catch()` handlers run as microtasks in the [event loop](/questions/quiz/what-is-event-loop-what-is-the-difference-between-call-stack-and-task-queue).
 5. **Request options**: The optional second argument to `fetch()` allows configuring various aspects of the request, such as the HTTP method, headers, body, credentials, caching behavior, and more.
 6. **Error handling**: Network, CORS, abort, and body-parsing failures reject a promise and can be handled with `.catch()` or `try...catch`. HTTP error statuses still produce a fulfilled `Response`, so application code must check the status explicitly.
 
-The `fetch()` API provides a modern, Promise-based approach to making HTTP requests in JavaScript, replacing the older `XMLHttpRequest` API. It offers a simpler and more flexible way to interact with APIs and fetch resources from servers, while integrating advanced HTTP concepts like CORS and other extensions.
+The `fetch()` API makes HTTP requests through Promises and follows browser rules such as CORS.
 
 ## Advantages and disadvantages of AJAX
 

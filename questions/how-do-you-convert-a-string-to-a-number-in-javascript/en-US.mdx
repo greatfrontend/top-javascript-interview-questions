@@ -8,9 +8,7 @@ Use `Number(value)` when the whole string must represent a number. Use `parseInt
 
 ---
 
-## How do you convert a string to a number in JavaScript?
-
-### Using the `Number()` function
+## Using the `Number()` function
 
 The `Number()` function converts a string to a number. It can handle both integer and floating-point numbers.
 
@@ -24,7 +22,7 @@ let floatNum = Number(floatStr);
 console.log(floatNum); // 123.45
 ```
 
-### Using the `parseInt()` function
+## Using the `parseInt()` function
 
 The `parseInt()` function parses a string and returns an integer. It can also take a second argument, the radix (base) of the numeral system to be used.
 
@@ -42,7 +40,7 @@ let binaryNum = parseInt(binaryStr, 2);
 console.log(binaryNum); // 10
 ```
 
-### Using the `parseFloat()` function
+## Using the `parseFloat()` function
 
 The `parseFloat()` function parses a string and returns a floating-point number.
 
@@ -52,7 +50,7 @@ let floatNum = parseFloat(floatStr);
 console.log(floatNum); // 123.45
 ```
 
-### Using the unary plus operator (`+`)
+## Using the unary plus operator (`+`)
 
 The unary plus operator can be used to convert a string to a number. It is a shorthand method and works for both integers and floating-point numbers.
 
@@ -66,7 +64,7 @@ let floatNum = +floatStr;
 console.log(floatNum); // 123.45
 ```
 
-### Handling non-numeric strings
+## Handling non-numeric strings
 
 If the string cannot be converted to a number, these methods will return `NaN` (Not-a-Number).
 

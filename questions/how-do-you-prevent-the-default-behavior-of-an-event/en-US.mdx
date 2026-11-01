@@ -16,13 +16,11 @@ This method stops the default action associated with the event from occurring.
 
 ---
 
-## How do you prevent the default behavior of an event?
-
-### Using `preventDefault` method
+## Using `preventDefault` method
 
 The `preventDefault` method is used to stop the default action of an event from occurring. This is useful in scenarios where you want to override the default behavior of an element, such as preventing a link from navigating to a new page or stopping a form from submitting.
 
-### Example: Preventing form submission
+## Example: Preventing form submission
 
 To prevent a form from submitting, you can attach an event listener to the form's `submit` event and call `preventDefault` within the event handler:
 
@@ -33,7 +31,7 @@ document.querySelector('form').addEventListener('submit', function (event) {
 });
 ```
 
-### Example: Preventing link navigation
+## Example: Preventing link navigation
 
 To prevent a link from navigating to a new page, you can attach an event listener to the link's `click` event and call `preventDefault`:
 
@@ -44,7 +42,7 @@ document.querySelector('a').addEventListener('click', function (event) {
 });
 ```
 
-### Example: Preventing default behavior in other events
+## Example: Preventing default behavior in other events
 
 The `preventDefault` method can be used with various other events, such as `keydown`, `contextmenu`, and more. Here is an example of preventing the default context menu from appearing on right-click:
 
@@ -55,7 +53,7 @@ document.addEventListener('contextmenu', function (event) {
 });
 ```
 
-### Important considerations
+## Important considerations
 
 - The `preventDefault` method should be called within the event handler function.
 - Not all events have a default behavior that can be prevented. For example, custom events do not have default actions.

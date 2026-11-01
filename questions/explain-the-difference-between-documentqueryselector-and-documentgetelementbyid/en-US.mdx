@@ -111,7 +111,7 @@ Keep in mind that a cached element can become detached or be replaced. A long-li
 
 Three more methods round out the modern DOM-query toolkit:
 
-- `element.closest(selector)` walks up from the element (including the element itself) and returns the nearest ancestor matching the selector, or `null`. It is constantly useful in event-delegation handlers:
+- `element.closest(selector)` walks up from the element (including the element itself) and returns the nearest ancestor matching the selector, or `null`. A delegated handler can use it to locate the element responsible for an action:
 
   ```js
   table.addEventListener('click', (event) => {

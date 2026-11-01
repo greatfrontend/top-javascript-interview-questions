@@ -8,9 +8,7 @@ Use `typeof` for primitive categories and functions. Its possible results includ
 
 ---
 
-## How do you check the data type of a variable?
-
-### Using the `typeof` operator
+## Using the `typeof` operator
 
 The `typeof` operator is the most common way to check the data type of a variable in JavaScript. It returns a string indicating the type of the operand.
 
@@ -40,7 +38,7 @@ let big = 42n;
 console.log(typeof big); // "bigint"
 ```
 
-### Checking for `null`
+## Checking for `null`
 
 The `typeof` operator returns `"object"` for `null`, which can be misleading. To specifically check for `null`, you should use a strict equality comparison.
 
@@ -49,7 +47,7 @@ let n = null;
 console.log(n === null); // true
 ```
 
-### Checking for arrays
+## Checking for arrays
 
 Arrays are a special type of object in JavaScript. To check if a variable is an array, you can use the `Array.isArray` method.
 
@@ -58,7 +56,7 @@ let arr = [1, 2, 3];
 console.log(Array.isArray(arr)); // true
 ```
 
-### Checking for `NaN`
+## Checking for `NaN`
 
 `NaN` (Not-a-Number) is a special numeric value in JavaScript. To check if a value is `NaN`, you can use the `Number.isNaN` method.
 
@@ -67,7 +65,7 @@ let notANumber = NaN;
 console.log(Number.isNaN(notANumber)); // true
 ```
 
-### Checking for `null` and `undefined`
+## Checking for `null` and `undefined`
 
 To check if a variable is either `null` or `undefined`, you can use a combination of the `==` operator and the `typeof` operator.
 

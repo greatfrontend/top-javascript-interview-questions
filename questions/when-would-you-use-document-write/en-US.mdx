@@ -6,7 +6,7 @@ title: When would you use `document.write()`?
 
 Almost never in new application code. During HTML parsing, `document.write()` injects markup into the input stream; after the document has loaded, it can implicitly call `document.open()` and replace the page. Its behavior in deferred or asynchronous scripts is problematic, it is an injection sink for untrusted strings, and browsers may intervene in slow-network cases.
 
-You may encounter it in legacy scripts or tightly controlled parser-time snippets. Replace it with normal HTML, DOM creation methods, or explicit script loading. Use the console and debugger—not `document.write()`—for debugging.
+You may encounter it in legacy scripts or tightly controlled parser-time snippets. Replace it with normal HTML, DOM creation methods, or explicit script loading. Use the console and debugger (not `document.write()`) for debugging.
 
 ---
 

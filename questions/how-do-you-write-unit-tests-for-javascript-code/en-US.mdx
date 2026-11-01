@@ -4,7 +4,7 @@ title: How do you write unit tests for JavaScript code?
 
 ## TL;DR
 
-Choose a small behavioral unit, provide controlled inputs and dependencies, execute it, and assert its observable result or side effect. Cover representative success, boundary, and failure cases. Keep tests deterministic and independent, but do not mock every collaborator merely to make a test “unit sized”—an integration test may give more confidence when several modules form one behavior.
+Choose a small behavioral unit, provide controlled inputs and dependencies, execute it, and assert its observable result or side effect. Cover representative success, boundary, and failure cases. Keep tests deterministic and independent, but do not mock every collaborator merely to make a test “unit sized”; an integration test may give more confidence when several modules form one behavior.
 
 Vitest, Jest, Mocha with an assertion library, and Node.js's built-in test runner are current options. The runner matters less than tests that explain the contract and fail for meaningful regressions.
 

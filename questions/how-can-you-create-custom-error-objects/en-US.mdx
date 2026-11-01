@@ -29,9 +29,7 @@ try {
 
 ---
 
-## How can you create custom error objects?
-
-### Extending the `Error` class
+## Extending the `Error` class
 
 To create a custom error object, you can extend the built-in `Error` class. This allows you to inherit the properties and methods of the `Error` class while adding your own custom properties and methods.
 
@@ -44,7 +42,7 @@ class CustomError extends Error {
 }
 ```
 
-### Adding custom properties
+## Adding custom properties
 
 You can add custom properties to your custom error class to provide more context about the error.
 
@@ -66,7 +64,7 @@ try {
 }
 ```
 
-### Custom methods
+## Custom methods
 
 You can also add custom methods to your custom error class to handle specific error-related logic.
 
@@ -90,7 +88,7 @@ try {
 }
 ```
 
-### Using `instanceof` to check for custom errors
+## Using `instanceof` to check for custom errors
 
 You can use the `instanceof` operator to check if an error is an instance of your custom error class.
 
@@ -116,7 +114,7 @@ try {
 
 Catch a custom error only where you can recover, translate it into an expected API result, or add useful context. Re-throw unexpected errors so programming defects are not silently treated as validation failures.
 
-### Preserving the original cause
+## Preserving the original cause
 
 Wrapping a low-level error can give callers a domain-specific error without losing the original failure:
 

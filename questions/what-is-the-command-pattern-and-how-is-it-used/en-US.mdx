@@ -66,13 +66,11 @@ sequenceDiagram
 
 Because the request is a value, an invoker can queue, log, retry, compose, or undo commands without understanding receiver details.
 
-## What is the Command pattern and how is it used?
-
-### Definition
+## Definition
 
 The Command pattern is a behavioral design pattern that encapsulates a request as an object, thereby allowing for the parameterization of clients with queues, requests, and operations. It also provides support for undoable operations.
 
-### Components
+## Components
 
 1. **Command**: Declares an interface for executing an operation.
 2. **ConcreteCommand**: Implements the `execute` method by invoking the corresponding operation(s) on `Receiver`.
@@ -80,7 +78,7 @@ The Command pattern is a behavioral design pattern that encapsulates a request a
 4. **Invoker**: Asks the command to carry out the request.
 5. **Client**: Creates a `ConcreteCommand` object and sets its receiver.
 
-### Implementation in JavaScript
+## Implementation in JavaScript
 
 ```js live
 // Step 1: Define the Command interface
@@ -159,7 +157,7 @@ remote.pressButton(); // Light is off
 remote.pressUndo(); // Light is on
 ```
 
-### Use cases
+## Use cases
 
 - **Undo/Redo functionality**: The Command pattern is ideal for implementing undo and redo operations.
 - **Macro commands**: It can be used to implement a sequence of commands.

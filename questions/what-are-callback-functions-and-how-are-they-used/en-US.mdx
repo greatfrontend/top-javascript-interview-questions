@@ -24,13 +24,11 @@ fetchData(handleData);
 
 ---
 
-## What are callback functions and how are they used?
-
-### Definition
+## Definition
 
 A callback function is passed to other code so that code can invoke it at the defined time. The invocation may be synchronous or asynchronous; only an asynchronous API allows the current stack to finish before the callback runs.
 
-### Synchronous callbacks
+## Synchronous callbacks
 
 Synchronous callbacks are executed immediately within the function they are passed to. They are often used for tasks that need to be completed before moving on to the next line of code.
 
@@ -50,7 +48,7 @@ greet('Alice', sayGoodbye);
 // Goodbye!
 ```
 
-### Asynchronous callbacks
+## Asynchronous callbacks
 
 Asynchronous callbacks are used for operations that take some time to complete, such as reading files, making HTTP requests, or handling events. These callbacks are executed after the asynchronous operation has finished.
 
@@ -70,9 +68,9 @@ fetchData(handleData);
 // Output: { name: 'John Doe' } after 1 second
 ```
 
-### Common use cases
+## Common use cases
 
-#### Event handling
+### Event handling
 
 Callbacks are often used in event handling. For example, in JavaScript, you can pass a callback function to an event listener.
 
@@ -88,7 +86,7 @@ button.addEventListener('click', () => {
 button.click();
 ```
 
-#### API calls
+### API calls
 
 Callbacks are frequently used in making API calls to handle the response data.
 
@@ -110,7 +108,7 @@ function displayUserData(data) {
 getUserData(1, displayUserData);
 ```
 
-#### Timers
+### Timers
 
 Callbacks are also used with timers like `setTimeout` and `setInterval`.
 

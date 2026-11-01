@@ -67,7 +67,7 @@ Using a `Set` avoids accidental duplicate subscriptions. Returning cleanup from 
 
 ## Delivery choices
 
-This example notifies synchronously. Therefore a slow observer delays the publisher, and a thrown exception stops later observers. Depending on the application, the subject can isolate listener errors, queue notifications, or use an asynchronous event system—but those choices change ordering and error propagation and should be documented.
+This example notifies synchronously. Therefore a slow observer delays the publisher, and a thrown exception stops later observers. Depending on the application, the subject can isolate listener errors, queue notifications, or use an asynchronous event system, but those choices change ordering and error propagation and should be documented.
 
 For streams with backpressure, cancellation, completion, and error channels, an async iterator or a stream abstraction may fit better than a minimal Observer.
 

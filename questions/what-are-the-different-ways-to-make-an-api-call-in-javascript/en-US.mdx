@@ -4,7 +4,7 @@ title: What are the different ways to make an API call in JavaScript?
 
 ## TL;DR
 
-Use the built-in `fetch()` API for most new browser and modern Node.js code. It supports promises, streaming response bodies, and cancellation with `AbortController`, but rejects only for request failures—not for HTTP error statuses—so check `response.ok`. Use `XMLHttpRequest` when maintaining legacy browser code or when its upload-progress events are specifically required. Libraries such as Axios can add a shared client policy, interceptors, and conveniences; jQuery AJAX mainly remains relevant in existing jQuery applications.
+Use the built-in `fetch()` API for most new browser and modern Node.js code. It supports promises, streaming response bodies, and cancellation with `AbortController`, but rejects only for request failures (not for HTTP error statuses) so check `response.ok`. Use `XMLHttpRequest` when maintaining legacy browser code or when its upload-progress events are specifically required. Libraries such as Axios can add a shared client policy, interceptors, and conveniences; jQuery AJAX mainly remains relevant in existing jQuery applications.
 
 These are request clients. Server-Sent Events and WebSockets solve long-lived server push or two-way messaging and are not drop-in replacements for ordinary request-response calls.
 

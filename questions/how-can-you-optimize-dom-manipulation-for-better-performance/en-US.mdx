@@ -8,9 +8,7 @@ Measure with browser performance tools, then reduce unnecessary DOM work, batch 
 
 ---
 
-## How can you optimize DOM manipulation for better performance?
-
-### Minimize direct DOM access
+## Minimize direct DOM access
 
 DOM access is not inherently a problem, but repeated queries and mutations can become costly when they trigger style, layout, paint, or large tree updates. Reuse stable references where that improves clarity and avoids repeated work.
 
@@ -28,7 +26,7 @@ element.style.backgroundColor = 'blue';
 console.log(document.body); // Notice the edits
 ```
 
-### Batch DOM changes
+## Batch DOM changes
 
 Instead of making multiple changes to the DOM one at a time, batch them together. This reduces the number of reflows and repaints.
 
@@ -44,7 +42,7 @@ element.style.cssText = 'color: red; background-color: blue;';
 console.log(document.body); // Notice the edits
 ```
 
-### Use `DocumentFragment`
+## Use `DocumentFragment`
 
 When adding multiple elements to the DOM, use a `DocumentFragment` to minimize reflows and repaints.
 
@@ -60,7 +58,7 @@ document.body.appendChild(fragment);
 console.log(document.body); // Notice that the divs have been added
 ```
 
-### Frameworks and virtual DOMs
+## Frameworks and virtual DOMs
 
 Libraries such as React provide declarative rendering and can batch updates. Their reconciliation also adds JavaScript and memory overhead, so use a framework for application architecture and measure hot paths rather than assuming its virtual representation is faster than focused DOM code.
 
@@ -78,7 +76,7 @@ const root = createRoot(document.getElementById('root'));
 root.render(<App />);
 ```
 
-### Use `requestAnimationFrame` for animations
+## Use `requestAnimationFrame` for animations
 
 For smoother animations, use `requestAnimationFrame` to ensure updates are synchronized with the browser's repaint cycle.
 
@@ -90,7 +88,7 @@ function animate() {
 requestAnimationFrame(animate);
 ```
 
-### Avoid layout thrashing
+## Avoid layout thrashing
 
 Layout thrashing occurs when you read and write to the DOM repeatedly in a way that forces the browser to recalculate styles and layout multiple times. To avoid this, separate read and write operations.
 

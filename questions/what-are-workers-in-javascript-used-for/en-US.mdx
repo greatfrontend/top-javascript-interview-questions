@@ -196,7 +196,7 @@ You are not expected to know about worklets, so it won't be covered in great det
 - **Origin and loading rules**: Worker script loading is subject to worker-type-specific same-origin and CORS rules. For example, classic dedicated worker entry scripts generally must be same-origin, while imported resources and module workers have their own Fetch/CORS behavior.
 - **No DOM access**: Workers do not have direct access to the DOM. They can communicate with the main thread through messages
 - **Performance**: Creating and managing workers incurs overhead. They should be used judiciously for tasks that truly benefit from parallel execution
-- **Error handling**: Proper error handling mechanisms should be in place to handle any issues within the worker scripts
+- **Error handling**: Listen for worker errors and report failed jobs through the worker's message protocol
 
 ## Further reading
 

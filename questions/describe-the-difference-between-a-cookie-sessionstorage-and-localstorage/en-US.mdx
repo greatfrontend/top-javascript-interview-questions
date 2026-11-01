@@ -222,7 +222,7 @@ A few common mistakes:
 
 ## Beyond these three: IndexedDB and Cache Storage
 
-Modern apps frequently need more than what these three APIs offer. Two more are worth knowing:
+IndexedDB supports structured data, while Cache Storage holds network responses:
 
 - **IndexedDB**: an in-browser, asynchronous, transactional database. Use it for large structured data (offline app state, large user-generated content, search indexes), MBs to GBs of storage, and queryable data. Wrappers like [Dexie.js](https://dexie.org/) and [idb](https://github.com/jakearchibald/idb) make the API more pleasant.
 - **Cache Storage** (`caches`): paired with [Service Workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API), this stores HTTP request/response pairs for offline-capable apps and PWAs. It is not a general-purpose key-value store; it is specifically for caching network responses.

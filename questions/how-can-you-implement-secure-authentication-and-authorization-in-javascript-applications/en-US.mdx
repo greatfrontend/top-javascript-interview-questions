@@ -4,7 +4,7 @@ title: How can you implement secure authentication and authorization in JavaScri
 
 ## TL;DR
 
-Use a proven identity provider or framework rather than inventing an authentication protocol. Protect credentials with HTTPS; use phishing-resistant passkeys or properly hashed passwords with MFA where appropriate; establish a short-lived server-side session or carefully validated token; and keep browser session credentials in `HttpOnly`, `Secure`, appropriately scoped cookies when possible. Enforce authorization on every server-side operation using the application's actual permission model—never rely on hidden UI or client-side role checks. Cookie-based sessions also need CSRF defenses such as `SameSite` plus a CSRF token where necessary.
+Use a proven identity provider or framework rather than inventing an authentication protocol. Protect credentials with HTTPS; use phishing-resistant passkeys or properly hashed passwords with MFA where appropriate; establish a short-lived server-side session or carefully validated token; and keep browser session credentials in `HttpOnly`, `Secure`, appropriately scoped cookies when possible. Enforce authorization on every server-side operation using the application's actual permission model, never rely on hidden UI or client-side role checks. Cookie-based sessions also need CSRF defenses such as `SameSite` plus a CSRF token where necessary.
 
 ---
 
@@ -30,17 +30,15 @@ flowchart TD
 
 Client-side route guards are user-interface behavior, not enforcement; the trusted server must validate authorization for every protected request.
 
-## How can you implement secure authentication and authorization in JavaScript applications?
-
-### Use HTTPS
+## Use HTTPS
 
 Ensure that your application uses HTTPS to encrypt data in transit. This prevents man-in-the-middle attacks and ensures that data exchanged between the client and server is secure.
 
-### Choose a session architecture
+## Choose a session architecture
 
 Opaque session identifiers stored in a server-side session store are often the simplest choice for a browser application. JWTs can be useful for distributed systems, but they add key management, claim validation, revocation, and rotation concerns; they are a format, not an authentication strategy.
 
-#### Example of generating a JWT
+### Example of generating a JWT
 
 ```js
 const jwt = require('jsonwebtoken');
@@ -52,7 +50,7 @@ const token = jwt.sign({ sub: '123', aud: 'api.example.com' }, signingKey, {
 });
 ```
 
-#### Example of verifying a JWT
+### Example of verifying a JWT
 
 ```js
 const jwt = require('jsonwebtoken');
@@ -69,7 +67,7 @@ try {
 }
 ```
 
-### Secure storage
+## Secure storage
 
 `localStorage` and `sessionStorage` are readable by any script running in the origin, so a single XSS vulnerability can exfiltrate a bearer token. For same-site browser applications, prefer a narrowly scoped `HttpOnly; Secure; SameSite` session cookie. Because cookies are attached automatically, add CSRF protection where `SameSite` alone does not cover the flow.
 
@@ -85,19 +83,19 @@ res.cookie('session', sessionId, {
 });
 ```
 
-### Server-side validation
+## Server-side validation
 
 Authenticate the session or token on the server for every protected request. For JWTs, allow-list the expected algorithm and validate the signature, issuer, audience, expiry, and any application-specific claims. Authentication proves who the caller is; authorization still decides whether that caller may perform this exact action on this exact resource.
 
-### OpenID Connect for third-party sign-in
+## OpenID Connect for third-party sign-in
 
 OAuth 2.0 delegates authorization; OpenID Connect adds the identity layer used for sign-in. Use Authorization Code with PKCE through a maintained provider SDK or library, validate `state` and `nonce`, and use HTTPS redirect URIs. Avoid implementing the protocol from scratch.
 
-### Server-side authorization
+## Server-side authorization
 
 RBAC is one option when permissions map cleanly to roles. Applications may instead need ownership checks, attribute-based policies, or explicit capabilities. Whatever the model, enforce it server-side and default to denial.
 
-#### Example of RBAC middleware in Express.js
+### Example of RBAC middleware in Express.js
 
 ```js
 function checkRole(role) {
@@ -116,7 +114,7 @@ app.get('/admin', checkRole('admin'), (req, res) => {
 });
 ```
 
-Real handlers should also check resource-level permissions—for example, whether a user owns the document being edited—rather than assuming a coarse role is sufficient.
+Real handlers should also check resource-level permissions (for example, whether a user owns the document being edited) rather than assuming a coarse role is sufficient.
 
 ## Further reading
 

@@ -16,9 +16,7 @@ console.log(myArray); // Output: [1, 2, 3]
 
 ---
 
-## How do you convert a `Set` to an array in JavaScript?
-
-### Using `Array.from()`
+## Using `Array.from()`
 
 The `Array.from()` method creates a new, shallow-copied array instance from an array-like or iterable object, such as a `Set`.
 
@@ -28,7 +26,7 @@ const myArray = Array.from(mySet);
 console.log(myArray); // Output: [1, 2, 3]
 ```
 
-### Using the spread operator
+## Using the spread operator
 
 The spread operator (`...`) can be used to expand the elements of a `Set` into an array.
 
@@ -38,9 +36,9 @@ const myArray = [...mySet];
 console.log(myArray); // Output: [1, 2, 3]
 ```
 
-### Performance considerations
+## Performance considerations
 
-Both methods are efficient and commonly used. However, the spread operator is often considered more concise and readable. Performance differences are generally negligible for most use cases, but for very large sets, you might want to benchmark both methods to see which performs better in your specific scenario.
+Both `Array.from(set)` and `[...set]` iterate the `Set` into a new array. If conversion is a performance bottleneck, benchmark both methods with representative data.
 
 ## Further reading
 

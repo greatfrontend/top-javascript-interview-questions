@@ -134,7 +134,7 @@ console.log(Object.prototype.toString.call(myObj)); // "[object MyCustomObject]"
 
 ## Summary
 
-`Symbol`s are useful for collision-resistant object properties and for customizing built-in protocols. Symbol-keyed properties are not necessarily non-enumerable—their property descriptor can have `enumerable: true`—but string-key enumeration APIs still skip them. Use class `#private` fields or closures when true access control is required.
+`Symbol`s are useful for collision-resistant object properties and for customizing built-in protocols. Symbol-keyed properties are not necessarily non-enumerable (their property descriptor can have `enumerable: true`) but string-key enumeration APIs still skip them. Use class `#private` fields or closures when true access control is required.
 
 ## Further reading
 

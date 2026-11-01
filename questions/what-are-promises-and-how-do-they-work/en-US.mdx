@@ -58,13 +58,11 @@ sequenceDiagram
 
 This is why a `.then()` chain composes transformations and errors instead of mutating the original promise.
 
-## What are Promises and how do they work?
+## Definition
 
-### Definition
+Promises represent the eventual outcome of asynchronous operations and pass results or errors through chains of handlers.
 
-Promises are a way to handle asynchronous operations in JavaScript. They provide a cleaner, more readable way to handle asynchronous code compared to traditional callback functions.
-
-### States of a Promise
+## States of a Promise
 
 A promise can be in one of three states:
 
@@ -72,7 +70,7 @@ A promise can be in one of three states:
 - `fulfilled`: The operation completed successfully.
 - `rejected`: The operation failed.
 
-### Creating a Promise
+## Creating a Promise
 
 You create a promise using the `Promise` constructor, which takes a function with two arguments: `resolve` and `reject`. These are callbacks that you call to change the state of the promise.
 
@@ -88,7 +86,7 @@ let promise = new Promise((resolve, reject) => {
 });
 ```
 
-### Handling a Promise
+## Handling a Promise
 
 To handle the result of a promise, you use the `.then()` method for a successful outcome and the `.catch()` method for an error.
 
@@ -112,7 +110,7 @@ promise
   });
 ```
 
-### Chaining Promises
+## Chaining Promises
 
 Promises can be chained to handle multiple asynchronous operations in sequence. Each `.then()` returns a new promise, allowing for further chaining.
 
@@ -134,7 +132,7 @@ new Promise((resolve, reject) => {
   });
 ```
 
-### Combining Promises
+## Combining Promises
 
 You can use `Promise.all()` to run multiple promises in parallel and wait for all of them to complete.
 
@@ -154,7 +152,7 @@ Promise.all([promise1, promise2, promise3]).then((results) => {
 
 In the above example, while `promise1` and `promise2` resolve instantly, `Promise.all` waits for `promise3`, which takes 2 seconds, before logging the results.
 
-### Practical failure modes
+## Practical failure modes
 
 - Constructing a Promise runs its executor synchronously; only its eventual reactions are deferred.
 - Forgetting to `return` a Promise inside `.then()` breaks sequencing and error propagation.

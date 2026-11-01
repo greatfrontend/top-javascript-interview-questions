@@ -86,7 +86,7 @@ fetch('https://jsonplaceholder.typicode.com/todos/1')
 
 在现代浏览器中，AJAX 使用 `fetch()` API 而不是 `XMLHTTPRequest` 完成，因此我们将解释 `fetch()` API 的工作原理：
 
-1. **发出请求**：[`fetch()` 函数](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)启动异步请求，从 URL 获取资源。它接受一个强制性参数——要获取的资源的 URL，并可以选择接受第二个参数——一个 `options` 对象，该对象允许使用 HTTP 方法、标头、正文等选项配置 HTTP 请求。
+1. **发出请求**：[`fetch()` 函数](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)启动异步请求，从 URL 获取资源。它接受一个强制性参数，要获取的资源的 URL，并可以选择接受第二个参数，一个 `options` 对象，该对象允许使用 HTTP 方法、标头、正文等选项配置 HTTP 请求。
 
    ```js
    fetch('https://api.example.com/data', {

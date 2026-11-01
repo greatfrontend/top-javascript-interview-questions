@@ -69,7 +69,7 @@ The server renders the HTML for each request using the current application state
 Example with the Next.js App Router:
 
 ```jsx
-// app/products/[id]/page.tsx — a React Server Component, async by default
+// app/products/[id]/page.tsx: a React Server Component, async by default
 export default async function ProductPage({ params }) {
   const { id } = await params;
   const res = await fetch(`https://api.example.com/products/${id}`, {
@@ -181,12 +181,12 @@ Tools such as [PageSpeed Insights](https://pagespeed.web.dev/) and WebPageTest p
 
 Several frameworks support the strategies above:
 
-- **[Next.js](https://nextjs.org/)** (React) — App Router is the current default. Supports SSR, SSG, ISR, and React Server Components with streaming.
-- **[Remix](https://remix.run/)** (React) — Emphasizes web standards and nested routing with loader and action functions. Merged with React Router in 2024.
-- **[Nuxt](https://nuxt.com/)** (Vue) — Supports SSR, SSG, ISR (via the Nitro server), and hybrid rendering.
-- **[SvelteKit](https://kit.svelte.dev/)** (Svelte) — Adapter-based; deploys as SSR, SSG, or edge functions depending on configuration.
-- **[Astro](https://astro.build/)** — Island architecture. Ships zero JavaScript by default and hydrates only the components marked as interactive. Well suited to content-heavy sites with limited interactivity.
-- **[SolidStart](https://start.solidjs.com/)** (Solid) — Architecturally similar to SvelteKit with Solid's fine-grained reactivity.
+- **[Next.js](https://nextjs.org/)** (React). App Router is the current default. Supports SSR, SSG, ISR, and React Server Components with streaming.
+- **[Remix](https://remix.run/)** (React). Emphasizes web standards and nested routing with loader and action functions. Merged with React Router in 2024.
+- **[Nuxt](https://nuxt.com/)** (Vue). Supports SSR, SSG, ISR (via the Nitro server), and hybrid rendering.
+- **[SvelteKit](https://kit.svelte.dev/)** (Svelte). Adapter-based; deploys as SSR, SSG, or edge functions depending on configuration.
+- **[Astro](https://astro.build/)**: Island architecture. Ships zero JavaScript by default and hydrates only the components marked as interactive. Well suited to content-heavy sites with limited interactivity.
+- **[SolidStart](https://start.solidjs.com/)** (Solid). Architecturally similar to SvelteKit with Solid's fine-grained reactivity.
 
 General guidance for new projects:
 

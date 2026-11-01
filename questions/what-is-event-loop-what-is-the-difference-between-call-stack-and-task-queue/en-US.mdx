@@ -5,7 +5,7 @@ subtitle: What is the difference between call stack and task queue?
 
 ## TL;DR
 
-The event loop is the host runtime's scheduling mechanism for coordinating JavaScript jobs, asynchronous operations, and—in browsers—rendering. A simplified browser turn works like this:
+The event loop is the host runtime's scheduling mechanism for coordinating JavaScript jobs, asynchronous operations, and (in browsers) rendering. A simplified browser turn works like this:
 
 1. The host runs one task, such as initial script evaluation, a timer callback, or an input-event callback. Function calls made by that task use the JavaScript agent's call stack.
 2. Timers, networking, and other host APIs continue outside the currently executing JavaScript stack. When work becomes ready, the host queues a task or settles a promise, which queues its reactions as microtasks.
@@ -71,7 +71,7 @@ This model is deliberately simplified: browsers can have multiple task queues, a
 
 ### Example
 
-The example below mixes synchronous logs with two timer callbacks and two promise callbacks. The first timer's callback enqueues a microtask, and the first promise callback enqueues another timer — small additions that exercise every ordering rule the event loop applies, while keeping each line individually trivial to read.
+The example below mixes synchronous logs with two timer callbacks and two promise callbacks. The first timer's callback enqueues a microtask, and the first promise callback enqueues another timer.
 
 ```js live
 console.log('Start');
@@ -160,7 +160,7 @@ Explanation:
 7. The script completes and the microtask queue drains in FIFO order: `run()`'s continuation logs `3`, then the `.then` callback logs `5`.
 8. The macrotask queue is then processed, logging `4`.
 
-The common misconception is that `await` blocks execution. It does not — the function is paused, but control returns immediately to the caller, and the continuation runs as a microtask once the awaited value settles.
+The common misconception is that `await` blocks execution. It does not: the function is paused, but control returns immediately to the caller, and the continuation runs as a microtask once the awaited value settles.
 
 ### Microtask starvation
 
@@ -186,13 +186,13 @@ scheduleMicrotask();
 
 With a bounded recursion depth, the macrotask eventually runs. An unbounded chain (for example `if (true)` instead of `if (count < 5)`) would prevent any macrotask from running and would block rendering in the browser.
 
-To yield to the browser for rendering or input handling, a macrotask is required — for example `setTimeout(fn, 0)`, `MessageChannel`, or `scheduler.yield()` in environments that support it. A microtask such as `queueMicrotask` or `Promise.resolve().then` does not yield.
+To yield to the browser for rendering or input handling, a macrotask is required, for example `setTimeout(fn, 0)`, `MessageChannel`, or `scheduler.yield()` in environments that support it. A microtask such as `queueMicrotask` or `Promise.resolve().then` does not yield.
 
 ### Yielding the main thread to split long tasks
 
 A synchronous block that runs longer than 50 ms is classified as a [long task](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceLongTaskTiming) and blocks the browser from rendering, handling input, and processing timers for that duration. The fix is to break the work into chunks and yield to the event loop between chunks so that rendering and other macrotasks can run.
 
-A loop that runs as one task — the entire computation blocks until it finishes:
+A loop that runs as one task: the entire computation blocks until it finishes:
 
 ```js
 function heavyWork() {
@@ -268,7 +268,7 @@ A comparison of the available yielding mechanisms:
 
 | Mechanism | Schedule type | Yields to render? | Notes |
 | --- | --- | --- | --- |
-| `queueMicrotask` / `Promise.then` | Microtask | No | Drains before render — used for sequencing, not yielding |
+| `queueMicrotask` / `Promise.then` | Microtask | No | Drains before render, used for sequencing, not yielding |
 | `setTimeout(fn, 0)` | Macrotask | Yes | Clamped to ≥ 4 ms after 5 nested calls per the HTML specification |
 | `MessageChannel.postMessage` | Macrotask | Yes | No clamp; ~ 0 ms in practice |
 | `scheduler.postTask(fn, { priority })` | Macrotask | Yes | Built-in priority levels (`user-blocking`, `user-visible`, `background`); Chromium-only |
@@ -306,7 +306,7 @@ The event loop is specified differently in browsers, Node.js, and Web Workers. C
 Specified in the [HTML Living Standard](https://html.spec.whatwg.org/multipage/webappapis.html#event-loops):
 
 - Each agent has its own event loop.
-- The macrotask queue is partitioned into multiple task sources (timers, network I/O, UI events, `postMessage`, and others). FIFO order is guaranteed within a source but not across sources — the user agent may choose any non-empty source each turn.
+- The macrotask queue is partitioned into multiple task sources (timers, network I/O, UI events, `postMessage`, and others). FIFO order is guaranteed within a source but not across sources: the user agent may choose any non-empty source each turn.
 - `requestAnimationFrame` callbacks run in a separate phase of the event loop, before the render step, rather than on the macrotask queue.
 - A browser may update rendering between tasks, but it does not render in the middle of a microtask checkpoint. This is why a long microtask chain can delay rendering.
 
@@ -367,7 +367,7 @@ process.nextTick(() => console.log('nextTick'));
 // CommonJS output begins:
 // nextTick
 // promise
-// setTimeout (or setImmediate — order between these two is not guaranteed at the top level)
+// setTimeout (or setImmediate: order between these two is not guaranteed at the top level)
 // setImmediate (or setTimeout)
 ```
 
@@ -379,7 +379,7 @@ process.nextTick(() => console.log('nextTick'));
 
 ## Common misconceptions
 
-Several statements about the event loop appear frequently in explanations and in responses generated by large language models but are inaccurate:
+The following common explanations of the event loop are inaccurate:
 
 1. **"`setTimeout(fn, 0)` runs immediately after the current synchronous code."** Microtasks drain first. A `Promise.resolve().then(fn)` scheduled after a `setTimeout(fn, 0)` still runs before the timer callback.
 2. **"`await` blocks the event loop."** The `await` expression pauses the containing async function and returns control to the caller. The continuation is scheduled as a microtask and does not block other tasks.

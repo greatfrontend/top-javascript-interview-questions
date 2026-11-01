@@ -47,13 +47,11 @@ sequenceDiagram
 
 The resumed code runs as a promise reaction, so it follows microtask ordering.
 
-## What is async/await and how does it simplify asynchronous code?
+## Introduction to async/await
 
-### Introduction to async/await
+Introduced in ECMAScript 2017 (ES8), `async/await` expresses Promise-based control flow with suspension at `await`.
 
-`async/await` is a feature introduced in ECMAScript 2017 (ES8) that allows you to write asynchronous code in a more synchronous-looking manner. It is built on top of promises and provides a cleaner and more readable way to handle asynchronous operations.
-
-### Using the `async` keyword
+## Using the `async` keyword
 
 The `async` keyword is used to declare an asynchronous function. When a function is declared as `async`, it automatically returns a promise. This means you can use the `await` keyword inside it to pause the execution of the function until a promise is resolved.
 
@@ -65,7 +63,7 @@ async function exampleFunction() {
 exampleFunction().then(console.log); // Output: Hello, World!
 ```
 
-### Using the `await` keyword
+## Using the `await` keyword
 
 The `await` keyword can be used inside an `async` function and at the top level of an ES module. It suspends that async function or module until the value is fulfilled; it does not block the JavaScript thread. If the awaited promise rejects, `await` throws that reason, which can be caught with `try...catch`.
 
@@ -85,11 +83,11 @@ async function fetchData() {
 fetchData();
 ```
 
-### Simplifying asynchronous code
+## Simplifying asynchronous code
 
 Before `async/await`, handling asynchronous operations often involved chaining multiple `.then()` calls, which could lead to "callback hell" or "pyramid of doom." `async/await` flattens this structure, making the code more readable and easier to maintain.
 
-#### Example with promises
+### Example with promises
 
 ```js live
 fetch('https://jsonplaceholder.typicode.com/posts/1')
@@ -105,7 +103,7 @@ fetch('https://jsonplaceholder.typicode.com/posts/1')
   });
 ```
 
-#### Example with async/await
+### Example with async/await
 
 ```js live
 async function fetchData() {
@@ -123,9 +121,9 @@ async function fetchData() {
 fetchData();
 ```
 
-### Error handling
+## Error handling
 
-Error handling with `async/await` is more straightforward compared to promises. You can use `try...catch` blocks to handle errors, making the code cleaner and more intuitive.
+A rejection at an awaited expression throws within the async function, so a surrounding `try...catch` block can handle it.
 
 ```js live
 async function fetchData() {

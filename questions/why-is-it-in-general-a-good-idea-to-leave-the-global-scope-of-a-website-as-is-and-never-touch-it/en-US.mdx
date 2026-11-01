@@ -47,8 +47,8 @@ In general, it's a good software engineering practice to not pollute the global 
 
 - **Naming conflicts**: The global scope is shared across all scripts on a web page. If you introduce new global variables or modify existing ones, you risk causing naming conflicts with other scripts or libraries used on the same page. This can lead to unexpected behavior and difficult-to-debug issues.
 - **Cluttered global namespace**: The global namespace should be kept as clean and minimal as possible. Adding unnecessary global variables or functions can clutter the namespace and make it harder to manage and maintain the codebase over time.
-- **Scope leaks**: When working with closures or event handlers, it's easy to accidentally create unintended references to global variables, leading to memory leaks and performance issues. By avoiding global variables altogether, you can prevent these types of scope leaks.
-- **Modularity and encapsulation**: One of the principles of good software design is modularity and encapsulation. By keeping variables and functions within their respective scopes (e.g., module, function, or block scope), you promote better code organization, reusability, and maintainability.
+- **Retained references**: Long-lived globals can retain objects after they are no longer needed. Remove obsolete references; module-scoped storage and closures can also retain unused objects.
+- **Modularity and encapsulation**: Keep implementation state in module, function, or block scope and expose the operations callers need.
 - **Security concerns**: Global variables can be accessed and modified by any script running on the page, including potentially malicious scripts. It is quite common for websites to load third-party scripts and in the event someone's network is compromised, it can pose security risks, especially if sensitive data is stored in global variables. However, in the first place you should not expose any sensitive data on the client.
 - **Compatibility and portability**: By relying heavily on global variables, your code becomes less portable and more dependent on the specific environment it was written for. This can make it harder to integrate with other libraries or frameworks, or to run the code in different environments (e.g., server-side vs browser).
 
@@ -76,7 +76,7 @@ In this example, `count`, `incrementCount`, and `decrementCount` are defined on 
 
 ## Avoiding global scope pollution
 
-By now we hope that you're convinced that it's not a good idea to define variables on the global scope. To avoid polluting the global scope, it is recommended to follow best practices such as:
+To limit global state and make dependencies explicit:
 
 - **Use local variables**: Declare variables within functions or blocks to limit their scope and prevent them from being accessed globally. Use `var`, `let`, or `const` to declare variables within a specific scope, ensuring they are not accidentally made global.
 - **Pass variables as function parameters**: Instead of accessing variables directly from the outer scope, pass them as parameters to functions to maintain encapsulation and avoid global scope pollution.

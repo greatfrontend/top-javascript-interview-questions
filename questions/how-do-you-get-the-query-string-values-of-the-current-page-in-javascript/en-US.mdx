@@ -14,9 +14,7 @@ console.log(value);
 
 ---
 
-## How do you get the query string values of the current page in JavaScript?
-
-### Using URLSearchParams
+## Using URLSearchParams
 
 The `URLSearchParams` interface provides an easy way to work with query strings. Here's how you can use it:
 
@@ -31,7 +29,7 @@ console.log(value);
 
 If the query parameter does not exist, the `get` method returns `null`.
 
-### Example
+## Example
 
 Consider a URL like `https://example.com?page=2&sort=asc`. To get the values of `page` and `sort`:
 
@@ -41,7 +39,7 @@ const page = params.get('page'); // '2'
 const sort = params.get('sort'); // 'asc'
 ```
 
-### Handling multiple values
+## Handling multiple values
 
 If a query parameter appears multiple times, you can use the `getAll` method to retrieve all values:
 
@@ -50,7 +48,7 @@ const params = new URLSearchParams(window.location.search);
 const values = params.getAll('key'); // Returns an array of values
 ```
 
-### Checking for the existence of a parameter
+## Checking for the existence of a parameter
 
 You can use the `has` method to check if a query parameter exists.
 
@@ -61,7 +59,7 @@ console.log(params.has('language'));
 console.log(params.has('tab'));
 ```
 
-### Iterating over all parameters
+## Iterating over all parameters
 
 You can iterate over all query parameters using the `forEach` method:
 

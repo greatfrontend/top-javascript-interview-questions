@@ -4,7 +4,7 @@ title: How can you avoid problems related to hoisting?
 
 ## TL;DR
 
-Use `const` by default and `let` when reassignment is required, keep declarations close to their first use, and never read a binding before it is initialized. `let` and `const` are still hoisted—their bindings exist from the start of the block—but they remain in the temporal dead zone until evaluation reaches the declaration. Static-analysis rules such as `no-use-before-define` and `no-undef` catch the risky patterns.
+Use `const` by default and `let` when reassignment is required, keep declarations close to their first use, and never read a binding before it is initialized. `let` and `const` are still hoisted (their bindings exist from the start of the block) but they remain in the temporal dead zone until evaluation reaches the declaration. Static-analysis rules such as `no-use-before-define` and `no-undef` catch the risky patterns.
 
 ```js live
 // Use let or const
@@ -21,13 +21,11 @@ myFunction(); // Output: 'Hello, world!'
 
 ---
 
-## How can you avoid problems related to hoisting?
-
-### Understand hoisting
+## Understand hoisting
 
 “Hoisting” describes the observable result of JavaScript creating bindings while it instantiates a scope before evaluating its statements. The engine does not physically move source code.
 
-### Use `let` and `const` instead of `var`
+## Use `let` and `const` instead of `var`
 
 `let` and `const` are block-scoped. Their bindings are hoisted to the start of the block but stay uninitialized in the temporal dead zone, so an early access throws instead of silently producing `undefined`.
 
@@ -44,7 +42,7 @@ let y = 20; // Block-scoped; initialized here
 const z = 30; // Block-scoped; initialized here
 ```
 
-### Keep declarations close to their first use
+## Keep declarations close to their first use
 
 Declare and initialize a binding before its first use, preferably close to the code that needs it. Moving every declaration to the top can widen its apparent lifetime and separate it from its purpose.
 
@@ -59,7 +57,7 @@ function example() {
 example(); // Output: 3
 ```
 
-### Declare functions before calling them
+## Declare functions before calling them
 
 Function declarations are initialized during scope setup; function expressions are evaluated in place. Keeping either form before its first call usually makes control flow easier to read, even when an earlier call to a declaration would be valid.
 
@@ -77,7 +75,7 @@ const anotherFunction = function () {
 anotherFunction(); // No issues here
 ```
 
-### Avoid using undeclared variables
+## Avoid using undeclared variables
 
 Using undeclared variables can lead to unexpected behavior due to hoisting. Always declare your variables before using them.
 

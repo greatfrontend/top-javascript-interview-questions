@@ -23,23 +23,21 @@ const cat = createAnimal('cat');
 
 ---
 
-## What is the Factory pattern and how is it used?
-
-### Definition
+## Definition
 
 The Factory pattern is a creational design pattern that provides an interface for creating objects in a superclass but allows subclasses to alter the type of objects that will be created. It encapsulates the object creation process, making the code more modular and easier to manage.
 
-### Use cases
+## Use cases
 
 1. **Complex object creation**: When the process of creating an object is complex or involves multiple steps.
 2. **Runtime object determination**: When the type of object to be created is determined at runtime.
 3. **Decoupling**: To decouple the client code from the specific classes it needs to instantiate.
 
-### Implementation in JavaScript
+## Implementation in JavaScript
 
 In JavaScript, the Factory pattern can be implemented using factory functions or classes. Below are examples of both approaches.
 
-#### Factory function
+### Factory function
 
 A factory function is a simple function that returns an object. It can contain logic to decide which type of object to create.
 
@@ -60,7 +58,7 @@ console.log(dog.sound); // Output: woof
 console.log(cat.sound); // Output: meow
 ```
 
-#### Factory class
+### Factory class
 
 A factory class can be used to encapsulate the creation logic within a class structure.
 
@@ -102,16 +100,16 @@ console.log(dog.sound); // Output: woof
 console.log(cat.sound); // Output: meow
 ```
 
-### Benefits
+## Benefits
 
 1. **Encapsulation**: The creation logic is encapsulated in one place.
 2. **Flexibility**: Easy to add new types of objects without changing the client code.
 3. **Decoupling**: Reduces the dependency of the client code on specific classes.
 
-### Drawbacks
+## Drawbacks
 
 1. **Complexity**: Can add unnecessary complexity if the object creation logic is simple.
-2. **Overhead**: May introduce additional overhead if not used judiciously.
+2. **Overhead**: A factory adds an extra abstraction; direct construction may be sufficient when there is only one simple implementation.
 
 ## Further reading
 

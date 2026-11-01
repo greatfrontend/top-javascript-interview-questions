@@ -31,9 +31,7 @@ flowchart TD
 
 The correct defense depends on the output context; Content Security Policy is a valuable additional layer, not a substitute for safe sinks, encoding, or sanitization.
 
-## What is Cross-Site Scripting (XSS) and how can you prevent it?
-
-### What is Cross-Site Scripting (XSS)?
+## What is Cross-Site Scripting (XSS)?
 
 Cross-Site Scripting (XSS) is a type of security vulnerability typically found in web applications. It allows attackers to inject malicious scripts into content from otherwise trusted websites. These scripts can then be executed in the context of the user's browser, leading to various malicious activities such as:
 
@@ -48,9 +46,9 @@ There are three main types of XSS attacks:
 2. **Reflected XSS**: The malicious script is reflected off a web server, such as in an error message, search result, or any other response that includes some or all of the input sent to the server.
 3. **DOM-based XSS**: The vulnerability exists in the client-side code rather than the server-side code. The malicious script is executed as a result of modifying the DOM environment in the victim's browser.
 
-### How can you prevent XSS?
+## How can you prevent XSS?
 
-#### Validate input and handle each output context safely
+### Validate input and handle each output context safely
 
 Validate input against the application's data rules, but encode or safely insert it at the output sink. For plain text, prefer `textContent` or a framework's escaped text interpolation. HTML, URL, CSS, and JavaScript contexts require different handling; do not reuse one generic escape function for all of them.
 
@@ -62,7 +60,7 @@ const sanitizeHtml = require('sanitize-html');
 const cleanInput = sanitizeHtml(userInput);
 ```
 
-#### Use Content Security Policy (CSP)
+### Use Content Security Policy (CSP)
 
 A Content Security Policy (CSP) is a security feature that helps prevent XSS attacks by specifying which dynamic resources are allowed to load. This can be done by setting HTTP headers.
 
@@ -70,7 +68,7 @@ A Content Security Policy (CSP) is a security feature that helps prevent XSS att
 Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted.cdn.com;
 ```
 
-#### Encode for the specific output context
+### Encode for the specific output context
 
 Use the framework or platform API designed for the destination context. For ordinary text, avoid constructing HTML at all:
 
@@ -78,7 +76,7 @@ Use the framework or platform API designed for the destination context. For ordi
 element.textContent = userInput;
 ```
 
-#### Use HTTP-only cookies
+### Use HTTP-only cookies
 
 Set session cookies to `HttpOnly` so injected JavaScript cannot read the cookie value directly. This limits one impact of XSS but does not stop malicious code from performing authenticated actions through the victim's browser.
 
@@ -86,7 +84,7 @@ Set session cookies to `HttpOnly` so injected JavaScript cannot read the cookie 
 Set-Cookie: sessionId=abc123; HttpOnly; Secure; SameSite=Lax
 ```
 
-#### Regularly update dependencies
+### Regularly update dependencies
 
 Keep your libraries and frameworks up to date to ensure you have the latest security patches and features.
 

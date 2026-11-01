@@ -37,10 +37,8 @@ Extending built-in JavaScript objects modifies the global scope and it's not a g
 1. **Future-proofing**: If a browser decides to implement its own version of a method, your custom extension might get overridden silently, leading to unexpected behavior or conflicts.
 2. **Collisions**: Adding custom methods to built-in objects can lead to collisions with future browser implementations or other libraries, causing unexpected behavior or errors.
 3. **Maintenance and debugging**: When extending built-in objects, it can be difficult for other developers to understand the changes made, making maintenance and debugging more challenging.
-4. **Performance**: Extending built-in objects can potentially impact performance, especially if the extensions are not optimized for the specific use case.
-5. **Security**: In some cases, extending built-in objects can introduce security vulnerabilities if not done correctly, such as adding enumerable properties that can be exploited by malicious code.
-6. **Compatibility**: Custom extensions to built-in objects may not be compatible with all browsers or environments, leading to issues with cross-browser compatibility.
-7. **Namespace clashes**: Extending built-in objects can lead to namespace clashes if multiple libraries or scripts extend the same object in different ways, causing conflicts and unexpected behavior.
+4. **Inherited properties**: Enumerable prototype additions appear in `for...in` loops and can break code that assumes every key belongs to the instance.
+5. **Compatibility**: Custom extensions to built-in objects may not be compatible with all browsers or environments, leading to issues with cross-browser compatibility.
 
 Read more about [why it is a bad idea to modify the global scope](/questions/quiz/why-is-it-in-general-a-good-idea-to-leave-the-global-scope-of-a-website-as-is-and-never-touch-it).
 

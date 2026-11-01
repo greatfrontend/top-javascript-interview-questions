@@ -14,11 +14,9 @@ document.getElementById('myButton').addEventListener('click', function () {
 
 ---
 
-## What are event listeners and how are they used?
+Event listeners run registered callbacks when the specified event is dispatched, such as a click, key press, or mouse movement.
 
-Event listeners are a fundamental part of web development, allowing developers to make web pages interactive by responding to user actions. They are functions that wait for specific events to occur on elements, such as clicks, key presses, or mouse movements, and then execute a specified function when those events occur.
-
-### Adding an event listener
+## Adding an event listener
 
 To add an event listener to an element, you use the `addEventListener` method. This method takes two main arguments: the type of event to listen for and the function to execute when the event occurs.
 
@@ -32,7 +30,7 @@ button.addEventListener('click', function () {
 
 In this example, an event listener is added to a button element with the ID `myButton`. When the button is clicked, an alert box will appear with the message "Button was clicked!".
 
-### Removing an event listener
+## Removing an event listener
 
 You can also remove an event listener using the `removeEventListener` method. This method requires the same arguments as `addEventListener`: the event type and the function to remove.
 
@@ -63,7 +61,7 @@ document.addEventListener('visibilitychange', handleVisibility, {
 controller.abort();
 ```
 
-### Event object
+## Event object
 
 When an event listener is triggered, an event object is passed to the event handler function. This object contains useful information about the event, such as the target element, the type of event, and more.
 
@@ -74,7 +72,7 @@ button.addEventListener('click', function (event) {
 });
 ```
 
-### Common event types
+## Common event types
 
 - `click`: Triggered when an element is clicked
 - `mouseover`: Triggered when the mouse pointer is moved over an element
@@ -82,7 +80,7 @@ button.addEventListener('click', function (event) {
 - `keydown`: Triggered when a key is pressed down
 - `keyup`: Triggered when a key is released
 
-### Event delegation
+## Event delegation
 
 Event delegation is a technique where a single event listener is added to a parent element to manage events for multiple child elements. This is useful for improving performance and managing dynamic content.
 
@@ -100,7 +98,7 @@ In this example, a single event listener is added to a list element. When any li
 
 Use `event.target.closest('li')` in real delegated handlers so clicks on a nested element still resolve to the list item, and verify the matched item belongs to the intended list. Delegation reduces listener management; it is not automatically faster for every small, fixed interface.
 
-### Listener options and failure modes
+## Listener options and failure modes
 
 - `{ once: true }` removes a listener after its first invocation.
 - `{ passive: true }` promises not to call `preventDefault()`, allowing the browser to optimize relevant scrolling events. Calling `preventDefault()` from that listener has no effect.

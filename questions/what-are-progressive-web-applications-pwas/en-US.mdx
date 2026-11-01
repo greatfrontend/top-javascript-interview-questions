@@ -4,7 +4,7 @@ title: What are Progressive Web Applications (PWAs)?
 
 ## TL;DR
 
-Progressive Web Applications (PWAs) are web applications enhanced with capabilities such as installation, offline behavior, background work, and notifications. Which capabilities are available—and the exact installation criteria—vary by browser and operating system. A web app manifest supplies installation metadata, service workers commonly provide offline and push behavior, and powerful features require a secure context.
+Progressive Web Applications (PWAs) are web applications enhanced with capabilities such as installation, offline behavior, background work, and notifications. Which capabilities are available (and the exact installation criteria) vary by browser and operating system. A web app manifest supplies installation metadata, service workers commonly provide offline and push behavior, and powerful features require a secure context.
 
 ---
 
@@ -32,13 +32,11 @@ flowchart TD
 
 Offline behavior is not automatic: it depends on what the service worker caches and how it handles misses, updates, and failures.
 
-## What are Progressive Web Applications (PWAs)?
+## Definition
 
-### Definition
+Progressive Web Applications (PWAs) are built with standard web technologies such as HTML, CSS, and JavaScript. They use supported platform features for capabilities such as installation, offline caching, and notifications.
 
-Progressive Web Applications (PWAs) are web applications that combine the best of web and mobile apps. They are built using standard web technologies such as HTML, CSS, and JavaScript but offer enhanced capabilities that make them feel like native apps.
-
-### Key characteristics
+## Key characteristics
 
 - **Progressively enhanced**: The core web experience should work where optional platform capabilities are unavailable.
 - **Responsive**: They fit any form factor, whether it's a desktop, mobile, or tablet.
@@ -51,9 +49,9 @@ Progressive Web Applications (PWAs) are web applications that combine the best o
 - **Installable**: Supporting browsers can install eligible sites into an app-like window or home-screen entry; criteria and UX vary by platform.
 - **Linkable**: They can be easily shared via URL and do not require complex installation.
 
-### Core technologies
+## Core technologies
 
-#### Service workers
+### Service workers
 
 Service workers are scripts that run in the background, separate from the web page, enabling features like offline functionality, background sync, and push notifications.
 
@@ -70,7 +68,7 @@ if ('serviceWorker' in navigator) {
 }
 ```
 
-#### Web app manifest
+### Web app manifest
 
 The web app manifest is a JSON file that provides metadata about the application (name, icons, start URL, etc.) and allows it to be installed on the user's home screen.
 
@@ -96,14 +94,14 @@ The web app manifest is a JSON file that provides metadata about the application
 }
 ```
 
-#### HTTPS
+### HTTPS
 
 Service workers and many other powerful capabilities require a secure context, normally HTTPS (with localhost exceptions for development). A site can still use a manifest without a service worker, and current installation criteria are browser-specific.
 
-### Benefits
+## Benefits
 
 - **Performance opportunities**: Caching and offline strategies can improve repeat-load resilience, but the PWA label itself does not guarantee fast loading.
-- **Increased engagement**: Features like push notifications and home screen installation help keep users engaged.
+- **Installation and notifications**: Supported browsers can offer home screen installation and user-authorized push notifications.
 - **Potentially shared implementation**: One web codebase can cover multiple platforms, though capability gaps and platform-specific UX can still add work.
 
 ## Further reading
